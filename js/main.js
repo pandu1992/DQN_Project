@@ -49,6 +49,7 @@
   const btnCompareAll = $("btnCompareAll");
   const btnCompareStop = $("btnCompareStop");
   const cmpEpisodesInput = $("cmpEpisodes");
+  const cmpSeedsInput = $("cmpSeeds");
   const compareCanvas = $("compareCanvas");
   const compareCtx = compareCanvas ? compareCanvas.getContext("2d") : null;
   const btnExportCmpCsv = $("btnExportCmpCsv");
@@ -84,8 +85,10 @@
   let usePER = false;
   let useNoisy = false;
   let comparing = false;
-  let compareResults = {}; // algo -> { rewards:[], success:[], steps:[] }
+  let compareResults = {}; // algo -> { seedRewards:[[]], seedSuccess:[[]], seedSteps:[[]] }
   let compareMods = { per: false, noisy: false }; // enhancement flags used in last comparison
+  let compareSeeds = 1;
+  let compareEpisodesPerAlgo = 0;
 
   const TOTAL_STEPS = 50000;
 
@@ -787,7 +790,9 @@
     ctx.fillStyle = "#071324";
     ctx.fillRect(0, 0, W, H);
 
-    const algos = ALGORITHMS.filter((a) => compareResults[a] && compareResults[a].rewards.length > 1);
+    const algos = ALGORITHMS.filter(
+      (a) => compareResults[a] && compareResults[a].seedRewards.some((c) => c.length > 1)
+    );
     if (algos.length === 0) {
       ctx.fillStyle = "#8aa0c6";
       ctx.font = "12px sans-serif";
@@ -795,15 +800,23 @@
       return;
     }
 
-    // global min/max over all MA curves
+    // per-algorithm mean & std MA20 curve (aggregated across seeds)
+    const agg = {};
     let min = Infinity, max = -Infinity, maxLen = 0;
-    const curves = {};
+    let anyBand = false;
     for (const a of algos) {
-      const ma = movingAvg(compareResults[a].rewards, 20);
-      curves[a] = ma;
-      maxLen = Math.max(maxLen, ma.length);
-      for (const v of ma) { if (v < min) min = v; if (v > max) max = v; }
+      const g = aggregateCurves(compareResults[a].seedRewards, 20);
+      agg[a] = g;
+      maxLen = Math.max(maxLen, g.mean.length);
+      if (g.nSeeds > 1) anyBand = true;
+      for (let i = 0; i < g.mean.length; i++) {
+        const lo = g.mean[i] - g.std[i];
+        const hi = g.mean[i] + g.std[i];
+        if (lo < min) min = lo;
+        if (hi > max) max = hi;
+      }
     }
+    if (!isFinite(min) || !isFinite(max)) { min = 0; max = 1; }
     if (min === max) { min -= 1; max += 1; }
     const pad = 28;
     const yFor = (v) => H - pad - ((v - min) / (max - min)) * (H - pad * 2);
@@ -819,14 +832,35 @@
       ctx.stroke();
     }
 
-    // each algorithm's MA20 curve
+    // ±std shaded bands (only when >1 seed)
     for (const a of algos) {
-      const ma = curves[a];
+      const g = agg[a];
+      if (g.nSeeds <= 1 || g.mean.length < 2) continue;
+      const col = hexToRgba(ALGO_COLORS[a] || "#ffffff", 0.16);
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      for (let i = 0; i < g.mean.length; i++) {
+        const x = xFor(i, g.mean.length);
+        const y = yFor(g.mean[i] + g.std[i]);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      for (let i = g.mean.length - 1; i >= 0; i--) {
+        const x = xFor(i, g.mean.length);
+        const y = yFor(g.mean[i] - g.std[i]);
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // mean MA20 lines
+    for (const a of algos) {
+      const g = agg[a];
       ctx.strokeStyle = ALGO_COLORS[a] || "#fff";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ma.forEach((v, i) => {
-        const x = xFor(i, ma.length);
+      g.mean.forEach((v, i) => {
+        const x = xFor(i, g.mean.length);
         const y = yFor(v);
         i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
       });
@@ -839,7 +873,73 @@
     ctx.fillText(max.toFixed(0), 4, yFor(max) + 3);
     ctx.fillText(min.toFixed(0), 4, yFor(min) + 3);
     ctx.textAlign = "right";
-    ctx.fillText(`${maxLen} episodes/algo · MA20${modsSuffix()}`, W - 6, 12);
+    const seedNote = anyBand ? ` · mean±std over ${compareResults[algos[0]].seedRewards.length} seeds` : "";
+    ctx.fillText(`${maxLen} eps/algo · MA20${seedNote}${modsSuffix()}`, W - 6, 12);
+  }
+
+  // ---- aggregation helpers (multi-seed) ----
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace("#", "");
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // given an array of per-seed reward arrays, return per-episode
+  // mean & std of the MA20 curve, aligned to the shortest seed length
+  function aggregateCurves(seedRewards, win) {
+    const nonEmpty = seedRewards.filter((c) => c.length > 0);
+    if (nonEmpty.length === 0) return { mean: [], std: [], nSeeds: 0 };
+    const mas = nonEmpty.map((c) => movingAvg(c, win));
+    const L = Math.min(...mas.map((m) => m.length));
+    const mean = new Array(L).fill(0);
+    const std = new Array(L).fill(0);
+    for (let i = 0; i < L; i++) {
+      let m = 0;
+      for (const ma of mas) m += ma[i];
+      m /= mas.length;
+      let v = 0;
+      for (const ma of mas) v += (ma[i] - m) * (ma[i] - m);
+      v /= mas.length;
+      mean[i] = m;
+      std[i] = Math.sqrt(v);
+    }
+    return { mean, std, nSeeds: mas.length };
+  }
+
+  // flatten per-seed arrays into aggregate stats for the table/summary
+  function seedAggStats(res) {
+    const seeds = res.seedRewards.length;
+    // per-seed scalar stats, then mean/std across seeds
+    const perSeedAvgReward = [];
+    const perSeedSucc = [];
+    const perSeedSteps = [];
+    const perSeedBestMA = [];
+    let totalEpisodes = 0;
+    for (let s = 0; s < seeds; s++) {
+      const rw = res.seedRewards[s];
+      if (!rw.length) continue;
+      totalEpisodes += rw.length;
+      perSeedAvgReward.push(rw.reduce((x, y) => x + y, 0) / rw.length);
+      perSeedSucc.push((100 * res.seedSuccess[s].reduce((x, y) => x + y, 0)) / rw.length);
+      perSeedSteps.push(res.seedSteps[s].reduce((x, y) => x + y, 0) / rw.length);
+      perSeedBestMA.push(Math.max(...movingAvg(rw, 20)));
+    }
+    const ms = (arr) => {
+      if (!arr.length) return { mean: NaN, std: 0 };
+      const m = arr.reduce((x, y) => x + y, 0) / arr.length;
+      const v = arr.reduce((x, y) => x + (y - m) * (y - m), 0) / arr.length;
+      return { mean: m, std: Math.sqrt(v) };
+    };
+    return {
+      seeds: perSeedAvgReward.length,
+      totalEpisodes,
+      reward: ms(perSeedAvgReward),
+      success: ms(perSeedSucc),
+      steps: ms(perSeedSteps),
+      bestMA: ms(perSeedBestMA),
+    };
   }
 
   function updateCompareLegendAndTable() {
@@ -852,6 +952,8 @@
     }
     const table = $("cmpTable");
     if (!table) return;
+    const pm = (m, s, dp) =>
+      s > 0 ? `${m.toFixed(dp)}±${s.toFixed(dp)}` : m.toFixed(dp);
     // rebuild rows (keep header row 0)
     table.querySelectorAll("tr.cmp-data").forEach((r) => r.remove());
     for (const a of ALGORITHMS) {
@@ -859,20 +961,16 @@
       const tr = document.createElement("tr");
       tr.className = "cmp-data";
       let cells;
-      if (res && res.rewards.length) {
-        const n = res.rewards.length;
-        const avgR = res.rewards.reduce((x, y) => x + y, 0) / n;
-        const succ = (100 * res.success.reduce((x, y) => x + y, 0)) / n;
-        const avgSteps = res.steps.reduce((x, y) => x + y, 0) / n;
-        const ma = movingAvg(res.rewards, 20);
-        const bestMA = Math.max(...ma);
+      const hasData = res && res.seedRewards.some((c) => c.length);
+      if (hasData) {
+        const st = seedAggStats(res);
         cells = [
           `<i class="cmp-swatch" style="background:${ALGO_COLORS[a]}"></i>${ALGO_LABELS[a]}`,
-          n,
-          succ.toFixed(0) + "%",
-          avgR.toFixed(1),
-          bestMA.toFixed(1),
-          avgSteps.toFixed(1),
+          st.seeds > 1 ? `${st.seeds}×${Math.round(st.totalEpisodes / st.seeds)}` : st.totalEpisodes,
+          pm(st.success.mean, st.success.std, 0) + "%",
+          pm(st.reward.mean, st.reward.std, 1),
+          pm(st.bestMA.mean, st.bestMA.std, 1),
+          pm(st.steps.mean, st.steps.std, 1),
         ];
       } else {
         cells = [
@@ -880,7 +978,7 @@
           "—", "—", "—", "—", "—",
         ];
       }
-      tr.innerHTML = cells.map((c, i) => (i === 0 ? `<td>${c}</td>` : `<td>${c}</td>`)).join("");
+      tr.innerHTML = cells.map((c) => `<td>${c}</td>`).join("");
       table.appendChild(tr);
     }
   }
@@ -894,31 +992,51 @@
 
     comparing = true;
     compareResults = {};
-    for (const a of ALGORITHMS) compareResults[a] = { rewards: [], success: [], steps: [] };
+    // per-algorithm: one reward/success/steps array PER SEED
+    for (const a of ALGORITHMS) {
+      compareResults[a] = { seedRewards: [], seedSuccess: [], seedSteps: [] };
+    }
     // capture the enhancement toggles applied to every compared agent
     compareMods = {
       per: perToggle ? perToggle.checked : false,
       noisy: noisyToggle ? noisyToggle.checked : false,
     };
-    updateCompareLegendAndTable();
 
     const targetEpisodes = Math.max(20, Math.min(600, parseInt(cmpEpisodesInput.value, 10) || 120));
+    const nSeeds = Math.max(1, Math.min(10, parseInt(cmpSeedsInput ? cmpSeedsInput.value : "1", 10) || 1));
+    compareSeeds = nSeeds;
+    compareEpisodesPerAlgo = targetEpisodes;
+
+    // pre-allocate seed slots so the table shows structure immediately
+    for (const a of ALGORITHMS) {
+      for (let s = 0; s < nSeeds; s++) {
+        compareResults[a].seedRewards.push([]);
+        compareResults[a].seedSuccess.push([]);
+        compareResults[a].seedSteps.push([]);
+      }
+    }
+    updateCompareLegendAndTable();
+
     if (btnCompareAll) btnCompareAll.disabled = true;
     if (btnCompareStop) btnCompareStop.disabled = false;
+    if (btnExportCmpCsv) btnExportCmpCsv.disabled = true;
+    if (btnExportCmpPng) btnExportCmpPng.disabled = true;
     btnTrain.disabled = true;
     btnGreedy.disabled = true;
     if (algoSelect) algoSelect.disabled = true;
 
-    let ai = 0;
+    let ai = 0;      // algorithm index
+    let si = 0;      // seed index
     let cmpEnv = null;
     let cmpAgent = null;
     let cmpObs = null;
     let cmpEpisode = 0;
     let cmpTraj = 1;
 
-    function startAlgo(idx) {
-      const algo = ALGORITHMS[idx];
-      cmpEnv = new VesselEnv(42);
+    function startRun(algoIdx, seedIdx) {
+      const algo = ALGORITHMS[algoIdx];
+      const seed = 42 + seedIdx;
+      cmpEnv = new VesselEnv(seed);
       cmpAgent = new DQNAgent(cmpEnv.obsDim, cmpEnv.nActions, {
         totalSteps: targetEpisodes * 25, // scale eps decay to the budget
         algorithm: algo,
@@ -930,13 +1048,12 @@
       cmpTraj = 1;
     }
 
-    startAlgo(ai);
+    startRun(ai, si);
 
     function frame() {
       if (!comparing) return; // stopped by user
 
       const algo = ALGORITHMS[ai];
-      // run a chunk of steps this frame (fewer for heavier dueling nets)
       const chunk = algo.indexOf("Dueling") !== -1 ? 220 : 400;
       for (let i = 0; i < chunk; i++) {
         const a = cmpAgent.act(cmpObs);
@@ -945,9 +1062,9 @@
         cmpObs = r.obs;
         cmpTraj++;
         if (r.terminated || r.truncated) {
-          compareResults[algo].rewards.push(cmpEnv.totalReward);
-          compareResults[algo].success.push(r.info.reachedGoal ? 1 : 0);
-          compareResults[algo].steps.push(cmpTraj - 1);
+          compareResults[algo].seedRewards[si].push(cmpEnv.totalReward);
+          compareResults[algo].seedSuccess[si].push(r.info.reachedGoal ? 1 : 0);
+          compareResults[algo].seedSteps[si].push(cmpTraj - 1);
           cmpEpisode++;
           cmpTraj = 1;
           cmpObs = cmpEnv.reset();
@@ -958,18 +1075,24 @@
       drawCompareChart();
       updateCompareLegendAndTable();
 
-      // status label on the reward chart header
-      if ($("chartLabel"))
+      if ($("chartLabel")) {
+        const seedTxt = nSeeds > 1 ? ` · seed ${si + 1}/${nSeeds}` : "";
         $("chartLabel").textContent =
-          `Comparing ${ALGO_LABELS[algo]} — ${cmpEpisode}/${targetEpisodes} episodes`;
+          `Comparing ${ALGO_LABELS[algo]}${modsSuffix()} — ${cmpEpisode}/${targetEpisodes} eps${seedTxt}`;
+      }
 
       if (cmpEpisode >= targetEpisodes) {
-        ai++;
-        if (ai >= ALGORITHMS.length) {
-          finishComparison();
-          return;
+        // advance: next seed, then next algorithm
+        si++;
+        if (si >= nSeeds) {
+          si = 0;
+          ai++;
+          if (ai >= ALGORITHMS.length) {
+            finishComparison();
+            return;
+          }
         }
-        startAlgo(ai);
+        startRun(ai, si);
       }
       animFrame = requestAnimationFrame(frame);
     }
@@ -1012,7 +1135,9 @@
   // (the comparison chart image) — paper-ready artifacts.
   // ============================================================
   function hasComparisonData() {
-    return ALGORITHMS.some((a) => compareResults[a] && compareResults[a].rewards.length > 0);
+    return ALGORITHMS.some(
+      (a) => compareResults[a] && compareResults[a].seedRewards.some((c) => c.length > 0)
+    );
   }
 
   function downloadBlob(blob, filename) {
@@ -1031,35 +1156,48 @@
     const suffix = modsSuffix().replace(/[^A-Za-z0-9]+/g, "");
     const lines = [];
 
-    // Section 1: per-algorithm summary
+    // Section 1: per-algorithm summary (mean ± std across seeds)
     lines.push("# Bintulu DQN — algorithm comparison summary");
     lines.push("# enhancements:" + (modsSuffix() || " none"));
-    lines.push("algorithm,label,episodes,success_rate_pct,avg_reward,reward_std,best_ma20,avg_steps");
+    lines.push("# seeds:" + compareSeeds + " episodes_per_algo:" + compareEpisodesPerAlgo);
+    lines.push(
+      "algorithm,label,seeds,episodes_per_seed," +
+      "success_rate_mean,success_rate_std," +
+      "avg_reward_mean,avg_reward_std," +
+      "best_ma20_mean,best_ma20_std," +
+      "avg_steps_mean,avg_steps_std"
+    );
     for (const a of ALGORITHMS) {
       const res = compareResults[a];
-      if (!res || !res.rewards.length) continue;
-      const n = res.rewards.length;
-      const mean = res.rewards.reduce((x, y) => x + y, 0) / n;
-      const variance = res.rewards.reduce((x, y) => x + (y - mean) * (y - mean), 0) / n;
-      const std = Math.sqrt(variance);
-      const succ = (100 * res.success.reduce((x, y) => x + y, 0)) / n;
-      const avgSteps = res.steps.reduce((x, y) => x + y, 0) / n;
-      const bestMA = Math.max(...movingAvg(res.rewards, 20));
-      const label = (ALGO_LABELS[a] + modsSuffix());
+      if (!res || !res.seedRewards.some((c) => c.length)) continue;
+      const st = seedAggStats(res);
+      const epsPerSeed = st.seeds ? Math.round(st.totalEpisodes / st.seeds) : 0;
+      const label = ALGO_LABELS[a] + modsSuffix();
       lines.push(
-        [a, `"${label}"`, n, succ.toFixed(2), mean.toFixed(3), std.toFixed(3), bestMA.toFixed(3), avgSteps.toFixed(2)].join(",")
+        [
+          a, `"${label}"`, st.seeds, epsPerSeed,
+          st.success.mean.toFixed(3), st.success.std.toFixed(3),
+          st.reward.mean.toFixed(3), st.reward.std.toFixed(3),
+          st.bestMA.mean.toFixed(3), st.bestMA.std.toFixed(3),
+          st.steps.mean.toFixed(3), st.steps.std.toFixed(3),
+        ].join(",")
       );
     }
 
-    // Section 2: per-episode learning curves (long format)
+    // Section 2: per-episode learning curves (long format, includes seed)
     lines.push("");
     lines.push("# per-episode records (long format)");
-    lines.push("algorithm,episode,reward,success,steps");
+    lines.push("algorithm,seed,episode,reward,success,steps");
     for (const a of ALGORITHMS) {
       const res = compareResults[a];
       if (!res) continue;
-      for (let i = 0; i < res.rewards.length; i++) {
-        lines.push([a, i + 1, res.rewards[i].toFixed(3), res.success[i], res.steps[i]].join(","));
+      for (let s = 0; s < res.seedRewards.length; s++) {
+        const rw = res.seedRewards[s];
+        for (let i = 0; i < rw.length; i++) {
+          lines.push(
+            [a, s, i + 1, rw[i].toFixed(3), res.seedSuccess[s][i], res.seedSteps[s][i]].join(",")
+          );
+        }
       }
     }
 
@@ -1084,7 +1222,8 @@
     c.fillStyle = "#e7eefc";
     c.font = "bold 15px sans-serif";
     c.textAlign = "left";
-    c.fillText("Bintulu DQN — Algorithm Comparison (MA20 reward)" + modsSuffix(), pad, 20);
+    const seedNote = compareSeeds > 1 ? ` — mean±std over ${compareSeeds} seeds` : "";
+    c.fillText("Bintulu DQN — Algorithm Comparison (MA20 reward)" + modsSuffix() + seedNote, pad, 20);
 
     // legend
     c.font = "12px sans-serif";
@@ -1130,8 +1269,25 @@
       maxVisit,
       comparing,
       compareMods,
+      compareSeeds,
+      compareEpisodesPerAlgo,
+      // total episodes accumulated per algorithm (summed across seeds)
       compareCounts: Object.fromEntries(
-        ALGORITHMS.map((a) => [a, compareResults[a] ? compareResults[a].rewards.length : 0])
+        ALGORITHMS.map((a) => [
+          a,
+          compareResults[a]
+            ? compareResults[a].seedRewards.reduce((n, c) => n + c.length, 0)
+            : 0,
+        ])
+      ),
+      // completed seeds per algorithm (seeds with >=1 episode)
+      compareSeedCounts: Object.fromEntries(
+        ALGORITHMS.map((a) => [
+          a,
+          compareResults[a]
+            ? compareResults[a].seedRewards.filter((c) => c.length > 0).length
+            : 0,
+        ])
       ),
     }),
     exportCSV,

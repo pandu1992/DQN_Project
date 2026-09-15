@@ -6,6 +6,7 @@ steer an autonomous vessel along a nautical channel network to its goal. It
 runs **100% in the browser** — no Python, no server, no install.
 
 **🌐 Live demo:** https://pandu1992.github.io/DQN_Project/
+📖 **Usage guide:** [USAGE.md](USAGE.md)
 
 ## Run it
 
@@ -80,20 +81,33 @@ PER / Noisy toggles you've enabled applied to all of them — then overlay their
 summary table of **episodes, success rate, average reward, best MA20 reward,
 and average steps** per algorithm.
 
+### 🎲 Multi-seed error bands (statistical rigor)
+
+Set the **seeds** field (default 3) before **Compare All**. Each algorithm is
+then trained over *K* independent seeds (environment seed `42, 43, …`); the
+chart shows the **mean MA20 curve** with a **shaded ±1 std band** across seeds,
+and the summary table reports every metric as **mean ± std**. This is what
+reviewers expect instead of a single noisy run — with `seeds = 1` the band
+disappears and you get the original single-run behavior.
+
 **Paper-ready export** (buttons enable once a comparison finishes):
 
-- **⬇ Comparison CSV** — a two-section CSV: a per-algorithm summary
-  (episodes, success rate, avg reward, reward std, best MA20, avg steps) plus
-  the full per-episode learning curves in long format (`algorithm, episode,
-  reward, success, steps`) — drop straight into pandas / R / Excel.
-- **🖼 Comparison PNG** — the overlaid learning-curve chart rendered with a
-  title and color legend, ready to embed in a figure.
+- **⬇ Comparison CSV** — a two-section CSV: (1) a per-algorithm summary with
+  **mean ± std across seeds** for success rate, avg reward, best MA20, and avg
+  steps; (2) the full per-episode learning curves in long format with a seed
+  column (`algorithm, seed, episode, reward, success, steps`) — drop straight
+  into pandas / R / Excel for significance tests.
+- **🖼 Comparison PNG** — the overlaid mean±std learning-curve chart rendered
+  with a title and color legend, ready to embed as a figure.
 
 > Because the networks are trained in pure JS on one browser thread, keep the
-> episodes-per-algorithm modest (the default is 120) for a quick comparison;
-> raise it for a more thorough run. Dueling variants and Noisy Nets are a bit
+> episodes-per-algorithm and seed count modest for a quick comparison; raise
+> them for a more thorough run. Dueling variants and Noisy Nets are a bit
 > heavier, so dueling stream heads are intentionally narrower to keep the
 > browser responsive.
+
+📖 **See [USAGE.md](USAGE.md)** for a full step-by-step guide and a fair
+research protocol.
 
 ## How it maps to the research notebook
 

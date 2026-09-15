@@ -126,10 +126,10 @@ canvas {
 .toggle input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
 .cmp-export { grid-template-columns: 1fr 1fr; margin-top: 8px; }
 
-.cmp-controls { grid-template-columns: 2fr 1fr; align-items: center; margin-top: 8px; }
-.cmp-eps { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.cmp-controls { grid-template-columns: 1fr 1fr; align-items: center; margin-top: 8px; }
+.cmp-eps { font-size: 12px; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .cmp-eps input {
-  width: 70px; padding: 6px 8px; border-radius: 8px;
+  width: 64px; padding: 6px 8px; border-radius: 8px;
   background: #16223b; color: var(--ink); border: 1px solid var(--line); font-size: 12px;
 }
 #btnCompareAll { grid-column: 1; }
