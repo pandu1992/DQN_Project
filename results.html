@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Q1 Experimental Analysis — Bintulu Port DQN</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .rp-wrap { max-width: 1080px; margin: 0 auto; padding: 18px 20px 80px; }
+  .rp-hero { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:8px; }
+  .rp-hero h1 { font-size:22px; margin:0 0 4px; }
+  .rp-hero p { margin:0; color:var(--muted); font-size:13px; }
+  .rp-back { font-size:13px; }
+  .rp-tabs { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 18px; position:sticky; top:0;
+    background:var(--bg,#0a1220); padding:10px 0; z-index:5; border-bottom:1px solid var(--line); }
+  .rp-tab { padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:#16223b;
+    color:var(--ink); cursor:pointer; font-size:13px; }
+  .rp-tab.active { background:var(--accent,#4da3ff); color:#04121f; border-color:transparent; font-weight:700; }
+  .rp-panel { display:none; }
+  .rp-panel.active { display:block; }
+  .rp-note { font-size:12px; color:var(--muted); background:rgba(77,163,255,.08);
+    border:1px solid rgba(77,163,255,.3); border-radius:8px; padding:10px 12px; margin:0 0 16px; line-height:1.5; }
+  .rp-downloads { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 22px; }
+  .rp-dl { font-size:12px; padding:7px 12px; border-radius:8px; background:#16223b; border:1px solid var(--line);
+    color:var(--ink); text-decoration:none; }
+  .rp-dl:hover { border-color:var(--accent,#4da3ff); }
+  /* markdown */
+  .md h1 { font-size:24px; margin:22px 0 8px; }
+  .md h2 { font-size:19px; margin:26px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  .md h3 { font-size:15px; margin:18px 0 6px; color:#cfe0ff; }
+  .md p, .md li { font-size:14px; line-height:1.65; color:var(--ink); }
+  .md code { background:#16223b; padding:1px 5px; border-radius:4px; font-size:12.5px; }
+  .md pre { background:#0c1526; border:1px solid var(--line); border-radius:8px; padding:12px; overflow:auto; }
+  .md pre code { background:none; padding:0; }
+  .md blockquote { border-left:3px solid var(--accent,#4da3ff); margin:12px 0; padding:6px 14px;
+    background:rgba(77,163,255,.06); color:var(--muted); border-radius:0 8px 8px 0; }
+  .md table { border-collapse:collapse; width:100%; margin:12px 0; font-size:12.5px; display:block; overflow-x:auto; }
+  .md th, .md td { border:1px solid var(--line); padding:6px 9px; text-align:left; }
+  .md th { background:#16223b; }
+  .md a { color:var(--accent,#4da3ff); }
+  /* csv tables */
+  .csv-block { margin:0 0 30px; }
+  .csv-title { font-size:15px; font-weight:700; margin:0 0 4px; color:#cfe0ff; }
+  .csv-desc { font-size:12px; color:var(--muted); margin:0 0 8px; }
+  .csv-scroll { overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+  table.csv { border-collapse:collapse; width:100%; font-size:12px; }
+  table.csv th, table.csv td { border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top; }
+  table.csv th { background:#16223b; position:sticky; top:0; font-weight:700; }
+  table.csv td:last-child { min-width:260px; color:var(--muted); }
+  table.csv tr:nth-child(even) td { background:rgba(22,34,59,.35); }
+  /* figures */
+  .fig-grid { display:grid; grid-template-columns:1fr; gap:26px; }
+  .fig-card { border:1px solid var(--line); border-radius:10px; padding:12px; background:#0c1526; }
+  .fig-card img { width:100%; height:auto; border-radius:6px; background:#fff; }
+  .fig-cap { font-size:12px; color:var(--muted); line-height:1.55; margin:10px 2px 2px; }
+  .fig-links { font-size:11px; margin-top:6px; }
+  .loading { color:var(--muted); font-size:13px; padding:20px 0; }
+</style>
+</head>
+<body>
+  <div class="rp-wrap">
+    <div class="rp-hero">
+      <div>
+        <h1>Q1 Experimental Analysis</h1>
+        <p>Comparative evaluation of 4 value-based DQN variants × PER × Noisy Nets · 10 seeds · 6,400 evaluation episodes</p>
+      </div>
+      <a class="rp-back btn" href="index.html">← Back to live simulation</a>
+    </div>
+
+    <div class="rp-note">
+      <b>Scope:</b> Real metrics only — no fabricated baselines or metrics. Analysis runs on an offline
+      research build (<code>VesselEnvV2</code>) that reuses the same graph, edge attributes, and Dijkstra
+      planner as the live simulation. See the report's Limitations for what is out of scope.
+    </div>
+
+    <div class="rp-tabs" id="rpTabs">
+      <button class="rp-tab active" data-tab="report">📄 Full Report</button>
+      <button class="rp-tab" data-tab="tables">📊 Tables</button>
+      <button class="rp-tab" data-tab="figures">📈 Figures</button>
+      <button class="rp-tab" data-tab="methods">🧪 Design &amp; Reproducibility</button>
+    </div>
+
+    <!-- REPORT -->
+    <section class="rp-panel active" id="panel-report">
+      <div class="rp-downloads">
+        <a class="rp-dl" href="results/reports/Q1_experimental_report.md" download>⬇ Report (Markdown)</a>
+        <a class="rp-dl" href="results/tables/all_tables.xlsx" download>⬇ All tables (Excel)</a>
+        <a class="rp-dl" href="results/raw/eval_episodes.csv" download>⬇ Raw eval data (CSV)</a>
+      </div>
+      <div class="md" id="reportBody"><p class="loading">Loading report…</p></div>
+    </section>
+
+    <!-- TABLES -->
+    <section class="rp-panel" id="panel-tables">
+      <div class="rp-downloads">
+        <a class="rp-dl" href="results/tables/all_tables.xlsx" download>⬇ All tables (Excel workbook)</a>
+      </div>
+      <div id="tablesBody"><p class="loading">Loading tables…</p></div>
+    </section>
+
+    <!-- FIGURES -->
+    <section class="rp-panel" id="panel-figures">
+      <div class="fig-grid" id="figuresBody"><p class="loading">Loading figures…</p></div>
+    </section>
+
+    <!-- METHODS / REPRO -->
+    <section class="rp-panel" id="panel-methods">
+      <div class="rp-downloads">
+        <a class="rp-dl" href="results/reports/REPRODUCIBILITY.md" download>⬇ Reproducibility (Markdown)</a>
+        <a class="rp-dl" href="results/reports/SATURATED_BENCHMARK_FINDING.md" download>⬇ Benchmark finding (Markdown)</a>
+        <a class="rp-dl" href="results/configs/experiment_config.json" download>⬇ Frozen config (JSON)</a>
+      </div>
+      <div class="md" id="methodsBody"><p class="loading">Loading…</p></div>
+    </section>
+  </div>
+
+  <script src="results_view.js"></script>
+</body>
+</html>
