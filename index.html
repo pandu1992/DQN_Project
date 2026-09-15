@@ -44,6 +44,10 @@
           <input type="number" id="cmpEpisodes" min="20" max="600" step="20" value="120" />
         </label>
       </div>
+      <div class="controls cmp-export">
+        <button id="btnExportCmpCsv" class="btn" disabled>⬇ Comparison CSV</button>
+        <button id="btnExportCmpPng" class="btn" disabled>🖼 Comparison PNG</button>
+      </div>
       <canvas id="compareCanvas" width="900" height="200"></canvas>
       <table class="metrics cmp-table" id="cmpTable">
         <tr>
@@ -65,6 +69,10 @@
         </select>
         <span class="select-hint">applied on Reset / Train</span>
       </label>
+      <div class="toggles">
+        <label class="toggle"><input type="checkbox" id="perToggle" /> <span>Prioritized Replay (PER)</span></label>
+        <label class="toggle"><input type="checkbox" id="noisyToggle" /> <span>Noisy Nets</span></label>
+      </div>
 
       <div class="panel-head"><span>Controls</span></div>
       <div class="controls">

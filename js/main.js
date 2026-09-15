@@ -44,11 +44,15 @@
 
   // algorithm + comparison controls
   const algoSelect = $("algoSelect");
+  const perToggle = $("perToggle");
+  const noisyToggle = $("noisyToggle");
   const btnCompareAll = $("btnCompareAll");
   const btnCompareStop = $("btnCompareStop");
   const cmpEpisodesInput = $("cmpEpisodes");
   const compareCanvas = $("compareCanvas");
   const compareCtx = compareCanvas ? compareCanvas.getContext("2d") : null;
+  const btnExportCmpCsv = $("btnExportCmpCsv");
+  const btnExportCmpPng = $("btnExportCmpPng");
 
   // ---------- State ----------
   let env, agent;
@@ -77,17 +81,24 @@
 
   // algorithm + comparison state
   let currentAlgo = "DQN";
+  let usePER = false;
+  let useNoisy = false;
   let comparing = false;
   let compareResults = {}; // algo -> { rewards:[], success:[], steps:[] }
+  let compareMods = { per: false, noisy: false }; // enhancement flags used in last comparison
 
   const TOTAL_STEPS = 50000;
 
   function init(algo) {
     currentAlgo = algo || (algoSelect ? algoSelect.value : "DQN");
+    usePER = perToggle ? perToggle.checked : false;
+    useNoisy = noisyToggle ? noisyToggle.checked : false;
     env = new VesselEnv(42);
     agent = new DQNAgent(env.obsDim, env.nActions, {
       totalSteps: TOTAL_STEPS,
       algorithm: currentAlgo,
+      per: usePER,
+      noisy: useNoisy,
     });
     episode = 0;
     rewardHistory = [];
@@ -734,15 +745,16 @@
   if (btnReplayWorst) btnReplayWorst.addEventListener("click", () => startReplay("worst"));
 
   // switching algorithm resets the sim with the new agent
-  if (algoSelect) {
-    algoSelect.addEventListener("change", () => {
-      if (comparing) return; // ignore during comparison run
-      running = false;
-      if (animFrame) cancelAnimationFrame(animFrame);
-      setButtons();
-      init(algoSelect.value);
-    });
+  function reinitFromControls() {
+    if (comparing) return;
+    running = false;
+    if (animFrame) cancelAnimationFrame(animFrame);
+    setButtons();
+    init(algoSelect ? algoSelect.value : "DQN");
   }
+  if (algoSelect) algoSelect.addEventListener("change", reinitFromControls);
+  if (perToggle) perToggle.addEventListener("change", reinitFromControls);
+  if (noisyToggle) noisyToggle.addEventListener("change", reinitFromControls);
 
   // ============================================================
   // COMPARISON MODE — run each algorithm for N episodes, overlay
@@ -757,6 +769,13 @@
       out.push(sum / (i - s + 1));
     }
     return out;
+  }
+
+  function modsSuffix() {
+    const m = [];
+    if (compareMods.per) m.push("PER");
+    if (compareMods.noisy) m.push("Noisy");
+    return m.length ? " +" + m.join("+") : "";
   }
 
   function drawCompareChart() {
@@ -820,7 +839,7 @@
     ctx.fillText(max.toFixed(0), 4, yFor(max) + 3);
     ctx.fillText(min.toFixed(0), 4, yFor(min) + 3);
     ctx.textAlign = "right";
-    ctx.fillText(`${maxLen} episodes/algo · MA20`, W - 6, 12);
+    ctx.fillText(`${maxLen} episodes/algo · MA20${modsSuffix()}`, W - 6, 12);
   }
 
   function updateCompareLegendAndTable() {
@@ -876,6 +895,11 @@
     comparing = true;
     compareResults = {};
     for (const a of ALGORITHMS) compareResults[a] = { rewards: [], success: [], steps: [] };
+    // capture the enhancement toggles applied to every compared agent
+    compareMods = {
+      per: perToggle ? perToggle.checked : false,
+      noisy: noisyToggle ? noisyToggle.checked : false,
+    };
     updateCompareLegendAndTable();
 
     const targetEpisodes = Math.max(20, Math.min(600, parseInt(cmpEpisodesInput.value, 10) || 120));
@@ -898,6 +922,8 @@
       cmpAgent = new DQNAgent(cmpEnv.obsDim, cmpEnv.nActions, {
         totalSteps: targetEpisodes * 25, // scale eps decay to the budget
         algorithm: algo,
+        per: compareMods.per,
+        noisy: compareMods.noisy,
       });
       cmpObs = cmpEnv.reset();
       cmpEpisode = 0;
@@ -955,6 +981,8 @@
       if (algoSelect) algoSelect.disabled = false;
       drawCompareChart();
       updateCompareLegendAndTable();
+      if (btnExportCmpCsv) btnExportCmpCsv.disabled = false;
+      if (btnExportCmpPng) btnExportCmpPng.disabled = false;
       if ($("chartLabel")) $("chartLabel").textContent = "Comparison complete";
       // restore the interactive sim to the selected algorithm
       init(algoSelect ? algoSelect.value : "DQN");
@@ -979,6 +1007,109 @@
   if (btnCompareAll) btnCompareAll.addEventListener("click", runComparison);
   if (btnCompareStop) btnCompareStop.addEventListener("click", () => stopComparison());
 
+  // ============================================================
+  // COMPARISON EXPORT — CSV (summary + per-episode curves) and PNG
+  // (the comparison chart image) — paper-ready artifacts.
+  // ============================================================
+  function hasComparisonData() {
+    return ALGORITHMS.some((a) => compareResults[a] && compareResults[a].rewards.length > 0);
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function exportComparisonCSV() {
+    if (!hasComparisonData()) return;
+    const suffix = modsSuffix().replace(/[^A-Za-z0-9]+/g, "");
+    const lines = [];
+
+    // Section 1: per-algorithm summary
+    lines.push("# Bintulu DQN — algorithm comparison summary");
+    lines.push("# enhancements:" + (modsSuffix() || " none"));
+    lines.push("algorithm,label,episodes,success_rate_pct,avg_reward,reward_std,best_ma20,avg_steps");
+    for (const a of ALGORITHMS) {
+      const res = compareResults[a];
+      if (!res || !res.rewards.length) continue;
+      const n = res.rewards.length;
+      const mean = res.rewards.reduce((x, y) => x + y, 0) / n;
+      const variance = res.rewards.reduce((x, y) => x + (y - mean) * (y - mean), 0) / n;
+      const std = Math.sqrt(variance);
+      const succ = (100 * res.success.reduce((x, y) => x + y, 0)) / n;
+      const avgSteps = res.steps.reduce((x, y) => x + y, 0) / n;
+      const bestMA = Math.max(...movingAvg(res.rewards, 20));
+      const label = (ALGO_LABELS[a] + modsSuffix());
+      lines.push(
+        [a, `"${label}"`, n, succ.toFixed(2), mean.toFixed(3), std.toFixed(3), bestMA.toFixed(3), avgSteps.toFixed(2)].join(",")
+      );
+    }
+
+    // Section 2: per-episode learning curves (long format)
+    lines.push("");
+    lines.push("# per-episode records (long format)");
+    lines.push("algorithm,episode,reward,success,steps");
+    for (const a of ALGORITHMS) {
+      const res = compareResults[a];
+      if (!res) continue;
+      for (let i = 0; i < res.rewards.length; i++) {
+        lines.push([a, i + 1, res.rewards[i].toFixed(3), res.success[i], res.steps[i]].join(","));
+      }
+    }
+
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    downloadBlob(blob, `bintulu_comparison${suffix ? "_" + suffix : ""}.csv`);
+  }
+
+  function exportComparisonPNG() {
+    if (!compareCanvas || !hasComparisonData()) return;
+    // compose a titled image: title bar + legend + the chart
+    const pad = 12, titleH = 46;
+    const W = compareCanvas.width;
+    const H = compareCanvas.height + titleH;
+    const out = document.createElement("canvas");
+    out.width = W;
+    out.height = H;
+    const c = out.getContext("2d");
+    c.fillStyle = "#0b1220";
+    c.fillRect(0, 0, W, H);
+
+    // title
+    c.fillStyle = "#e7eefc";
+    c.font = "bold 15px sans-serif";
+    c.textAlign = "left";
+    c.fillText("Bintulu DQN — Algorithm Comparison (MA20 reward)" + modsSuffix(), pad, 20);
+
+    // legend
+    c.font = "12px sans-serif";
+    let lx = pad;
+    for (const a of ALGORITHMS) {
+      const label = ALGO_LABELS[a];
+      c.fillStyle = ALGO_COLORS[a] || "#fff";
+      c.fillRect(lx, 32, 12, 10);
+      c.fillStyle = "#cfe0ff";
+      c.fillText(label, lx + 16, 41);
+      lx += 20 + c.measureText(label).width + 14;
+    }
+
+    // chart underneath
+    c.drawImage(compareCanvas, 0, titleH);
+
+    out.toBlob((blob) => {
+      const suffix = modsSuffix().replace(/[^A-Za-z0-9]+/g, "");
+      downloadBlob(blob, `bintulu_comparison${suffix ? "_" + suffix : ""}.png`);
+    }, "image/png");
+  }
+
+  if (btnExportCmpCsv) btnExportCmpCsv.addEventListener("click", exportComparisonCSV);
+  if (btnExportCmpPng) btnExportCmpPng.addEventListener("click", exportComparisonPNG);
+
   // ---------- boot ----------
   init();
   drawCompareChart();
@@ -989,17 +1120,23 @@
     getState: () => ({
       episode,
       algorithm: agent.algorithm,
+      label: agent.label,
+      usePER: agent.usePER,
+      useNoisy: agent.useNoisy,
       records: episodeRecords.length,
       lanes: Object.keys(laneStats),
       best: bestEpisode ? bestEpisode.reward : null,
       worst: worstEpisode ? worstEpisode.reward : null,
       maxVisit,
       comparing,
+      compareMods,
       compareCounts: Object.fromEntries(
         ALGORITHMS.map((a) => [a, compareResults[a] ? compareResults[a].rewards.length : 0])
       ),
     }),
     exportCSV,
+    exportComparisonCSV,
+    exportComparisonPNG,
     runComparison,
   };
 })();
