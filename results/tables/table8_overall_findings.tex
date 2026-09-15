@@ -1,0 +1,10 @@
+\begin{tabular}{lllllll}
+\toprule
+Algorithm & Best Strength & Main Weakness & Statistical Evidence & Robustness & Practical Assessment & Interpretation \\
+\midrule
+DQN & success 50\% & route 1.59x optimal; high seed variance & no significant algorithm effect (Holm-corrected) & enhancements not significant; seed variance dominant & interchangeable on success/reward at this budget & At 150-episode budget, DQN reaches 50\% success (95\% CI +/-18\%); no statistical evidence it differs from the other variants on success or reward after correction. Route optimality 1.59x. \\
+Double DQN & success 43\% & route 1.17x optimal; high seed variance & no significant algorithm effect (Holm-corrected) & enhancements not significant; seed variance dominant & interchangeable on success/reward at this budget & At 150-episode budget, Double DQN reaches 43\% success (95\% CI +/-19\%); no statistical evidence it differs from the other variants on success or reward after correction. Route optimality 1.17x. \\
+Dueling DQN & success 40\% & route 1.07x optimal; high seed variance & no significant algorithm effect (Holm-corrected) & enhancements not significant; seed variance dominant & interchangeable on success/reward at this budget & At 150-episode budget, Dueling DQN reaches 40\% success (95\% CI +/-12\%); no statistical evidence it differs from the other variants on success or reward after correction. Route optimality 1.07x. \\
+Dueling Double DQN & success 46\% & route 1.94x optimal; high seed variance & no significant algorithm effect (Holm-corrected) & enhancements not significant; seed variance dominant & interchangeable on success/reward at this budget & At 150-episode budget, Dueling Double DQN reaches 46\% success (95\% CI +/-18\%); no statistical evidence it differs from the other variants on success or reward after correction. Route optimality 1.94x. \\
+\bottomrule
+\end{tabular}

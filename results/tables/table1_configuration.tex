@@ -1,0 +1,10 @@
+\begin{tabular}{llllll}
+\toprule
+Algorithm & Implementation & Training Configuration & Evaluation Configuration & Formula/Method & Interpretation \\
+\midrule
+DQN & pure-JS QNetwork/DuelingQNetwork + DQNAgent (js/dqn.js) & train 150 eps, budget 4500 steps, lr=0.001, gamma=0.99, batch=64, target\_update=1000 & greedy, 40 held-out eps x 10 seeds; no learning & y=r+gamma*max\_a' Q\_theta-(s',a'); Huber loss & Baseline value estimator; over-estimation bias uncorrected. \\
+Double DQN & pure-JS QNetwork/DuelingQNetwork + DQNAgent (js/dqn.js) & train 150 eps, budget 4500 steps, lr=0.001, gamma=0.99, batch=64, target\_update=1000 & greedy, 40 held-out eps x 10 seeds; no learning & a*=argmax\_a' Q\_theta(s',a'); y=r+gamma*Q\_theta-(s',a*) & Decoupled selection/evaluation intended to curb over-estimation. \\
+Dueling DQN & pure-JS QNetwork/DuelingQNetwork + DQNAgent (js/dqn.js) & train 150 eps, budget 4500 steps, lr=0.001, gamma=0.99, batch=64, target\_update=1000 & greedy, 40 held-out eps x 10 seeds; no learning & Q(s,a)=V(s)+(A(s,a)-mean\_a A(s,a)) & Separates state value from action advantage; larger head. \\
+Dueling Double DQN & pure-JS QNetwork/DuelingQNetwork + DQNAgent (js/dqn.js) & train 150 eps, budget 4500 steps, lr=0.001, gamma=0.99, batch=64, target\_update=1000 & greedy, 40 held-out eps x 10 seeds; no learning & dueling network + double-Q target & Combines both refinements; most parameters/compute. \\
+\bottomrule
+\end{tabular}

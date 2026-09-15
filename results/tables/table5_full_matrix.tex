@@ -1,0 +1,22 @@
+\begin{tabular}{lllllll}
+\toprule
+Algorithm & Condition & Success & Reward & Optimality & Steps & Interpretation \\
+\midrule
+DQN & baseline & 49.8 ± 18.1\% & -18.6 ± 39.0 & 1.587 ± 1.217 & 36.7 ± 8.8 & 49.8 ± 18.1\% success; route 1.59x optimal. \\
+DQN & +Noisy & 55.0 ± 18.2\% & -5.3 ± 38.7 & 1.052 ± 0.032 & 33.9 ± 8.3 & 55.0 ± 18.2\% success; route 1.05x optimal. \\
+DQN & +PER & 41.2 ± 19.1\% & -38.5 ± 40.0 & 1.222 ± 0.259 & 40.6 ± 8.8 & 41.2 ± 19.1\% success; route 1.22x optimal. \\
+DQN & +PER+Noisy & 45.8 ± 16.2\% & -27.3 ± 34.5 & 1.229 ± 0.187 & 38.8 ± 7.6 & 45.8 ± 16.2\% success; route 1.23x optimal. \\
+Double DQN & baseline & 43.2 ± 19.3\% & -33.0 ± 40.1 & 1.171 ± 0.280 & 39.9 ± 8.4 & 43.2 ± 19.3\% success; route 1.17x optimal. \\
+Double DQN & +Noisy & 44.5 ± 19.4\% & -28.2 ± 41.4 & 1.206 ± 0.117 & 39.0 ± 9.0 & 44.5 ± 19.4\% success; route 1.21x optimal. \\
+Double DQN & +PER & 50.2 ± 12.3\% & -20.9 ± 29.7 & 1.461 ± 0.443 & 36.0 ± 6.6 & 50.2 ± 12.3\% success; route 1.46x optimal. \\
+Double DQN & +PER+Noisy & 44.8 ± 14.3\% & -28.9 ± 29.8 & 1.097 ± 0.077 & 38.8 ± 6.3 & 44.8 ± 14.3\% success; route 1.10x optimal. \\
+Dueling DQN & baseline & 40.2 ± 11.8\% & -38.2 ± 25.0 & 1.074 ± 0.114 & 40.4 ± 4.9 & 40.2 ± 11.8\% success; route 1.07x optimal. \\
+Dueling DQN & +Noisy & 54.5 ± 21.8\% & -6.3 ± 46.1 & 1.095 ± 0.136 & 34.4 ± 10.0 & 54.5 ± 21.8\% success; route 1.09x optimal. \\
+Dueling DQN & +PER & 48.8 ± 20.3\% & -21.6 ± 44.1 & 1.139 ± 0.220 & 36.4 ± 9.8 & 48.8 ± 20.3\% success; route 1.14x optimal. \\
+Dueling DQN & +PER+Noisy & 52.2 ± 18.3\% & -13.8 ± 39.7 & 1.248 ± 0.417 & 35.1 ± 8.5 & 52.2 ± 18.3\% success; route 1.25x optimal. \\
+Dueling Double DQN & baseline & 45.5 ± 17.9\% & -30.3 ± 38.0 & 1.939 ± 1.051 & 40.0 ± 8.8 & 45.5 ± 17.9\% success; route 1.94x optimal. \\
+Dueling Double DQN & +Noisy & 39.8 ± 21.4\% & -36.9 ± 46.2 & 1.032 ± 0.044 & 41.0 ± 10.0 & 39.8 ± 21.4\% success; route 1.03x optimal. \\
+Dueling Double DQN & +PER & 34.8 ± 14.0\% & -55.3 ± 29.4 & 2.224 ± 1.150 & 44.4 ± 6.9 & 34.8 ± 14.0\% success; route 2.22x optimal. \\
+Dueling Double DQN & +PER+Noisy & 56.8 ± 14.7\% & -3.5 ± 31.3 & 1.103 ± 0.066 & 32.9 ± 6.5 & 56.8 ± 14.7\% success; route 1.10x optimal. \\
+\bottomrule
+\end{tabular}

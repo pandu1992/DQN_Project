@@ -1,0 +1,98 @@
+{
+  "experiment_id": "bintulu_dqn_q1_factorial_v2",
+  "description": "Q1-grade multi-seed factorial comparison of 4 value-based DQN variants x Prioritized Experience Replay (PER) x Noisy Nets on the VesselEnvV2 graph-navigation MDP. Metrics are REAL (derived from the environment's existing edge attributes); no observation-noise / packet-error / collision / docking / CTE metrics are included because the environment does not implement them.",
+  "date_designed": "2026-09-15",
+  "environment": {
+    "module": "js/environmentV2.js",
+    "class": "VesselEnvV2",
+    "rationale": "The original environment.js is a saturated 2-mission index-advancing benchmark on which all algorithms trivially reach ~100% success / ~119.9 reward with zero between-group variance, making comparative statistics vacuous. V2 reuses the SAME graph topology, SAME edge attributes (distance, risk, traffic, weather, current, travel_time, energy_cost, navigation_cost, difficulty) and the SAME Dijkstra planner, but exposes a genuine graph-navigation MDP where the agent selects among the current node's real outgoing edges. This produces 115 distinct missions/seed, optimal-cost range 5.3-151.5, and a real difficulty gradient (random policy 13% success, near-optimal policy 100%).",
+    "obs_dim": 25,
+    "n_actions": 4,
+    "n_action_slots": 4,
+    "max_out_degree": 3,
+    "max_episode_steps": 60,
+    "reward_config": {
+      "goal": 100.0,
+      "invalid": -5.0,
+      "timeout": -30.0,
+      "cost_scale": 1.0,
+      "cost_multiplier_per_edge": 0.1,
+      "step_penalty": -0.2,
+      "revisit_penalty": -1.0
+    },
+    "mission_distribution": "start = any waypoint on an access channel (L02/L08); goal = one of {harbour terminal L01, L02 terminal, L08 terminal}, sampled by a seeded mission RNG (seed+777). Cross-lane routing to the harbour passes through the shared junction.",
+    "optimal_reference": "Dijkstra over navigation_cost with virtual-edge expansion (identical to environment.js). Validated: a follow-Dijkstra policy yields optimality_ratio = 1.0000 on 100/100 solved episodes, confirming the planner is the true optimum and optimality_ratio >= 1.0 is well defined."
+  },
+  "factors": {
+    "algorithm": ["DQN", "DoubleDQN", "DuelingDQN", "DuelingDoubleDQN"],
+    "per": [false, true],
+    "noisy": [false, true]
+  },
+  "n_configurations": 16,
+  "seeds": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "n_seeds": 10,
+  "seed_policy": "The SAME 10 seeds are used for every configuration (shared/paired design). For a given seed, env_seed = 42 + seed (controls graph + mission stream) and the agent-side RNG is mulberry32(seed*1000003 + 12345) (controls weight init, exploration, replay sampling). This fairness control enables paired statistical tests across configurations on matched seeds.",
+  "training": {
+    "train_episodes": 150,
+    "total_steps_budget": 4500,
+    "total_steps_budget_formula": "train_episodes * 30",
+    "budget_justification": "Calibration at 150 train episodes yields a discriminative, non-saturated regime (DQN 58.3+-9.6%, DoubleDQN 67.5+-26.5%, DuelingDQN 26.7+-9.2%, DuelingDoubleDQN 48.3+-28.3% success over 3 seeds) with real between-algorithm and between-seed variance. Random policy = 13%, so no floor effect; best mean ~67%, so no ceiling effect. total_steps_budget scales the epsilon-decay / PER-beta anneal schedule to the training length."
+  },
+  "evaluation": {
+    "eval_episodes": 40,
+    "policy": "greedy (no exploration; Noisy layers still resample noise per action as in the source act() method)",
+    "learning_during_eval": false,
+    "rationale": "Training-phase metrics conflate exploration noise with policy quality. The converged policy is measured by a held-out greedy evaluation over 40 fresh missions from the same seeded mission stream. These evaluation episodes are the unit of analysis; per-seed aggregates (one scalar per seed) are the independent samples for statistics (n = 10 per configuration)."
+  },
+  "agent_hyperparameters_from_source": {
+    "source": "DQNAgent default cfg in js/dqn.js (unchanged)",
+    "lr": 0.001,
+    "gamma": 0.99,
+    "buffer_size": 50000,
+    "batch_size": 64,
+    "learning_starts": 1000,
+    "train_freq": 4,
+    "target_update": 1000,
+    "eps_start": 1.0,
+    "eps_end": 0.05,
+    "eps_fraction": 0.2,
+    "hidden": 128,
+    "dueling_stream_hidden": 64,
+    "per_alpha": 0.6,
+    "per_beta_start": 0.4,
+    "per_beta_anneal_steps": "total_steps_budget / 2",
+    "noisy_sigma0": 0.5,
+    "loss": "Huber (delta=1.0)",
+    "optimizer": "Adam (b1=0.9, b2=0.999, eps=1e-8)"
+  },
+  "metrics": {
+    "primary": ["success", "reward", "optimality_ratio"],
+    "secondary": ["steps", "excess_cost", "route_cost", "route_risk", "route_difficulty", "route_distance", "invalid", "revisit"],
+    "definitions": {
+      "success": "1 if the vessel reached the goal within max_episode_steps, else 0.",
+      "reward": "Total episodic return under reward_config.",
+      "steps": "Number of environment steps taken in the episode.",
+      "route_cost": "Sum of navigation_cost over the edges the agent actually traversed (real edge attribute).",
+      "optimal_cost": "Dijkstra minimum navigation_cost from start to goal (real).",
+      "excess_cost": "route_cost - optimal_cost, over solved episodes (>= 0).",
+      "optimality_ratio": "route_cost / optimal_cost, over solved episodes (>= 1.0; 1.0 = optimal route).",
+      "route_risk": "Sum of the traversed edges' risk attribute (real).",
+      "route_difficulty": "Sum of the traversed edges' difficulty attribute (real).",
+      "route_distance": "Sum of the traversed edges' geometric distance (real).",
+      "invalid": "Count of invalid actions (selected a non-existent edge slot).",
+      "revisit": "Count of times the agent re-entered an already-visited node."
+    },
+    "explicitly_out_of_scope": [
+      "observation/state noise (not implemented in environment)",
+      "packet error rate / communication channel (not implemented; 'PER' in this project = Prioritized Experience Replay, a replay-buffer feature)",
+      "collision rate (no vessel dynamics / collision model)",
+      "docking accuracy (not modeled)",
+      "cross-track error CTE (not modeled)",
+      "IALA compliance / violations (not modeled)",
+      "physical travel time (only planner navigation_cost exists)"
+    ]
+  },
+  "total_cells": 160,
+  "total_eval_episodes": 6400,
+  "total_training_episodes": 24000
+}

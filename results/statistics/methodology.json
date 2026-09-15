@@ -1,0 +1,21 @@
+{
+  "design": "Randomized-block / repeated-measures: seed (0-9) is the block; the SAME 10 seeds appear in every configuration, so factor-level comparisons are within-block (paired).",
+  "unit_of_analysis": "per-seed scalar (n=10 per configuration); evaluation episodes within a seed are not independent and are collapsed first.",
+  "normality_fraction_groups_passing_shapiro_0.05": {
+    "excess_cost": 0.188,
+    "mean_reward": 0.875,
+    "mean_steps": 0.938,
+    "optimality_ratio": 0.312,
+    "revisit_rate": 0.938,
+    "route_difficulty": 0.812,
+    "route_risk": 0.812,
+    "success_rate": 0.938
+  },
+  "excluded_metrics": {
+    "invalid_rate": "uniformly 0.0 under greedy evaluation (zero variance); not testable and excluded from all statistics."
+  },
+  "omnibus_choice": "Report BOTH one-way repeated-measures ANOVA and Friedman for the 4 base algorithms. Prefer Friedman where Shapiro-Wilk indicates non-normality for that metric; prefer RM-ANOVA where normality holds. Effect sizes: partial eta^2 (ANOVA), Kendall's W (Friedman).",
+  "factorial_model": "OLS y ~ algorithm*per*noisy + seed (Type-II ANOVA), balanced design (10 per cell); partial eta^2 per effect. statsmodels_available=True",
+  "correction_note": "Pairwise post-hoc and multiple-comparison correction handled in the next stage (Holm + Benjamini-Hochberg).",
+  "alpha": 0.05
+}

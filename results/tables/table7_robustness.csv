@@ -1,0 +1,5 @@
+Algorithm,Baseline Success,Best Enhancement,Worst Enhancement,Mean Var Ratio,Any Sig (Holm),Interpretation
+DQN,49.8 ± 18.1%,+Noisy (+5.2%),+PER (-8.5%),0.98,no,Enhancements shift success by -8.5% to +5.2% (none significant after Holm); variance decreases on average (var ratio 0.98). 
+Double DQN,43.2 ± 19.3%,+PER (+7.0%),+Noisy (+1.2%),0.65,no,Enhancements shift success by +1.2% to +7.0% (none significant after Holm); variance decreases on average (var ratio 0.65). 
+Dueling DQN,40.2 ± 11.8%,+Noisy (+14.2%),+PER (+8.5%),2.94,no,Enhancements shift success by +8.5% to +14.2% (none significant after Holm); variance increases on average (var ratio 2.94). 
+Dueling Double DQN,45.5 ± 17.9%,+PER+Noisy (+11.2%),+PER (-10.7%),0.90,no,Enhancements shift success by -10.7% to +11.2% (none significant after Holm); variance decreases on average (var ratio 0.90). 
