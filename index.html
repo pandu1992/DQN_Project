@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bintulu Port — DQN Autonomous Ship Navigation (Web Simulation)</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">
+      <h1>Bintulu Port — Autonomous Ship Navigation</h1>
+      <p class="subtitle">Deep Q-Network (DQN) reinforcement learning · runs entirely in your browser</p>
+    </div>
+    <div class="badge" id="deviceBadge">DEVICE: BROWSER-JS</div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: map + chart -->
+    <section class="panel map-panel">
+      <div class="panel-head">
+        <span>Navigation Map</span>
+        <span class="legend">
+          <i class="dot planned"></i> Planned (Dijkstra)
+          <i class="dot actual"></i> Actual (DQN)
+          <i class="dot ship"></i> Ship
+          <i class="dot green"></i> Green buoy
+          <i class="dot red"></i> Red buoy
+        </span>
+      </div>
+      <canvas id="mapCanvas" width="900" height="560"></canvas>
+
+      <div class="panel-head"><span>Episode Reward</span><span id="chartLabel" class="muted"></span></div>
+      <canvas id="chartCanvas" width="900" height="180"></canvas>
+    </section>
+
+    <!-- RIGHT: controls + metrics -->
+    <aside class="panel side-panel">
+      <div class="panel-head"><span>Controls</span></div>
+      <div class="controls">
+        <button id="btnTrain" class="btn primary">▶ Train</button>
+        <button id="btnPause" class="btn" disabled>⏸ Pause</button>
+        <button id="btnReset" class="btn danger">⟲ Reset</button>
+        <button id="btnGreedy" class="btn">🎯 Run Greedy Episode</button>
+      </div>
+
+      <label class="slider-row">
+        <span>Speed: <b id="speedLabel">8×</b></span>
+        <input type="range" id="speedSlider" min="1" max="60" value="8" />
+      </label>
+
+      <div class="controls">
+        <button id="btnHeatmap" class="btn">🔥 Heatmap: OFF</button>
+        <button id="btnExport" class="btn" disabled>⬇ Export CSV</button>
+        <button id="btnReplayBest" class="btn" disabled>🏆 Replay Best</button>
+        <button id="btnReplayWorst" class="btn" disabled>💥 Replay Worst</button>
+      </div>
+
+      <div class="panel-head"><span>Training Status</span></div>
+      <table class="metrics">
+        <tr><td>Episode</td><td id="mEpisode">0</td></tr>
+        <tr><td>Env steps</td><td id="mSteps">0</td></tr>
+        <tr><td>Epsilon (ε)</td><td id="mEps">1.000</td></tr>
+        <tr><td>Last loss</td><td id="mLoss">—</td></tr>
+        <tr><td>Replay size</td><td id="mBuffer">0</td></tr>
+        <tr><td>Episode reward</td><td id="mReward">0.0</td></tr>
+        <tr><td>Avg reward (100)</td><td id="mAvg">—</td></tr>
+        <tr><td>Success rate (100)</td><td id="mSucc">—</td></tr>
+      </table>
+
+      <div class="panel-head"><span>Current Mission</span></div>
+      <table class="metrics">
+        <tr><td>Start</td><td id="mStart">—</td></tr>
+        <tr><td>Goal</td><td id="mGoal">—</td></tr>
+        <tr><td>Lane</td><td id="mLane">—</td></tr>
+        <tr><td>Planned dist</td><td id="mPlanDist">—</td></tr>
+        <tr><td>Planned cost</td><td id="mPlanCost">—</td></tr>
+      </table>
+
+      <div class="panel-head"><span>Live Q-values</span></div>
+      <div class="qbars" id="qbars">
+        <div class="qbar-row"><span>WAIT</span><div class="qbar"><i id="q0"></i></div><b id="q0v">0.0</b></div>
+        <div class="qbar-row"><span>FORWARD</span><div class="qbar"><i id="q1"></i></div><b id="q1v">0.0</b></div>
+        <div class="qbar-row"><span>BACKWARD</span><div class="qbar"><i id="q2"></i></div><b id="q2v">0.0</b></div>
+      </div>
+      <p class="chosen">Chosen action: <b id="chosenAction">—</b></p>
+
+      <div class="panel-head"><span>North (L02) vs South (L08)</span></div>
+      <table class="metrics cmp">
+        <tr><th></th><th>North L02</th><th>South L08</th></tr>
+        <tr><td>Episodes</td><td id="cmpNorthN">0</td><td id="cmpSouthN">0</td></tr>
+        <tr><td>Success</td><td id="cmpNorthSucc">—</td><td id="cmpSouthSucc">—</td></tr>
+        <tr><td>Avg reward</td><td id="cmpNorthReward">—</td><td id="cmpSouthReward">—</td></tr>
+        <tr><td>Avg steps</td><td id="cmpNorthSteps">—</td><td id="cmpSouthSteps">—</td></tr>
+      </table>
+
+      <div class="panel-head"><span>Representative Episodes</span></div>
+      <table class="metrics">
+        <tr><td>🏆 Best</td><td id="bestLabel">—</td></tr>
+        <tr><td>💥 Worst</td><td id="worstLabel">—</td></tr>
+      </table>
+
+      <p class="note">
+        Browser port of the "Bintulu Port Experiment" research notebook.
+        The DQN learns to steer the vessel forward along the planned channel
+        to the goal while avoiding wasteful WAIT/BACKWARD moves. Toggle the
+        <b>heatmap</b> to see waypoint visit frequency, <b>export CSV</b> for
+        per-episode benchmark metrics, compare <b>North vs South</b> channel
+        performance, and <b>replay</b> the best / worst episodes.
+      </p>
+    </aside>
+  </main>
+
+  <script src="js/environment.js"></script>
+  <script src="js/dqn.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
