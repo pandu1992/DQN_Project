@@ -247,8 +247,11 @@ def fig8():
             row = sub[sub.effect == e]
             if len(row):
                 data[i, j] = row["partial_eta2"].values[0]
-    fig, ax = plt.subplots(figsize=(8, 4.4))
-    im = ax.imshow(data, cmap="YlOrRd", vmin=0, vmax=max(0.25, np.nanmax(data)))
+    # narrower figure + constrained_layout so the heatmap and its colorbar
+    # fill the canvas (avoids the left-hand whitespace of a wide figure);
+    # aspect="auto" lets the 5x3 grid stretch to fill the axes box.
+    fig, ax = plt.subplots(figsize=(6.4, 4.6), constrained_layout=True)
+    im = ax.imshow(data, cmap="YlOrRd", vmin=0, vmax=max(0.25, np.nanmax(data)), aspect="auto")
     ax.set_xticks(range(len(prim))); ax.set_xticklabels(["Success", "Reward", "Opt. ratio"])
     ax.set_yticks(range(len(effects))); ax.set_yticklabels([elab[e] for e in effects])
     for i in range(len(effects)):
