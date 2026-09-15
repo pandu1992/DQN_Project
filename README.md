@@ -1,13 +1,15 @@
 # Bintulu Port — Web DQN Autonomous Ship Navigation
 
 A **browser-based** simulation of the *Bintulu Port Experiment* research
-notebook: a Deep Q-Network (DQN) learns to steer an autonomous vessel along
-a nautical channel network to its goal. It runs **100% in the browser** — no
-Python, no server, no install. Just open `index.html`.
+notebook: a family of value-based RL agents (DQN and its variants) learn to
+steer an autonomous vessel along a nautical channel network to its goal. It
+runs **100% in the browser** — no Python, no server, no install.
+
+**🌐 Live demo:** https://pandu1992.github.io/DQN_Project/
 
 ## Run it
 
-Simply open `index.html` in any modern browser. That's it.
+Simply open `index.html` in any modern browser (or use the live demo above).
 
 (Optional local server, only if your browser blocks `file://` scripts:
 `python3 -m http.server` then visit `http://localhost:8000`.)
@@ -43,6 +45,33 @@ Simply open `index.html` in any modern browser. That's it.
   reward) are recorded with their trajectories; replay them on the map to
   inspect optimal vs failed navigation, like the notebook's episode animator.
 
+## Algorithm variants & comparison
+
+The **Algorithm** dropdown lets you train the vessel with any of four
+value-based RL algorithms (the choice applies on Reset / Train):
+
+| Algorithm | Idea | What changes |
+|---|---|---|
+| **DQN** (vanilla) | Baseline Deep Q-Network | `Q(s,a) = MLP(s)`; target = `r + γ·maxₐ' Q_target(s',a')` |
+| **Double DQN** | Decouple action *selection* from *evaluation* to reduce Q overestimation | online net picks `a' = argmaxₐ' Q_online(s',·)`, target net evaluates `Q_target(s', a')` |
+| **Dueling DQN** | Split the head into a state-value `V(s)` and an advantage `A(s,a)` stream | `Q(s,a) = V(s) + (A(s,a) − mean_a A(s,a))` |
+| **Dueling Double DQN** | Combine both improvements | dueling network **+** double-Q target |
+
+### ⚔ Compare All
+
+Click **Compare All** to automatically train each of the four algorithms for
+*N* episodes (configurable) on the same seeded environment, then overlay their
+**MA20 reward learning curves** on one chart with a color legend, plus a
+summary table of **episodes, success rate, average reward, best MA20 reward,
+and average steps** per algorithm. This is the head-to-head performance
+comparison for your research — everything runs client-side.
+
+> Because the networks are trained in pure JS on one browser thread, keep the
+> episodes-per-algorithm modest (the default is 120) for a quick comparison;
+> raise it for a more thorough run. Dueling variants are a bit heavier
+> (extra value/advantage streams), so their stream heads are intentionally
+> narrower to keep the browser responsive.
+
 ## How it maps to the research notebook
 
 | Notebook sprint | Web module |
@@ -54,10 +83,15 @@ Simply open `index.html` in any modern browser. That's it.
 | Sprint 3 / 6.8 — Gymnasium `reset`/`step`, WAIT/FORWARD/BACKWARD | `VesselEnv.reset`, `VesselEnv.step` |
 | Sprint 6.7B/C — RewardEngine + TerminationEngine | `REWARD_CONFIG` + reward/termination logic in `step` |
 | Sprint 4 / 7.2 — DQN (MlpPolicy, target net, replay, ε-greedy) | `js/dqn.js` → `QNetwork`, `DQNAgent`, `ReplayBuffer` |
+| Sprint 5 / 7.x — DQN variants (Double, Dueling, Dueling-Double) & benchmark comparison | `js/dqn.js` → `DuelingQNetwork`, `DQNAgent` algorithm flag; `js/main.js` → Compare-All engine |
 | Sprint 7.x — benchmark metrics, reward curve, trajectory viz | `js/main.js` telemetry + canvas rendering |
 
-### DQN details (`js/dqn.js`)
-- MLP `obsDim(10) → 128 → 128 → 3` actions, ReLU hidden, linear output.
+### Agent details (`js/dqn.js`)
+- Torso MLP `obsDim(10) → 128 → 128` (ReLU). Standard head → `3` action
+  Q-values; dueling head → value `V(s)` + advantage `A(s,a)` streams.
+- Selectable algorithm: `DQN`, `DoubleDQN`, `DuelingDQN`, `DuelingDoubleDQN`
+  (`cfg.algorithm`). Double-Q changes the target computation; dueling changes
+  the network architecture.
 - Target network with periodic hard update (`targetUpdate = 1000`).
 - Experience replay (`bufferSize = 50000`, `batchSize = 64`).
 - ε-greedy, linear decay `1.0 → 0.05` over `epsFraction · totalSteps`.

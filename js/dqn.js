@@ -2,17 +2,33 @@
  * BINTULU PORT — Web DQN Simulation
  * dqn.js
  *
- * Pure-JavaScript Deep Q-Network (no external ML library).
- *   - MLP policy net: obsDim -> 128 -> 128 -> nActions (ReLU)
+ * Pure-JavaScript value-based RL agents (no external ML library).
+ *
+ * Supported algorithms (select via cfg.algorithm):
+ *   - "DQN"            : vanilla Deep Q-Network
+ *   - "DoubleDQN"      : Double DQN (online net selects a', target evaluates)
+ *   - "DuelingDQN"     : Dueling architecture (V(s) + A(s,a) streams)
+ *   - "DuelingDoubleDQN": Dueling network + Double-Q target
+ *
+ * Common to all:
+ *   - MLP torso obsDim -> 128 -> 128 (ReLU)
  *   - Target network with periodic hard update
  *   - Experience replay buffer
  *   - Epsilon-greedy exploration (linear decay)
- *   - Huber loss + SGD w/ Adam-style per-parameter moments
+ *   - Huber loss + Adam optimizer
  *
  * Hyperparameters mirror the notebook's RL_CONFIG:
  *   learning_rate 1e-3, buffer 50k, batch 64, gamma 0.99,
  *   train_freq 4, target_update 1000, eps 1.0 -> 0.05.
  * ============================================================ */
+
+const ALGORITHMS = ["DQN", "DoubleDQN", "DuelingDQN", "DuelingDoubleDQN"];
+const ALGO_LABELS = {
+  DQN: "DQN",
+  DoubleDQN: "Double DQN",
+  DuelingDQN: "Dueling DQN",
+  DuelingDoubleDQN: "Dueling Double DQN",
+};
 
 function randn() {
   // Box-Muller
@@ -28,30 +44,24 @@ class Dense {
     this.nIn = nIn;
     this.nOut = nOut;
     this.activation = activation; // "relu" | "linear"
-    // He initialization
-    const scale = Math.sqrt(2 / nIn);
+    const scale = Math.sqrt(2 / nIn); // He init
     this.W = new Float64Array(nIn * nOut);
     this.b = new Float64Array(nOut);
     for (let i = 0; i < this.W.length; i++) this.W[i] = randn() * scale;
 
-    // Adam moments
     this.mW = new Float64Array(nIn * nOut);
     this.vW = new Float64Array(nIn * nOut);
     this.mB = new Float64Array(nOut);
     this.vB = new Float64Array(nOut);
-
-    // gradient accumulators
     this.gW = new Float64Array(nIn * nOut);
     this.gB = new Float64Array(nOut);
   }
 
   forward(x) {
-    // x: Float64Array length nIn -> returns {z, a}
     const z = new Float64Array(this.nOut);
     for (let o = 0; o < this.nOut; o++) {
       let sum = this.b[o];
-      const base = o; // column-major-ish: W[i*nOut + o]
-      for (let i = 0; i < this.nIn; i++) sum += x[i] * this.W[i * this.nOut + base];
+      for (let i = 0; i < this.nIn; i++) sum += x[i] * this.W[i * this.nOut + o];
       z[o] = sum;
     }
     const a = new Float64Array(this.nOut);
@@ -63,10 +73,27 @@ class Dense {
     return { z, a };
   }
 
-  zeroGrad() {
-    this.gW.fill(0);
-    this.gB.fill(0);
+  // Given dL/da (length nOut), accumulate grads and return dL/dx (length nIn)
+  backwardInto(cacheIn, aInput, dA) {
+    const dZ = new Float64Array(this.nOut);
+    if (this.activation === "relu") {
+      for (let o = 0; o < this.nOut; o++) dZ[o] = cacheIn.z[o] > 0 ? dA[o] : 0;
+    } else {
+      dZ.set(dA);
+    }
+    const dX = new Float64Array(this.nIn);
+    for (let o = 0; o < this.nOut; o++) {
+      const g = dZ[o];
+      this.gB[o] += g;
+      for (let i = 0; i < this.nIn; i++) {
+        this.gW[i * this.nOut + o] += aInput[i] * g;
+        dX[i] += this.W[i * this.nOut + o] * g;
+      }
+    }
+    return dX;
   }
+
+  zeroGrad() { this.gW.fill(0); this.gB.fill(0); }
 
   adamStep(lr, t) {
     const b1 = 0.9, b2 = 0.999, eps = 1e-8;
@@ -76,28 +103,25 @@ class Dense {
       const g = this.gW[i];
       this.mW[i] = b1 * this.mW[i] + (1 - b1) * g;
       this.vW[i] = b2 * this.vW[i] + (1 - b2) * g * g;
-      const mHat = this.mW[i] / bc1;
-      const vHat = this.vW[i] / bc2;
-      this.W[i] -= (lr * mHat) / (Math.sqrt(vHat) + eps);
+      this.W[i] -= (lr * (this.mW[i] / bc1)) / (Math.sqrt(this.vW[i] / bc2) + eps);
     }
     for (let o = 0; o < this.nOut; o++) {
       const g = this.gB[o];
       this.mB[o] = b1 * this.mB[o] + (1 - b1) * g;
       this.vB[o] = b2 * this.vB[o] + (1 - b2) * g * g;
-      const mHat = this.mB[o] / bc1;
-      const vHat = this.vB[o] / bc2;
-      this.b[o] -= (lr * mHat) / (Math.sqrt(vHat) + eps);
+      this.b[o] -= (lr * (this.mB[o] / bc1)) / (Math.sqrt(this.vB[o] / bc2) + eps);
     }
   }
 
-  cloneWeightsFrom(other) {
-    this.W.set(other.W);
-    this.b.set(other.b);
-  }
+  cloneWeightsFrom(other) { this.W.set(other.W); this.b.set(other.b); }
 }
 
+/* ------------------------------------------------------------
+ * Standard Q-network: obsDim -> H -> H -> nActions
+ * ------------------------------------------------------------ */
 class QNetwork {
   constructor(nIn, nHidden, nOut) {
+    this.type = "mlp";
     this.l1 = new Dense(nIn, nHidden, "relu");
     this.l2 = new Dense(nHidden, nHidden, "relu");
     this.l3 = new Dense(nHidden, nOut, "linear");
@@ -112,58 +136,18 @@ class QNetwork {
     return { x, o1, o2, o3, q: o3.a };
   }
 
-  predict(x) {
-    return this.forward(x).q;
-  }
+  predict(x) { return this.forward(x).q; }
 
-  zeroGrad() {
-    this.l1.zeroGrad();
-    this.l2.zeroGrad();
-    this.l3.zeroGrad();
-  }
+  zeroGrad() { this.l1.zeroGrad(); this.l2.zeroGrad(); this.l3.zeroGrad(); }
 
-  // Accumulate gradients for one sample given dL/dq (length nOut)
+  // dq: dL/dQ (length nOut)
   backward(cache, dq) {
-    const { x, o1, o2 } = cache;
-    // layer 3 (linear)
-    const dA2 = new Float64Array(this.l2.nOut);
-    for (let o = 0; o < this.l3.nOut; o++) {
-      const grad = dq[o];
-      this.l3.gB[o] += grad;
-      for (let i = 0; i < this.l3.nIn; i++) {
-        this.l3.gW[i * this.l3.nOut + o] += o2.a[i] * grad;
-        dA2[i] += this.l3.W[i * this.l3.nOut + o] * grad;
-      }
-    }
-    // layer 2 (relu)
-    const dZ2 = new Float64Array(this.l2.nOut);
-    for (let o = 0; o < this.l2.nOut; o++) dZ2[o] = o2.z[o] > 0 ? dA2[o] : 0;
-    const dA1 = new Float64Array(this.l1.nOut);
-    for (let o = 0; o < this.l2.nOut; o++) {
-      const grad = dZ2[o];
-      this.l2.gB[o] += grad;
-      for (let i = 0; i < this.l2.nIn; i++) {
-        this.l2.gW[i * this.l2.nOut + o] += o1.a[i] * grad;
-        dA1[i] += this.l2.W[i * this.l2.nOut + o] * grad;
-      }
-    }
-    // layer 1 (relu)
-    const dZ1 = new Float64Array(this.l1.nOut);
-    for (let o = 0; o < this.l1.nOut; o++) dZ1[o] = o1.z[o] > 0 ? dA1[o] : 0;
-    for (let o = 0; o < this.l1.nOut; o++) {
-      const grad = dZ1[o];
-      this.l1.gB[o] += grad;
-      for (let i = 0; i < this.l1.nIn; i++) {
-        this.l1.gW[i * this.l1.nOut + o] += x[i] * grad;
-      }
-    }
+    const dA2 = this.l3.backwardInto(cache.o3, cache.o2.a, dq);
+    const dA1 = this.l2.backwardInto(cache.o2, cache.o1.a, dA2);
+    this.l1.backwardInto(cache.o1, cache.x, dA1);
   }
 
-  adamStep(lr, t) {
-    this.l1.adamStep(lr, t);
-    this.l2.adamStep(lr, t);
-    this.l3.adamStep(lr, t);
-  }
+  adamStep(lr, t) { this.l1.adamStep(lr, t); this.l2.adamStep(lr, t); this.l3.adamStep(lr, t); }
 
   cloneFrom(other) {
     this.l1.cloneWeightsFrom(other.l1);
@@ -172,12 +156,105 @@ class QNetwork {
   }
 }
 
-class ReplayBuffer {
-  constructor(cap) {
-    this.cap = cap;
-    this.data = [];
-    this.pos = 0;
+/* ------------------------------------------------------------
+ * Dueling Q-network:
+ *   torso obsDim -> H -> H
+ *   value stream    : H -> Hs -> 1        => V(s)
+ *   advantage stream: H -> Hs -> nActions => A(s,a)
+ *   Q(s,a) = V(s) + ( A(s,a) - mean_a A(s,a) )
+ * ------------------------------------------------------------ */
+class DuelingQNetwork {
+  constructor(nIn, nHidden, nOut, streamHidden) {
+    this.type = "dueling";
+    this.nIn = nIn;
+    this.nOut = nOut;
+    // narrower stream heads keep pure-JS compute light for the browser
+    const hs = streamHidden || Math.max(32, Math.round(nHidden / 2));
+    this.l1 = new Dense(nIn, nHidden, "relu");
+    this.l2 = new Dense(nHidden, nHidden, "relu");
+    // value stream
+    this.vHidden = new Dense(nHidden, hs, "relu");
+    this.vOut = new Dense(hs, 1, "linear");
+    // advantage stream
+    this.aHidden = new Dense(nHidden, hs, "relu");
+    this.aOut = new Dense(hs, nOut, "linear");
   }
+
+  forward(x) {
+    const o1 = this.l1.forward(x);
+    const o2 = this.l2.forward(o1.a);
+
+    const vh = this.vHidden.forward(o2.a);
+    const vo = this.vOut.forward(vh.a); // length 1
+    const ah = this.aHidden.forward(o2.a);
+    const ao = this.aOut.forward(ah.a); // length nOut
+
+    // mean advantage
+    let meanA = 0;
+    for (let k = 0; k < this.nOut; k++) meanA += ao.a[k];
+    meanA /= this.nOut;
+
+    const q = new Float64Array(this.nOut);
+    for (let k = 0; k < this.nOut; k++) q[k] = vo.a[0] + (ao.a[k] - meanA);
+
+    return { x, o1, o2, vh, vo, ah, ao, meanA, q };
+  }
+
+  predict(x) { return this.forward(x).q; }
+
+  zeroGrad() {
+    this.l1.zeroGrad(); this.l2.zeroGrad();
+    this.vHidden.zeroGrad(); this.vOut.zeroGrad();
+    this.aHidden.zeroGrad(); this.aOut.zeroGrad();
+  }
+
+  // dq: dL/dQ (length nOut)
+  backward(cache, dq) {
+    const n = this.nOut;
+    // Q_k = V + A_k - mean(A)
+    //   dL/dV   = sum_k dq_k
+    //   dL/dA_j = dq_j - (1/n) * sum_k dq_k
+    let sumdq = 0;
+    for (let k = 0; k < n; k++) sumdq += dq[k];
+
+    const dV = new Float64Array(1);
+    dV[0] = sumdq;
+    const dA = new Float64Array(n);
+    for (let j = 0; j < n; j++) dA[j] = dq[j] - sumdq / n;
+
+    // value stream back
+    const dVh = this.vOut.backwardInto(cache.vo, cache.vh.a, dV);
+    const dV2fromV = this.vHidden.backwardInto(cache.vh, cache.o2.a, dVh);
+    // advantage stream back
+    const dAh = this.aOut.backwardInto(cache.ao, cache.ah.a, dA);
+    const dV2fromA = this.aHidden.backwardInto(cache.ah, cache.o2.a, dAh);
+
+    // merge gradients into torso o2 activation
+    const dO2 = new Float64Array(dV2fromV.length);
+    for (let i = 0; i < dO2.length; i++) dO2[i] = dV2fromV[i] + dV2fromA[i];
+
+    const dA1 = this.l2.backwardInto(cache.o2, cache.o1.a, dO2);
+    this.l1.backwardInto(cache.o1, cache.x, dA1);
+  }
+
+  adamStep(lr, t) {
+    this.l1.adamStep(lr, t); this.l2.adamStep(lr, t);
+    this.vHidden.adamStep(lr, t); this.vOut.adamStep(lr, t);
+    this.aHidden.adamStep(lr, t); this.aOut.adamStep(lr, t);
+  }
+
+  cloneFrom(other) {
+    this.l1.cloneWeightsFrom(other.l1);
+    this.l2.cloneWeightsFrom(other.l2);
+    this.vHidden.cloneWeightsFrom(other.vHidden);
+    this.vOut.cloneWeightsFrom(other.vOut);
+    this.aHidden.cloneWeightsFrom(other.aHidden);
+    this.aOut.cloneWeightsFrom(other.aOut);
+  }
+}
+
+class ReplayBuffer {
+  constructor(cap) { this.cap = cap; this.data = []; this.pos = 0; }
   push(t) {
     if (this.data.length < this.cap) this.data.push(t);
     else this.data[this.pos] = t;
@@ -188,9 +265,7 @@ class ReplayBuffer {
     for (let i = 0; i < n; i++) out.push(this.data[Math.floor(Math.random() * this.data.length)]);
     return out;
   }
-  get size() {
-    return this.data.length;
-  }
+  get size() { return this.data.length; }
 }
 
 class DQNAgent {
@@ -199,6 +274,7 @@ class DQNAgent {
     this.nActions = nActions;
     this.cfg = Object.assign(
       {
+        algorithm: "DQN",
         lr: 1e-3,
         gamma: 0.99,
         bufferSize: 50000,
@@ -214,9 +290,24 @@ class DQNAgent {
       },
       cfg
     );
-    this.q = new QNetwork(obsDim, this.cfg.hidden, nActions);
-    this.target = new QNetwork(obsDim, this.cfg.hidden, nActions);
+    if (!ALGORITHMS.includes(this.cfg.algorithm)) this.cfg.algorithm = "DQN";
+    this.algorithm = this.cfg.algorithm;
+
+    // Double-Q if algorithm name contains "Double"
+    this.useDouble = this.algorithm.indexOf("Double") !== -1;
+    // Dueling network if algorithm name contains "Dueling"
+    this.useDueling = this.algorithm.indexOf("Dueling") !== -1;
+
+    if (this.useDueling) {
+      const hs = this.cfg.streamHidden || 64;
+      this.q = new DuelingQNetwork(obsDim, this.cfg.hidden, nActions, hs);
+      this.target = new DuelingQNetwork(obsDim, this.cfg.hidden, nActions, hs);
+    } else {
+      this.q = new QNetwork(obsDim, this.cfg.hidden, nActions);
+      this.target = new QNetwork(obsDim, this.cfg.hidden, nActions);
+    }
     this.target.cloneFrom(this.q);
+
     this.buffer = new ReplayBuffer(this.cfg.bufferSize);
     this.stepCount = 0;
     this.trainSteps = 0;
@@ -224,10 +315,18 @@ class DQNAgent {
     this.epsilon = this.cfg.epsStart;
   }
 
+  get label() { return ALGO_LABELS[this.algorithm] || this.algorithm; }
+
   computeEpsilon() {
     const frac = Math.min(1, this.stepCount / (this.cfg.epsFraction * this.cfg.totalSteps));
     this.epsilon = this.cfg.epsStart + frac * (this.cfg.epsEnd - this.cfg.epsStart);
     return this.epsilon;
+  }
+
+  argmax(arr) {
+    let best = 0;
+    for (let a = 1; a < arr.length; a++) if (arr[a] > arr[best]) best = a;
+    return best;
   }
 
   act(obs, greedy = false) {
@@ -235,15 +334,10 @@ class DQNAgent {
     if (!greedy && Math.random() < this.epsilon) {
       return Math.floor(Math.random() * this.nActions);
     }
-    const q = this.q.predict(obs);
-    let best = 0;
-    for (let a = 1; a < this.nActions; a++) if (q[a] > q[best]) best = a;
-    return best;
+    return this.argmax(this.q.predict(obs));
   }
 
-  qValues(obs) {
-    return Array.from(this.q.predict(obs));
-  }
+  qValues(obs) { return Array.from(this.q.predict(obs)); }
 
   observe(s, a, r, s2, done) {
     this.buffer.push({ s, a, r, s2, done });
@@ -261,21 +355,30 @@ class DQNAgent {
     this.q.zeroGrad();
     let lossSum = 0;
     const invN = 1 / batch.length;
+    const delta = 1.0; // Huber
 
     for (const tr of batch) {
-      // target: r + gamma * max_a' Q_target(s2)  (0 if done)
       let targetVal = tr.r;
       if (!tr.done) {
-        const q2 = this.target.predict(tr.s2);
-        let m = q2[0];
-        for (let a = 1; a < this.nActions; a++) if (q2[a] > m) m = q2[a];
-        targetVal += this.cfg.gamma * m;
+        if (this.useDouble) {
+          // Double DQN: online net picks a', target net evaluates it
+          const qOnlineNext = this.q.predict(tr.s2);
+          const aStar = this.argmax(qOnlineNext);
+          const qTargetNext = this.target.predict(tr.s2);
+          targetVal += this.cfg.gamma * qTargetNext[aStar];
+        } else {
+          // vanilla: max over target net
+          const q2 = this.target.predict(tr.s2);
+          let m = q2[0];
+          for (let a = 1; a < this.nActions; a++) if (q2[a] > m) m = q2[a];
+          targetVal += this.cfg.gamma * m;
+        }
       }
+
       const cache = this.q.forward(tr.s);
       const pred = cache.q[tr.a];
-      let err = pred - targetVal;
-      // Huber loss derivative (delta = 1)
-      const delta = 1.0;
+      const err = pred - targetVal;
+
       let dqA;
       if (Math.abs(err) <= delta) {
         dqA = err;
@@ -284,7 +387,7 @@ class DQNAgent {
         dqA = delta * Math.sign(err);
         lossSum += delta * (Math.abs(err) - 0.5 * delta);
       }
-      const dq = new Float64Array(this.nActions); // gradient only on taken action
+      const dq = new Float64Array(this.nActions);
       dq[tr.a] = dqA * invN;
       this.q.backward(cache, dq);
     }
@@ -295,4 +398,4 @@ class DQNAgent {
   }
 }
 
-window.BintuluDQN = { DQNAgent, QNetwork };
+window.BintuluDQN = { DQNAgent, QNetwork, DuelingQNetwork, ALGORITHMS, ALGO_LABELS };
