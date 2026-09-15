@@ -13,6 +13,7 @@
 (function () {
   const { VesselEnv, ACTION_NAMES, MAP_W, MAP_H } = window.BintuluEnv;
   const { DQNAgent, ALGORITHMS, ALGO_LABELS } = window.BintuluDQN;
+  const Stats = window.BintuluStats;
 
   // per-algorithm colors for the comparison chart
   const ALGO_COLORS = {
@@ -55,6 +56,10 @@
   const btnExportCmpCsv = $("btnExportCmpCsv");
   const btnExportCmpPng = $("btnExportCmpPng");
 
+  // statistical evaluation controls
+  const statMetricSelect = $("statMetricSelect");
+  const btnExportStatsCsv = $("btnExportStatsCsv");
+
   // ---------- State ----------
   let env, agent;
   let running = false;
@@ -89,6 +94,7 @@
   let compareMods = { per: false, noisy: false }; // enhancement flags used in last comparison
   let compareSeeds = 1;
   let compareEpisodesPerAlgo = 0;
+  let statMetric = "reward"; // metric used for pairwise significance tests
 
   const TOTAL_STEPS = 50000;
 
@@ -942,6 +948,191 @@
     };
   }
 
+  // ============================================================
+  // STATISTICAL EVALUATION
+  // Build per-algorithm SAMPLES (one scalar per seed) for a chosen
+  // metric, then run pairwise Welch's t-test + Mann–Whitney U +
+  // Cohen's d across every algorithm pair.
+  // ============================================================
+
+  // metric definitions: each maps a single seed's episode arrays -> scalar
+  const STAT_METRICS = {
+    // mean reward over the final 20% of episodes (final performance)
+    reward: {
+      label: "Final reward (last 20% eps)",
+      unit: "",
+      dp: 2,
+      perSeed: (rw) => tailMean(rw, 0.2),
+    },
+    // success rate (%) over the final 20% of episodes
+    success: {
+      label: "Success rate (last 20% eps)",
+      unit: "%",
+      dp: 1,
+      perSeed: (rw, sc) => 100 * tailMean(sc, 0.2),
+    },
+    // mean reward over ALL episodes
+    avgReward: {
+      label: "Avg reward (all eps)",
+      unit: "",
+      dp: 2,
+      perSeed: (rw) => (rw.length ? rw.reduce((a, b) => a + b, 0) / rw.length : NaN),
+    },
+    // peak of the MA20 reward curve (best sustained performance)
+    bestMA: {
+      label: "Best MA20 reward",
+      unit: "",
+      dp: 2,
+      perSeed: (rw) => (rw.length ? Math.max(...movingAvg(rw, 20)) : NaN),
+    },
+  };
+
+  // mean of the last `frac` fraction of an array (at least 1 element)
+  function tailMean(arr, frac) {
+    if (!arr || arr.length === 0) return NaN;
+    const k = Math.max(1, Math.round(arr.length * frac));
+    const tail = arr.slice(arr.length - k);
+    return tail.reduce((a, b) => a + b, 0) / tail.length;
+  }
+
+  // Build { key,label,samples[] } groups for a metric, one sample per seed.
+  function buildStatGroups(metricKey) {
+    const def = STAT_METRICS[metricKey] || STAT_METRICS.reward;
+    const groups = [];
+    for (const a of ALGORITHMS) {
+      const res = compareResults[a];
+      if (!res) continue;
+      const samples = [];
+      for (let s = 0; s < res.seedRewards.length; s++) {
+        const rw = res.seedRewards[s];
+        if (!rw || rw.length === 0) continue;
+        const val = def.perSeed(rw, res.seedSuccess[s], res.seedSteps[s]);
+        if (isFinite(val)) samples.push(val);
+      }
+      if (samples.length > 0) {
+        groups.push({ key: a, label: ALGO_LABELS[a] + modsSuffix(), samples });
+      }
+    }
+    return groups;
+  }
+
+  // full stats bundle for the current comparison + metric
+  function computeStatEvaluation(metricKey) {
+    const groups = buildStatGroups(metricKey);
+    const pairs = Stats.pairwise(groups);
+    const nComp = pairs.length;
+    const bonf = Stats.bonferroniAlpha(nComp, 0.05);
+    return { metricKey, def: STAT_METRICS[metricKey] || STAT_METRICS.reward, groups, pairs, nComp, bonf };
+  }
+
+  function updateStatTables() {
+    const summaryTbl = $("statSummaryTable");
+    const pairTbl = $("statPairwiseTable");
+    const warnEl = $("statWarning");
+    if (!summaryTbl || !pairTbl) return;
+
+    const hasData = hasComparisonData();
+    if (btnExportStatsCsv) btnExportStatsCsv.disabled = !hasData || comparing;
+
+    // clear old data rows
+    summaryTbl.querySelectorAll("tr.stat-data").forEach((r) => r.remove());
+    pairTbl.querySelectorAll("tr.stat-data").forEach((r) => r.remove());
+
+    if (!hasData) {
+      if (warnEl) { warnEl.hidden = true; }
+      return;
+    }
+
+    const ev = computeStatEvaluation(statMetric);
+    const dp = ev.def.dp;
+    const unit = ev.def.unit;
+
+    // ---- low-power warning ----
+    const minSeeds = ev.groups.length
+      ? Math.min(...ev.groups.map((g) => g.samples.length))
+      : 0;
+    if (warnEl) {
+      if (ev.groups.length < 2) {
+        warnEl.hidden = false;
+        warnEl.innerHTML =
+          "Need at least 2 algorithms with completed seeds to run significance tests. " +
+          "Run <b>Compare All</b> first.";
+      } else if (minSeeds < 5) {
+        warnEl.hidden = false;
+        warnEl.innerHTML =
+          `⚠ Low statistical power: only <b>${minSeeds} seed(s)</b> per algorithm. ` +
+          `Two-sample tests are unreliable with n&lt;5 — increase <b>seeds</b> (≥5, ideally ≥10) ` +
+          `for meaningful p-values. Bonferroni-adjusted α for ${ev.nComp} comparisons = ` +
+          `<b>${ev.bonf.toFixed(4)}</b>.`;
+      } else {
+        warnEl.hidden = false;
+        warnEl.innerHTML =
+          `${minSeeds}+ seeds per algorithm · ${ev.nComp} pairwise comparisons · ` +
+          `Bonferroni-adjusted α = <b>${ev.bonf.toFixed(4)}</b>.`;
+      }
+    }
+
+    // ---- per-algorithm summary rows ----
+    for (const g of ev.groups) {
+      const m = Stats.mean(g.samples);
+      const sd = Stats.std(g.samples);
+      const ci = Stats.ci95(g.samples);
+      const lo = Math.min(...g.samples);
+      const hi = Math.max(...g.samples);
+      const color = ALGO_COLORS[g.key] || "#fff";
+      const ciTxt = isFinite(ci) ? `±${ci.toFixed(dp)}${unit}` : "—";
+      const tr = document.createElement("tr");
+      tr.className = "stat-data";
+      const cells = [
+        `<i class="cmp-swatch" style="background:${color}"></i>${g.label}`,
+        g.samples.length,
+        `${m.toFixed(dp)}${unit}`,
+        `${sd.toFixed(dp)}${unit}`,
+        ciTxt,
+        `${lo.toFixed(dp)}…${hi.toFixed(dp)}`,
+      ];
+      tr.innerHTML = cells.map((c) => `<td>${c}</td>`).join("");
+      summaryTbl.appendChild(tr);
+    }
+
+    // ---- pairwise comparison rows ----
+    if (ev.pairs.length === 0) {
+      const tr = document.createElement("tr");
+      tr.className = "stat-data";
+      tr.innerHTML = `<td colspan="7" class="muted">No pairwise comparisons available.</td>`;
+      pairTbl.appendChild(tr);
+    }
+    for (const pr of ev.pairs) {
+      const sig = Stats.sigMarker(pr.pWelch);
+      const isSig = isFinite(pr.pWelch) && pr.pWelch < 0.05;
+      const dTxt = isFinite(pr.cohensD) ? pr.cohensD.toFixed(2) : "—";
+      const diffTxt = isFinite(pr.diff) ? (pr.diff >= 0 ? "+" : "") + pr.diff.toFixed(dp) + unit : "—";
+      const tr = document.createElement("tr");
+      tr.className = "stat-data";
+      const cells = [
+        `${shortLabel(pr.aKey)} vs ${shortLabel(pr.bKey)}`,
+        diffTxt,
+        Stats.formatP(pr.pWelch),
+        Stats.formatP(pr.pMann),
+        dTxt,
+        pr.magnitude,
+        `<span>${sig}</span>`,
+      ];
+      tr.innerHTML = cells
+        .map((c, i) => {
+          const cls = i === 6 ? (isSig ? "sig-yes" : "sig-no") : "";
+          return `<td class="${cls}">${c}</td>`;
+        })
+        .join("");
+      pairTbl.appendChild(tr);
+    }
+  }
+
+  // compact algorithm label for pairwise rows
+  function shortLabel(key) {
+    return { DQN: "DQN", DoubleDQN: "Double", DuelingDQN: "Dueling", DuelingDoubleDQN: "Duel+Dbl" }[key] || key;
+  }
+
   function updateCompareLegendAndTable() {
     const legend = $("cmpLegend");
     if (legend) {
@@ -1074,6 +1265,7 @@
 
       drawCompareChart();
       updateCompareLegendAndTable();
+      updateStatTables();
 
       if ($("chartLabel")) {
         const seedTxt = nSeeds > 1 ? ` · seed ${si + 1}/${nSeeds}` : "";
@@ -1104,6 +1296,7 @@
       if (algoSelect) algoSelect.disabled = false;
       drawCompareChart();
       updateCompareLegendAndTable();
+      updateStatTables();
       if (btnExportCmpCsv) btnExportCmpCsv.disabled = false;
       if (btnExportCmpPng) btnExportCmpPng.disabled = false;
       if ($("chartLabel")) $("chartLabel").textContent = "Comparison complete";
@@ -1249,10 +1442,91 @@
   if (btnExportCmpCsv) btnExportCmpCsv.addEventListener("click", exportComparisonCSV);
   if (btnExportCmpPng) btnExportCmpPng.addEventListener("click", exportComparisonPNG);
 
+  // re-render stats tables when the metric selection changes
+  if (statMetricSelect) {
+    statMetricSelect.addEventListener("change", () => {
+      statMetric = statMetricSelect.value;
+      updateStatTables();
+    });
+  }
+
+  // ============================================================
+  // STATISTICS CSV EXPORT — summary stats for ALL metrics +
+  // pairwise test results (Welch p, Mann–Whitney p, Cohen's d).
+  // ============================================================
+  function exportStatsCSV() {
+    if (!hasComparisonData()) return;
+    const suffix = modsSuffix().replace(/[^A-Za-z0-9]+/g, "");
+    const lines = [];
+    lines.push("# Bintulu DQN — statistical evaluation");
+    lines.push("# enhancements:" + (modsSuffix() || " none"));
+    lines.push("# seeds:" + compareSeeds + " episodes_per_algo:" + compareEpisodesPerAlgo);
+    lines.push("# tests: Welch two-sample t-test (unequal var) + Mann-Whitney U (two-sided); effect size Cohen's d (pooled) & Hedges g");
+
+    const metricKeys = Object.keys(STAT_METRICS);
+
+    // Section 1: per-algorithm per-metric summary
+    lines.push("");
+    lines.push("# per-algorithm summary (one sample per seed)");
+    lines.push("metric,algorithm,n_seeds,mean,sd,sem,ci95_halfwidth,min,max");
+    for (const mk of metricKeys) {
+      const groups = buildStatGroups(mk);
+      for (const g of groups) {
+        lines.push(
+          [
+            mk, g.key, g.samples.length,
+            Stats.mean(g.samples).toFixed(4),
+            Stats.std(g.samples).toFixed(4),
+            Stats.sem(g.samples).toFixed(4),
+            (isFinite(Stats.ci95(g.samples)) ? Stats.ci95(g.samples).toFixed(4) : "NA"),
+            Math.min(...g.samples).toFixed(4),
+            Math.max(...g.samples).toFixed(4),
+          ].join(",")
+        );
+      }
+    }
+
+    // Section 2: pairwise significance tests
+    lines.push("");
+    lines.push("# pairwise significance tests (two-sided)");
+    lines.push(
+      "metric,algo_a,algo_b,n_a,n_b,mean_a,mean_b,diff," +
+      "welch_t,welch_df,welch_p,mannwhitney_U,mannwhitney_p," +
+      "cohens_d,hedges_g,effect_magnitude,significant_0.05"
+    );
+    for (const mk of metricKeys) {
+      const groups = buildStatGroups(mk);
+      const pairs = Stats.pairwise(groups);
+      for (const pr of pairs) {
+        lines.push(
+          [
+            mk, pr.aKey, pr.bKey, pr.nA, pr.nB,
+            pr.meanA.toFixed(4), pr.meanB.toFixed(4), pr.diff.toFixed(4),
+            isFinite(pr.welch.t) ? pr.welch.t.toFixed(4) : "NA",
+            isFinite(pr.welch.df) ? pr.welch.df.toFixed(4) : "NA",
+            isFinite(pr.pWelch) ? pr.pWelch.toExponential(4) : "NA",
+            isFinite(pr.mannWhitney.U) ? pr.mannWhitney.U : "NA",
+            isFinite(pr.pMann) ? pr.pMann.toExponential(4) : "NA",
+            isFinite(pr.cohensD) ? pr.cohensD.toFixed(4) : "NA",
+            isFinite(pr.hedgesG) ? pr.hedgesG.toFixed(4) : "NA",
+            pr.magnitude,
+            isFinite(pr.pWelch) && pr.pWelch < 0.05 ? "yes" : "no",
+          ].join(",")
+        );
+      }
+    }
+
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    downloadBlob(blob, `bintulu_statistics${suffix ? "_" + suffix : ""}.csv`);
+  }
+
+  if (btnExportStatsCsv) btnExportStatsCsv.addEventListener("click", exportStatsCSV);
+
   // ---------- boot ----------
   init();
   drawCompareChart();
   updateCompareLegendAndTable();
+  updateStatTables();
 
   // expose a tiny hook for headless testing
   window.__bintulu = {
@@ -1290,9 +1564,37 @@
         ])
       ),
     }),
+    // statistical evaluation snapshot (current metric)
+    statMetric,
+    statEvaluation: () => {
+      if (!hasComparisonData()) return null;
+      const ev = computeStatEvaluation(statMetric);
+      return {
+        metric: ev.metricKey,
+        nComparisons: ev.nComp,
+        bonferroniAlpha: ev.bonf,
+        groups: ev.groups.map((g) => ({
+          key: g.key,
+          n: g.samples.length,
+          mean: Stats.mean(g.samples),
+          std: Stats.std(g.samples),
+          ci95: Stats.ci95(g.samples),
+        })),
+        pairs: ev.pairs.map((p) => ({
+          a: p.aKey, b: p.bKey,
+          diff: p.diff,
+          pWelch: p.pWelch,
+          pMann: p.pMann,
+          cohensD: p.cohensD,
+          magnitude: p.magnitude,
+          sig: p.sig,
+        })),
+      };
+    },
     exportCSV,
     exportComparisonCSV,
     exportComparisonPNG,
+    exportStatsCSV,
     runComparison,
   };
 })();

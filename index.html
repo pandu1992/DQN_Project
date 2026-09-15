@@ -58,6 +58,47 @@
           <th>Avg reward</th><th>Best MA20</th><th>Avg steps</th>
         </tr>
       </table>
+
+      <!-- ===== STATISTICAL EVALUATION ===== -->
+      <div class="panel-head">
+        <span>Statistical Evaluation</span>
+        <span class="legend">
+          <label class="stat-metric-row">metric:
+            <select id="statMetricSelect">
+              <option value="reward">Final reward (last 20% eps)</option>
+              <option value="success">Success rate (last 20% eps)</option>
+              <option value="avgReward">Avg reward (all eps)</option>
+              <option value="bestMA">Best MA20 reward</option>
+            </select>
+          </label>
+        </span>
+      </div>
+      <p id="statWarning" class="stat-warning" hidden></p>
+
+      <div class="stat-sub">Per-algorithm summary <span class="muted">(across seeds · mean, SD, 95% CI of the mean)</span></div>
+      <table class="metrics cmp-table stat-summary" id="statSummaryTable">
+        <tr>
+          <th>Algorithm</th><th>n (seeds)</th><th>Mean</th>
+          <th>SD</th><th>95% CI</th><th>Min…Max</th>
+        </tr>
+      </table>
+
+      <div class="stat-sub">Pairwise significance <span class="muted">(Welch's t-test p · Mann–Whitney p · Cohen's d · two-sided)</span></div>
+      <table class="metrics cmp-table stat-pairwise" id="statPairwiseTable">
+        <tr>
+          <th>Comparison</th><th>Δ mean</th><th>t-test p</th>
+          <th>MW p</th><th>Cohen's d</th><th>Effect</th><th>Sig.</th>
+        </tr>
+      </table>
+      <p class="stat-note muted">
+        Significance markers use the Welch's t-test p-value:
+        <b>***</b> p&lt;0.001 · <b>**</b> p&lt;0.01 · <b>*</b> p&lt;0.05 · <b>ns</b> not significant.
+        Effect size (Cohen's <i>d</i>): |d|&lt;0.2 negligible · &lt;0.5 small · &lt;0.8 medium · ≥0.8 large.
+        Bonferroni-adjusted threshold shown in the warning line when applicable.
+      </p>
+      <div class="controls stat-export">
+        <button id="btnExportStatsCsv" class="btn" disabled>⬇ Statistics CSV</button>
+      </div>
     </section>
 
     <!-- RIGHT: controls + metrics -->
@@ -155,6 +196,7 @@
 
   <script src="js/environment.js"></script>
   <script src="js/dqn.js"></script>
+  <script src="js/stats.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

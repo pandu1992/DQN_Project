@@ -100,6 +100,29 @@ disappears and you get the original single-run behavior.
 - **🖼 Comparison PNG** — the overlaid mean±std learning-curve chart rendered
   with a title and color legend, ready to embed as a figure.
 
+### 📊 Statistical evaluation (significance tests)
+
+Once a multi-seed **Compare All** finishes, the **Statistical Evaluation**
+panel treats each seed as one sample and automatically runs proper
+significance tests between algorithms — everything computed in pure JS
+(`js/stats.js`), validated against SciPy reference values:
+
+- **Metric selector** — run the tests on *final reward* (last 20% of
+  episodes), *success rate* (last 20%), *avg reward* (all episodes), or
+  *best MA20 reward*.
+- **Per-algorithm summary** — n (seeds), mean, SD, and the **95% confidence
+  interval** of the mean (Student-t), plus the min…max range.
+- **Pairwise significance** — for every algorithm pair: Δ mean,
+  **Welch's two-sample t-test** p-value (unequal-variance), **Mann–Whitney U**
+  p-value (non-parametric rank-sum), **Cohen's d** effect size + magnitude
+  label, and a significance marker (`***`/`**`/`*`/`ns`). All tests two-sided.
+- **Multiple-comparison correction** — a **Bonferroni-adjusted α**
+  (`0.05 / #comparisons`) is shown; a **low-power warning** appears when fewer
+  than 5 seeds are used.
+- **⬇ Statistics CSV** — per-algorithm summary + full pairwise results
+  (Welch t/df/p, Mann–Whitney U/p, Cohen's d, Hedges g, effect magnitude,
+  significant-at-0.05 flag) for **all metrics at once** — paper-ready.
+
 > Because the networks are trained in pure JS on one browser thread, keep the
 > episodes-per-algorithm and seed count modest for a quick comparison; raise
 > them for a more thorough run. Dueling variants and Noisy Nets are a bit
@@ -123,6 +146,7 @@ research protocol.
 | Sprint 5 / 7.x — DQN variants (Double, Dueling, Dueling-Double) & benchmark comparison | `js/dqn.js` → `DuelingQNetwork`, `DQNAgent` algorithm flag; `js/main.js` → Compare-All engine |
 | Rainbow-style enhancements — Prioritized Replay + Noisy Nets | `js/dqn.js` → `PrioritizedReplayBuffer`, `NoisyDense` (`cfg.per`, `cfg.noisy`) |
 | Sprint 7.x — benchmark metrics, reward curve, trajectory viz, CSV/PNG export | `js/main.js` telemetry + canvas rendering + comparison export |
+| Multi-seed evaluation + significance testing (Welch t-test, Mann–Whitney U, Cohen's d, 95% CI, Bonferroni) | `js/stats.js` → `window.BintuluStats`; `js/main.js` → Statistical Evaluation panel + stats CSV |
 
 ### Agent details (`js/dqn.js`)
 - Torso MLP `obsDim(10) → 128 → 128` (ReLU). Standard head → `3` action
