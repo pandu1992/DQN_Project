@@ -197,6 +197,60 @@
     </aside>
   </main>
 
+  <!-- ============ KEY FINDINGS (Q1 experimental analysis) ============ -->
+  <section class="findings" id="findings">
+    <div class="findings-head">
+      <div>
+        <h2>Key Findings — Q1 Experimental Analysis</h2>
+        <p class="findings-sub">
+          A rigorous multi-seed factorial study (4 DQN variants × PER × Noisy Nets, 10 seeds,
+          6,400 evaluation episodes) on a real graph-navigation task. Highlights below;
+          full report, tables, figures, and PDF in the analysis page.
+        </p>
+      </div>
+      <a class="btn report-btn" href="results.html">📊 Open full analysis &amp; download PDF</a>
+    </div>
+
+    <div class="findings-insights">
+      <div class="insight-card">
+        <span class="insight-tag">💡 Insight</span>
+        <p>The four DQN variants are <b>statistically indistinguishable</b> on success and reward
+        (no effect survives correction) — they are effectively interchangeable at this budget.</p>
+      </div>
+      <div class="insight-card">
+        <span class="insight-tag">💡 Insight</span>
+        <p><b>Random seed dominates variance</b> (partial η² ≈ 0.20 ≫ any design factor): run-to-run
+        variability swamps the algorithm choice — a reproducibility caution worth reporting.</p>
+      </div>
+      <div class="insight-card">
+        <span class="insight-tag">💡 Insight</span>
+        <p>The one real signal is on <b>route optimality</b>: <b>Noisy Nets</b> — not the DQN variant —
+        is the lever with a measurable (small–medium) effect.</p>
+      </div>
+    </div>
+
+    <div class="findings-figs">
+      <figure>
+        <a href="results/figures/fig1_overall_performance.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="results/figures/fig1_overall_performance.png" alt="Overall performance of the four DQN variants with 95% CIs" />
+        </a>
+        <figcaption>Overall success &amp; reward per algorithm (mean ± 95% CI, 10 seeds). Overlapping CIs → no significant algorithm effect.</figcaption>
+      </figure>
+      <figure>
+        <a href="results/figures/fig4_per_seed_distributions.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="results/figures/fig4_per_seed_distributions.png" alt="Per-seed performance distributions" />
+        </a>
+        <figcaption>Per-seed distributions: the wide spread (one DQN seed at 0%) shows seed variance dominates.</figcaption>
+      </figure>
+      <figure>
+        <a href="results/figures/fig8_variance_dominance.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="results/figures/fig8_variance_dominance.png" alt="Variance-component heatmap (partial eta squared)" />
+        </a>
+        <figcaption>Variance explained (partial η²): the Seed block outweighs every design factor.</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <script src="js/environment.js"></script>
   <script src="js/dqn.js"></script>
   <script src="js/stats.js"></script>
