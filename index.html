@@ -32,10 +32,40 @@
 
       <div class="panel-head"><span>Episode Reward</span><span id="chartLabel" class="muted"></span></div>
       <canvas id="chartCanvas" width="900" height="180"></canvas>
+
+      <div class="panel-head">
+        <span>Algorithm Comparison</span>
+        <span class="legend" id="cmpLegend"></span>
+      </div>
+      <div class="controls cmp-controls">
+        <button id="btnCompareAll" class="btn primary">⚔ Compare All (auto-run each)</button>
+        <button id="btnCompareStop" class="btn" disabled>⏹ Stop</button>
+        <label class="cmp-eps">episodes/algo:
+          <input type="number" id="cmpEpisodes" min="20" max="600" step="20" value="120" />
+        </label>
+      </div>
+      <canvas id="compareCanvas" width="900" height="200"></canvas>
+      <table class="metrics cmp-table" id="cmpTable">
+        <tr>
+          <th>Algorithm</th><th>Episodes</th><th>Success</th>
+          <th>Avg reward</th><th>Best MA20</th><th>Avg steps</th>
+        </tr>
+      </table>
     </section>
 
     <!-- RIGHT: controls + metrics -->
     <aside class="panel side-panel">
+      <div class="panel-head"><span>Algorithm</span></div>
+      <label class="select-row">
+        <select id="algoSelect">
+          <option value="DQN">DQN (vanilla)</option>
+          <option value="DoubleDQN">Double DQN</option>
+          <option value="DuelingDQN">Dueling DQN</option>
+          <option value="DuelingDoubleDQN">Dueling Double DQN</option>
+        </select>
+        <span class="select-hint">applied on Reset / Train</span>
+      </label>
+
       <div class="panel-head"><span>Controls</span></div>
       <div class="controls">
         <button id="btnTrain" class="btn primary">▶ Train</button>
@@ -58,6 +88,7 @@
 
       <div class="panel-head"><span>Training Status</span></div>
       <table class="metrics">
+        <tr><td>Algorithm</td><td id="mAlgo">DQN</td></tr>
         <tr><td>Episode</td><td id="mEpisode">0</td></tr>
         <tr><td>Env steps</td><td id="mSteps">0</td></tr>
         <tr><td>Epsilon (ε)</td><td id="mEps">1.000</td></tr>
