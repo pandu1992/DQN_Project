@@ -7,6 +7,47 @@
 (function () {
   "use strict";
 
+  // ---------- math (KaTeX) handling ----------
+  // We extract $$...$$ (display) and $...$ (inline) math into placeholders
+  // BEFORE markdown processing so the markdown/escaping steps can't mangle
+  // the LaTeX, then render them with KaTeX and swap the HTML back in.
+  const mathStore = [];
+  const MATH_TOKEN = (i) => `\u0000MATH${i}\u0000`; // null-delimited, survives markdown
+
+  function protectMath(md) {
+    // display math first: $$ ... $$ (may span lines)
+    md = md.replace(/\$\$([\s\S]+?)\$\$/g, (_, tex) => {
+      const idx = mathStore.push({ tex: tex.trim(), display: true }) - 1;
+      return MATH_TOKEN(idx);
+    });
+    // inline math: $ ... $  (avoid matching $$ leftovers and currency like $5)
+    md = md.replace(/\$([^\$\n]+?)\$/g, (m, tex) => {
+      if (/^\s*\d/.test(tex) && !/[\\^_{}]/.test(tex)) return m; // likely currency, leave as-is
+      const idx = mathStore.push({ tex: tex.trim(), display: false }) - 1;
+      return MATH_TOKEN(idx);
+    });
+    return md;
+  }
+
+  function renderMathToken(idx) {
+    const entry = mathStore[idx];
+    if (!entry) return "";
+    if (window.katex) {
+      try {
+        return window.katex.renderToString(entry.tex, {
+          displayMode: entry.display, throwOnError: false, output: "html",
+        });
+      } catch (e) { /* fall through to raw */ }
+    }
+    // KaTeX not available: show the LaTeX in a code block rather than raw $$
+    const cls = entry.display ? "math-fallback-block" : "math-fallback-inline";
+    return `<code class="${cls}">${esc(entry.tex)}</code>`;
+  }
+
+  function restoreMath(html) {
+    return html.replace(/\u0000MATH(\d+)\u0000/g, (_, i) => renderMathToken(+i));
+  }
+
   // ---------- tiny, safe-ish Markdown -> HTML ----------
   function esc(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -21,7 +62,8 @@
     return s;
   }
   function renderMarkdown(md) {
-    const lines = md.replace(/\r/g, "").split("\n");
+    md = protectMath(md.replace(/\r/g, ""));
+    const lines = md.split("\n");
     let html = "", i = 0;
     let inCode = false, codeBuf = [];
     let listType = null, listBuf = [];
@@ -60,6 +102,15 @@
       }
       if (inCode) { codeBuf.push(line); continue; }
 
+      // a line that is ONLY a display-math token -> emit as its own block
+      // (KaTeX display math is block-level and must not sit inside <p>)
+      const soleMath = line.trim().match(/^\u0000MATH(\d+)\u0000$/);
+      if (soleMath && mathStore[+soleMath[1]] && mathStore[+soleMath[1]].display) {
+        flushList();
+        html += `<div class="math-display">${line.trim()}</div>`;
+        continue;
+      }
+
       // table rows
       if (/^\s*\|.*\|\s*$/.test(line)) { flushList(); tableBuf.push(line.trim()); continue; }
       else if (tableBuf.length) flushTable();
@@ -92,7 +143,7 @@
       }
     }
     flushList(); flushTable();
-    return html;
+    return restoreMath(html);
   }
 
   // ---------- CSV parsing (handles quoted fields w/ commas) ----------
@@ -150,11 +201,34 @@
     "fig7_enhancement_tradeoff", "fig8_variance_dominance",
   ];
 
+  // ---------- KaTeX readiness ----------
+  // KaTeX is loaded with `defer`, so it may not be ready when a panel first
+  // renders. We keep the raw markdown for math-bearing panels and re-render
+  // once KaTeX is available (or after a short timeout for the fallback).
+  const mdCache = {}; // panelId -> markdown string
+  let katexReady = false;
+
+  function whenKatexReady(cb) {
+    if (window.katex) { katexReady = true; return cb(); }
+    let waited = 0;
+    const iv = setInterval(() => {
+      waited += 100;
+      if (window.katex) { katexReady = true; clearInterval(iv); cb(); }
+      else if (waited >= 5000) { clearInterval(iv); cb(); } // give up -> fallback rendering
+    }, 100);
+  }
+
+  function renderMdInto(elId, md) {
+    document.getElementById(elId).innerHTML = renderMarkdown(md);
+  }
+
   // ---------- loaders ----------
   async function loadReport() {
     try {
       const md = await fetchText("results/reports/Q1_experimental_report.md");
-      document.getElementById("reportBody").innerHTML = renderMarkdown(md);
+      mdCache.report = md;
+      renderMdInto("reportBody", md);
+      if (!katexReady) whenKatexReady(() => renderMdInto("reportBody", mdCache.report));
     } catch (e) {
       document.getElementById("reportBody").innerHTML =
         `<p class='loading'>Could not load report (${e.message}).</p>`;
@@ -167,8 +241,10 @@
         fetchText("results/reports/REPRODUCIBILITY.md"),
         fetchText("results/reports/SATURATED_BENCHMARK_FINDING.md"),
       ]);
-      document.getElementById("methodsBody").innerHTML =
-        renderMarkdown(finding) + "<hr/>" + renderMarkdown(repro);
+      const combine = () => renderMarkdown(mdCache.methodsFinding) + "<hr/>" + renderMarkdown(mdCache.methodsRepro);
+      mdCache.methodsFinding = finding; mdCache.methodsRepro = repro;
+      document.getElementById("methodsBody").innerHTML = combine();
+      if (!katexReady) whenKatexReady(() => { document.getElementById("methodsBody").innerHTML = combine(); });
     } catch (e) {
       document.getElementById("methodsBody").innerHTML =
         `<p class='loading'>Could not load (${e.message}).</p>`;
