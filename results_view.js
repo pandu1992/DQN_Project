@@ -61,7 +61,9 @@
     s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
     return s;
   }
+  let eqCounter = 0;
   function renderMarkdown(md) {
+    eqCounter = 0; // equation numbers restart per document
     md = protectMath(md.replace(/\r/g, ""));
     const lines = md.split("\n");
     let html = "", i = 0;
@@ -107,7 +109,10 @@
       const soleMath = line.trim().match(/^\u0000MATH(\d+)\u0000$/);
       if (soleMath && mathStore[+soleMath[1]] && mathStore[+soleMath[1]].display) {
         flushList();
-        html += `<div class="math-display">${line.trim()}</div>`;
+        eqCounter++;
+        html += `<div class="math-display" id="eq-${eqCounter}">` +
+                `<span class="math-eq">${line.trim()}</span>` +
+                `<span class="eq-num">(${eqCounter})</span></div>`;
         continue;
       }
 
@@ -126,7 +131,20 @@
         while (i + 1 < lines.length && /^\s*>\s?/.test(lines[i + 1])) {
           buf.push(lines[++i].replace(/^\s*>\s?/, ""));
         }
-        html += `<blockquote>${inlineMd(buf.join(" "))}</blockquote>`;
+        // GitHub-style admonition: first line "[!INSIGHT]" -> highlighted callout
+        const adm = buf[0].trim().match(/^\[!(\w+)\]\s*$/);
+        if (adm) {
+          const kind = adm[1].toLowerCase();
+          const body = buf.slice(1).join(" ");
+          const label = kind === "insight" ? "💡 Key insight" :
+                        kind === "note" ? "📝 Note" :
+                        kind === "warning" ? "⚠ Caution" : kind;
+          html += `<div class="admonition admonition-${kind}">` +
+                  `<div class="admonition-title">${label}</div>` +
+                  `<div class="admonition-body">${inlineMd(body)}</div></div>`;
+        } else {
+          html += `<blockquote>${inlineMd(buf.join(" "))}</blockquote>`;
+        }
       } else if (/^\s*[-*]\s+/.test(line)) {
         if (listType !== "ul") { flushList(); listType = "ul"; }
         listBuf.push(line.replace(/^\s*[-*]\s+/, ""));
@@ -295,6 +313,114 @@
       host.appendChild(card);
     }
   }
+
+  // ---------- PDF export (print-to-PDF of the full report) ----------
+  // Builds a clean, self-contained print document (report + all tables +
+  // figures, with KaTeX math and justified text) and invokes the browser's
+  // print dialog, where the user chooses "Save as PDF".
+  async function downloadPdf(btn) {
+    const origText = btn.textContent;
+    btn.textContent = "Preparing PDF…";
+    btn.disabled = true;
+    try {
+      const base = location.href.replace(/[^/]*$/, ""); // dir of results.html
+      const [reportMd, findingMd, reproMd, capMd] = await Promise.all([
+        mdCache.report ? Promise.resolve(mdCache.report) : fetchText("results/reports/Q1_experimental_report.md"),
+        fetchText("results/reports/SATURATED_BENCHMARK_FINDING.md"),
+        fetchText("results/reports/REPRODUCIBILITY.md"),
+        fetchText("results/figures/figures_captions.md").catch(() => ""),
+      ]);
+      mdCache.report = reportMd;
+
+      const reportHtml = renderMarkdown(reportMd);
+      const findingHtml = renderMarkdown(findingMd);
+      const reproHtml = renderMarkdown(reproMd);
+
+      // tables section
+      let tablesHtml = "";
+      for (const [file, title] of TABLES) {
+        try {
+          const rows = parseCSV(await fetchText("results/tables/" + file + ".csv"));
+          tablesHtml += `<h3 class="pdf-tbl-title">${esc(title)}</h3>` + csvToTable(rows);
+        } catch (e) { /* skip */ }
+      }
+
+      // figures section (absolute URLs so the print window can load them)
+      const captions = {};
+      const re = /##\s+(\S+)\s*\n+([^#]+)/g; let m;
+      while ((m = re.exec(capMd))) captions[m[1].trim()] = m[2].trim();
+      let figsHtml = "";
+      for (const fig of FIGURES) {
+        figsHtml += `<figure class="pdf-fig"><img src="${base}results/figures/${fig}.png"/>` +
+                    `<figcaption>${esc(captions[fig] || fig)}</figcaption></figure>`;
+      }
+
+      const katexCss = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
+      const now = new Date().toISOString().slice(0, 10);
+      const doc = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Bintulu Port DQN — Q1 Experimental Report</title>
+<link rel="stylesheet" href="${katexCss}">
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Times New Roman', Georgia, serif; color:#111; line-height:1.5;
+    font-size:11pt; max-width:800px; margin:0 auto; }
+  h1 { font-size:20pt; margin:0 0 2pt; }
+  h2 { font-size:14pt; border-bottom:1px solid #999; padding-bottom:2pt; margin:18pt 0 6pt;
+    page-break-after:avoid; }
+  h3 { font-size:12pt; margin:12pt 0 4pt; page-break-after:avoid; }
+  p, li { text-align:justify; }
+  code { font-family:'Courier New',monospace; background:#f2f2f2; padding:0 3px; font-size:9.5pt; }
+  pre { background:#f6f6f6; border:1px solid #ddd; padding:8px; overflow:auto; font-size:9pt; }
+  blockquote { border-left:3px solid #888; margin:8pt 0; padding:2pt 10pt; color:#333; }
+  table { border-collapse:collapse; width:100%; margin:8pt 0; font-size:8.5pt; page-break-inside:avoid; }
+  th,td { border:1px solid #bbb; padding:3px 5px; text-align:left; vertical-align:top; }
+  th { background:#eee; }
+  .admonition { border:1px solid #c9a227; background:#fff9e6; border-left:4px solid #d4a017;
+    border-radius:4px; padding:6pt 10pt; margin:10pt 0; page-break-inside:avoid; }
+  .admonition-title { font-weight:bold; color:#8a6d00; margin-bottom:3pt; font-size:10.5pt; }
+  .math-display { text-align:center; margin:8pt 0; position:relative; }
+  .eq-num { position:absolute; right:0; top:50%; transform:translateY(-50%); color:#333; }
+  .katex { font-size:1em; }
+  .csv-scroll { overflow:visible; border:none; }
+  .pdf-tbl-title { font-size:10.5pt; color:#333; margin-top:10pt; }
+  .pdf-fig { margin:10pt 0; page-break-inside:avoid; text-align:center; }
+  .pdf-fig img { max-width:100%; height:auto; border:1px solid #ddd; }
+  .pdf-fig figcaption { font-size:8.5pt; color:#333; text-align:justify; margin-top:3pt; }
+  .pdf-cover { border-bottom:2px solid #333; padding-bottom:8pt; margin-bottom:10pt; }
+  .pdf-cover .sub { color:#444; font-size:10pt; }
+  .pagebreak { page-break-before:always; }
+  a { color:#0b5; text-decoration:none; }
+</style></head><body>
+<div class="pdf-cover">
+  <h1>Bintulu Port — Autonomous Vessel Navigation</h1>
+  <div class="sub">Q1-grade comparative experimental evaluation of value-based DRL agents · generated ${now}</div>
+  <div class="sub">Source: https://pandu1992.github.io/DQN_Project/</div>
+</div>
+${reportHtml}
+<div class="pagebreak"></div><h2>Appendix A — All Tables</h2>${tablesHtml}
+<div class="pagebreak"></div><h2>Appendix B — Figures</h2>${figsHtml}
+<div class="pagebreak"></div><h2>Appendix C — Experimental Design Note</h2>${findingHtml}
+<h2>Appendix D — Reproducibility</h2>${reproHtml}
+</body></html>`;
+
+      const w = window.open("", "_blank");
+      if (!w) { alert("Please allow pop-ups to generate the PDF."); return; }
+      w.document.open(); w.document.write(doc); w.document.close();
+      // wait for KaTeX + images, then print
+      const doPrint = () => { try { w.focus(); w.print(); } catch (e) {} };
+      w.onload = () => setTimeout(doPrint, 900);
+      // fallback if onload already passed
+      setTimeout(() => { if (w && !w.closed) doPrint(); }, 2500);
+    } catch (e) {
+      alert("Could not build the PDF: " + e.message);
+    } finally {
+      btn.textContent = origText;
+      btn.disabled = false;
+    }
+  }
+  const pdfBtn = document.getElementById("btnDownloadPdf");
+  if (pdfBtn) pdfBtn.addEventListener("click", () => downloadPdf(pdfBtn));
 
   // ---------- tabs ----------
   const loaded = {};

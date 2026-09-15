@@ -52,6 +52,14 @@ application is unchanged.
 repeated-measures design that supports **paired** tests). Total: **160 training
 runs**, **6,400 held-out evaluation episodes**.
 
+> [!INSIGHT]
+> **The benchmark had to be made discriminative before it could be studied.**
+> The deployed environment is *saturated* — a two-mission, path-index task on
+> which every algorithm scores ~100% with essentially zero variance, so no
+> statistical test can separate them. Rebuilding it as a genuine
+> graph-navigation MDP (same graph, same edge attributes, same planner) is the
+> pivotal design decision that makes the entire comparison meaningful.
+
 ---
 
 ## 2. Algorithms
@@ -317,10 +325,14 @@ no meaningful success/reward differences.
 
 Seed is the dominant variance component (Figure 8): partial η² ≈ 0.20 for
 success and reward — larger than every design factor combined. Concretely, DQN
-ranges from 0% (seed 5, a training collapse) to 75% (seed 8) success. **The
-practical implication for a Q1 manuscript: with a 10-seed budget at 150 training
-episodes, run-to-run variability swamps the algorithmic differences**, so
-single-seed or few-seed comparisons of these variants would be unreliable.
+ranges from 0% (seed 5, a training collapse) to 75% (seed 8) success.
+
+> [!INSIGHT]
+> **Run-to-run variability swamps the algorithmic differences.** With a 10-seed
+> budget at 150 training episodes, the random seed explains ~4× more variance
+> (partial η² ≈ 0.20) than the algorithm choice. Any single-seed or few-seed
+> comparison of these DQN variants would therefore be unreliable — a
+> reproducibility caution that is itself a publishable result.
 
 ---
 
@@ -374,6 +386,14 @@ single-seed or few-seed comparisons of these variants would be unreliable.
 - **F4 (Practical).** For this task and budget the variants are effectively
   **interchangeable on success/reward**; if route efficiency matters, **Noisy
   Nets** is the most promising lever (small–medium effect on ρ).
+
+> [!INSIGHT]
+> **Headline takeaway.** On this benchmark the four DQN variants are
+> statistically interchangeable for *reaching the goal*; where they differ is in
+> *how efficiently* they route (optimality ratio), and there **Noisy Nets** — not
+> the choice of DQN variant — is the lever with a measurable (small–medium)
+> effect. Report the seed-variance result (F3) prominently: it reframes the study
+> from "which algorithm wins" to "how many seeds are needed to claim a winner".
 
 ---
 
