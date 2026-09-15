@@ -87,20 +87,81 @@ The active configuration appears in the metrics panel and chart labels, e.g.
 1. (Optional) tick **PER** and/or **Noisy Nets** — they apply to *every*
    algorithm in the comparison.
 2. Set **episodes/algo** (default 120; higher = more thorough but slower).
-3. Click **⚔ Compare All**. Each of the four algorithms trains in turn on the
-   **same seeded environment**; their **MA20 reward learning curves** overlay
+3. Set **seeds** (default 3). With `seeds > 1`, each algorithm is trained
+   once per seed (env seed = `42 + seedIndex`); the chart draws the
+   **mean curve with a ±std error band**, and the summary table reports
+   **mean ± std across seeds**. `seeds = 1` keeps the classic single-run
+   behavior (no band). More seeds → more reliable statistics (see §7).
+4. Click **⚔ Compare All**. Each of the four algorithms trains in turn on the
+   **same seeded environment(s)**; their **MA20 reward learning curves** overlay
    on one chart with a color legend, and a summary table fills in
    (episodes, success rate, avg reward, best MA20, avg steps).
 4. When it finishes, the export buttons enable:
    - **⬇ Comparison CSV** — two sections: (a) per-algorithm summary, (b) full
-     per-episode learning curves in long format. Drop straight into
-     pandas / R / Excel.
-   - **🖼 Comparison PNG** — the overlaid learning-curve chart with title and
-     legend, ready to embed as a figure.
+     per-episode learning curves in long format (includes a `seed` column).
+     Drop straight into pandas / R / Excel.
+   - **🖼 Comparison PNG** — the overlaid learning-curve chart (with the ±std
+     band when `seeds > 1`), title, and legend, ready to embed as a figure.
 
 ---
 
-## 6. A fair research workflow
+## 6. Statistical evaluation (significance tests)
+
+Below the comparison, the **Statistical Evaluation** panel automatically runs
+proper significance tests on the multi-seed results — no external tools
+needed. Each seed contributes **one sample** per algorithm, so this panel is
+only meaningful when you ran **Compare All with `seeds > 1`** (ideally ≥ 5).
+
+### Choose a metric
+The **metric** dropdown selects what the tests compare:
+
+| Metric | Definition |
+|---|---|
+| **Final reward (last 20% eps)** | mean episodic reward over each seed's final 20% of episodes — "converged" performance. |
+| **Success rate (last 20% eps)** | goal-reaching rate over the final 20% of episodes. |
+| **Avg reward (all eps)** | mean reward across every episode of the run. |
+| **Best MA20 reward** | peak of the 20-episode moving-average reward curve. |
+
+### Per-algorithm summary table
+For the selected metric, each algorithm shows **n (seeds)**, **mean**, **SD**,
+the **95% confidence interval** of the mean (Student-t based), and the
+observed **min…max** range across seeds.
+
+### Pairwise significance table
+Every algorithm pair is tested (6 pairs for the 4 algorithms), reporting:
+
+- **Δ mean** — difference of means (first minus second).
+- **t-test p** — [Welch's two-sample t-test](https://en.wikipedia.org/wiki/Welch%27s_t-test)
+  (does *not* assume equal variances; robust for unequal seed spread).
+- **MW p** — [Mann–Whitney U test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test)
+  (non-parametric rank-sum; doesn't assume normality — safer for few seeds).
+- **Cohen's d** — standardized effect size (pooled SD); how *large* the
+  difference is, independent of sample size.
+- **Effect** — magnitude label: negligible / small / medium / large.
+- **Sig.** — marker from the Welch p-value.
+
+All tests are **two-sided**. `sig` markers:
+`***` p<0.001 · `**` p<0.01 · `*` p<0.05 · `ns` not significant.
+Effect size: |d|<0.2 negligible · <0.5 small · <0.8 medium · ≥0.8 large.
+
+### Multiple-comparison correction
+Testing all pairs inflates the false-positive rate. The warning line shows a
+**Bonferroni-adjusted α** (`0.05 / number_of_comparisons`); treat a result as
+significant only if its p-value is below that adjusted threshold.
+
+> **⚠ Low-power warning.** With fewer than 5 seeds per algorithm the tests are
+> unreliable — the panel flags this explicitly. Bump **seeds** to ≥ 5
+> (ideally ≥ 10) before drawing conclusions.
+
+### Export
+**⬇ Statistics CSV** dumps, for **all four metrics** at once:
+(a) per-algorithm summary (n, mean, SD, SEM, 95% CI half-width, min, max) and
+(b) full pairwise test results (Welch t/df/p, Mann–Whitney U/p, Cohen's d,
+Hedges g, effect magnitude, significant-at-0.05 flag). Paper-ready.
+
+---
+
+## 7. A fair research workflow
 
 To make claims defensible in a paper, keep everything identical except the
 one thing you're studying:
@@ -115,8 +176,9 @@ one thing you're studying:
    `bintulu_comparison_baseline.csv`, `bintulu_comparison_PER.csv`).
 4. **Aggregate & test.** Load the CSVs and compare the metric of interest
    (final MA20 reward, success rate, avg steps). Because a single run is
-   noisy, prefer the **multi-seed** mode (see below) so you can report
-   **mean ± std** and run significance tests across seeds.
+   noisy, use the **multi-seed** mode (set `seeds ≥ 5`) so you can report
+   **mean ± std** and let the built-in **Statistical Evaluation** panel (§6)
+   run the significance tests across seeds for you.
 
 ### Interpreting the metrics
 
@@ -130,7 +192,7 @@ one thing you're studying:
 
 ---
 
-## 7. Reproducibility notes
+## 8. Reproducibility notes
 
 - The environment is **seeded** so the map/mission stream is deterministic;
   the comparison trains every algorithm on the same seed(s).
@@ -143,7 +205,7 @@ one thing you're studying:
 
 ---
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 - **Page looks stale after an update** — hard refresh (Ctrl/Cmd + Shift + R).
 - **Comparison feels slow** — lower episodes/algo, or reduce the number of
