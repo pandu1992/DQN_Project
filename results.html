@@ -34,8 +34,36 @@
   button.rp-dl { cursor:pointer; font-family:inherit; }
   .rp-dl-primary { background:var(--accent,#4da3ff); color:#04121f; border-color:var(--accent,#4da3ff); font-weight:700; }
   .rp-dl-primary:disabled { opacity:.6; cursor:default; }
+  /* report layout: sticky TOC + body */
+  .report-layout { display:grid; grid-template-columns:230px 1fr; gap:26px; align-items:start; }
+  .toc { position:sticky; top:70px; max-height:calc(100vh - 90px); overflow-y:auto;
+    border:1px solid var(--line); border-radius:10px; padding:12px 12px 14px; background:#0c1526; font-size:12.5px; }
+  .toc-title { font-weight:700; color:#cfe0ff; font-size:12px; text-transform:uppercase;
+    letter-spacing:.5px; margin-bottom:8px; }
+  .toc-link { display:block; color:var(--muted); text-decoration:none; padding:4px 8px;
+    border-radius:6px; border-left:2px solid transparent; line-height:1.35; margin-bottom:1px; }
+  .toc-link:hover { color:var(--ink); background:rgba(77,163,255,.08); }
+  .toc-link.active { color:var(--accent,#4da3ff); background:rgba(77,163,255,.12);
+    border-left-color:var(--accent,#4da3ff); font-weight:600; }
+  .toc-num { color:var(--accent,#4da3ff); font-weight:700; margin-right:2px; }
+  /* cross-reference links */
+  .xref { color:var(--accent,#4da3ff); text-decoration:none; border-bottom:1px dotted rgba(77,163,255,.5);
+    cursor:pointer; }
+  .xref:hover { border-bottom-style:solid; }
+  /* flash highlight when a cross-ref/TOC target is reached */
+  .xref-flash { animation:xrefFlash 1.6s ease-out; border-radius:6px; }
+  @keyframes xrefFlash {
+    0% { background:rgba(255,207,107,.45); box-shadow:0 0 0 6px rgba(255,207,107,.25); }
+    100% { background:transparent; box-shadow:none; }
+  }
+  @media (max-width:900px) {
+    .report-layout { grid-template-columns:1fr; }
+    .toc { position:static; max-height:none; margin-bottom:8px; }
+  }
   /* markdown */
   .md h1 { font-size:24px; margin:22px 0 8px; }
+  .md h2 { scroll-margin-top:70px; }
+  .md h3 { scroll-margin-top:70px; }
   .md h2 { font-size:19px; margin:26px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
   .md h3 { font-size:15px; margin:18px 0 6px; color:#cfe0ff; }
   .md p, .md li { font-size:14px; line-height:1.65; color:var(--ink); text-align:justify; }
@@ -74,7 +102,7 @@
   .admonition-body strong { color:#fff; }
   /* math */
   .math-display { margin:14px 0; overflow-x:auto; text-align:center; position:relative;
-    display:flex; align-items:center; justify-content:center; gap:12px; }
+    display:flex; align-items:center; justify-content:center; gap:12px; scroll-margin-top:80px; }
   .math-display .math-eq { flex:0 1 auto; }
   .eq-num { color:var(--muted); font-size:13px; flex:0 0 auto; min-width:34px; text-align:right; }
   .katex { font-size:1.02em; color:var(--ink); }
@@ -115,7 +143,10 @@
         <a class="rp-dl" href="results/tables/all_tables.xlsx" download>⬇ All tables (Excel)</a>
         <a class="rp-dl" href="results/raw/eval_episodes.csv" download>⬇ Raw eval data (CSV)</a>
       </div>
-      <div class="md" id="reportBody"><p class="loading">Loading report…</p></div>
+      <div class="report-layout">
+        <aside class="toc" id="tocNav"></aside>
+        <div class="md" id="reportBody"><p class="loading">Loading report…</p></div>
+      </div>
     </section>
 
     <!-- TABLES -->
