@@ -1,3 +1,11 @@
 node_modules/
 .DS_Store
 *.log
+
+
+# Python virtual environment for the offline experiment analysis
+experiments/.venv/
+__pycache__/
+*.pyc
+# experiment run log (regenerable)
+experiments/run.log

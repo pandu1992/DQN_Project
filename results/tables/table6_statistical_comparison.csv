@@ -1,0 +1,19 @@
+Comparison,Metric,Test,Statistic (dz),p-value,Adj p (Holm),Effect Size,Interpretation
+DQN vs Double DQN,success_rate,paired Wilcoxon,0.25,0.557,1.000,d_z=0.25 (small); delta=0.19,DQN vs Double DQN: delta=6.50; not significant after Holm (adj p=1.00); effect small.
+DQN vs Dueling DQN,success_rate,paired Wilcoxon,0.35,0.262,1.000,d_z=0.35 (small); delta=0.31,DQN vs Dueling DQN: delta=9.50; not significant after Holm (adj p=1.00); effect small.
+DQN vs Dueling Double DQN,success_rate,paired Wilcoxon,0.17,0.625,1.000,d_z=0.17 (negligible); delta=0.10,DQN vs Dueling Double DQN: delta=4.25; not significant after Holm (adj p=1.00); effect negligible.
+Double DQN vs Dueling DQN,success_rate,paired Wilcoxon,0.08,0.695,1.000,d_z=0.08 (negligible); delta=-0.04,Double DQN vs Dueling DQN: delta=3.00; not significant after Holm (adj p=1.00); effect negligible.
+Double DQN vs Dueling Double DQN,success_rate,paired Wilcoxon,-0.09,1.000,1.000,d_z=-0.09 (negligible); delta=-0.04,Double DQN vs Dueling Double DQN: delta=-2.25; not significant after Holm (adj p=1.00); effect negligible.
+Dueling DQN vs Dueling Double DQN,success_rate,paired Wilcoxon,-0.16,0.557,1.000,d_z=-0.16 (negligible); delta=-0.10,Dueling DQN vs Dueling Double DQN: delta=-5.25; not significant after Holm (adj p=1.00); effect negligible.
+DQN vs Double DQN,mean_reward,paired Wilcoxon,0.28,0.432,1.000,d_z=0.28 (small); delta=0.16,DQN vs Double DQN: delta=14.41; not significant after Holm (adj p=1.00); effect small.
+DQN vs Dueling DQN,mean_reward,paired Wilcoxon,0.33,0.275,1.000,d_z=0.33 (small); delta=0.30,DQN vs Dueling DQN: delta=19.60; not significant after Holm (adj p=1.00); effect small.
+DQN vs Dueling Double DQN,mean_reward,paired Wilcoxon,0.21,0.557,1.000,d_z=0.21 (small); delta=0.10,DQN vs Dueling Double DQN: delta=11.68; not significant after Holm (adj p=1.00); effect small.
+Double DQN vs Dueling DQN,mean_reward,paired Wilcoxon,0.07,0.770,1.000,d_z=0.07 (negligible); delta=-0.06,Double DQN vs Dueling DQN: delta=5.20; not significant after Holm (adj p=1.00); effect negligible.
+Double DQN vs Dueling Double DQN,mean_reward,paired Wilcoxon,-0.05,0.922,1.000,d_z=-0.05 (negligible); delta=-0.02,Double DQN vs Dueling Double DQN: delta=-2.73; not significant after Holm (adj p=1.00); effect negligible.
+Dueling DQN vs Dueling Double DQN,mean_reward,paired Wilcoxon,-0.11,0.625,1.000,d_z=-0.11 (negligible); delta=-0.14,Dueling DQN vs Dueling Double DQN: delta=-7.92; not significant after Holm (adj p=1.00); effect negligible.
+DQN vs Double DQN,optimality_ratio,paired Wilcoxon,0.27,1.000,1.000,d_z=0.27 (small); delta=0.00,DQN vs Double DQN: delta=0.47; not significant after Holm (adj p=1.00); effect small.
+DQN vs Dueling DQN,optimality_ratio,paired Wilcoxon,0.31,0.893,1.000,d_z=0.31 (small); delta=-0.06,DQN vs Dueling DQN: delta=0.50; not significant after Holm (adj p=1.00); effect small.
+DQN vs Dueling Double DQN,optimality_ratio,paired Wilcoxon,-0.18,0.600,1.000,d_z=-0.18 (negligible); delta=-0.20,DQN vs Dueling Double DQN: delta=-0.46; not significant after Holm (adj p=1.00); effect negligible.
+Double DQN vs Dueling DQN,optimality_ratio,paired Wilcoxon,0.25,1.000,1.000,d_z=0.25 (small); delta=-0.04,Double DQN vs Dueling DQN: delta=0.09; not significant after Holm (adj p=1.00); effect small.
+Double DQN vs Dueling Double DQN,optimality_ratio,paired Wilcoxon,-0.52,0.249,1.000,d_z=-0.52 (medium); delta=-0.27,Double DQN vs Dueling Double DQN: delta=-0.87; not significant after Holm (adj p=1.00); effect medium.
+Dueling DQN vs Dueling Double DQN,optimality_ratio,paired Wilcoxon,-0.58,0.138,0.828,d_z=-0.58 (medium); delta=-0.20,Dueling DQN vs Dueling Double DQN: delta=-0.87; not significant after Holm (adj p=0.83); effect medium.

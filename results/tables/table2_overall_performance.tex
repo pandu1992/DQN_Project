@@ -1,0 +1,10 @@
+\begin{tabular}{lllllll}
+\toprule
+Algorithm & Success Rate & Mean Reward & Optimality Ratio & Mean Steps & Route Risk & Interpretation \\
+\midrule
+DQN & 49.8 ± 18.1\% & -18.6 ± 39.0 & 1.587 ± 1.217 & 36.7 ± 8.8 & 0.65 ± 0.18 & Success 49.8\% with a wide 95\% CI (+/-18.1\%), reflecting high run-to-run variance; route optimality 1.59x the Dijkstra optimum. \\
+Double DQN & 43.2 ± 19.3\% & -33.0 ± 40.1 & 1.171 ± 0.280 & 39.9 ± 8.4 & 0.59 ± 0.15 & Success 43.2\% with a wide 95\% CI (+/-19.3\%), reflecting high run-to-run variance; route optimality 1.17x the Dijkstra optimum. \\
+Dueling DQN & 40.2 ± 11.8\% & -38.2 ± 25.0 & 1.074 ± 0.114 & 40.4 ± 4.9 & 0.52 ± 0.11 & Success 40.2\% with a wide 95\% CI (+/-11.8\%), reflecting high run-to-run variance; route optimality 1.07x the Dijkstra optimum. \\
+Dueling Double DQN & 45.5 ± 17.9\% & -30.3 ± 38.0 & 1.939 ± 1.051 & 40.0 ± 8.8 & 0.83 ± 0.42 & Success 45.5\% with a wide 95\% CI (+/-17.9\%), reflecting high run-to-run variance; route optimality 1.94x the Dijkstra optimum. \\
+\bottomrule
+\end{tabular}

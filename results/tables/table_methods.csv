@@ -1,0 +1,11 @@
+Analysis,Formula / Method,Purpose,Assumption,Interpretation
+Descriptive CI,"CI95 = xbar +/- t_{0.975,n-1} * s/sqrt(n)",Uncertainty of per-config mean over seeds,Approx. normal mean; n=10,Half-widths are wide (10-22% for success) -> low precision from 10 seeds.
+Bootstrap CI,"percentile CI from 10,000 resamples of the seed means",Distribution-free CI cross-check,i.i.d. seeds,"Bootstrap and t-CI agree, supporting robustness of the interval estimates."
+Normality,Shapiro-Wilk W on each config's 10 seed-means,Test parametric assumption,"n>=3, non-constant",success/reward ~90% normal; optimality_ratio/excess_cost non-normal -> non-parametric primary.
+Variance homogeneity,"Levene (Brown-Forsythe, median-centred)",Test equal variance across algorithms,independent groups,All metrics homoscedastic (p>0.05).
+Omnibus (parametric),one-way repeated-measures ANOVA; partial eta^2 = SS_treat/(SS_treat+SS_err),Overall algorithm effect (block=seed),"normality, sphericity",No success/reward effect; optimality_ratio effect exists in factorial model.
+Omnibus (non-parametric),Friedman chi^2 = 12/(nk(k+1)) sum R_j^2 - 3n(k+1); Kendall W,"Overall algorithm effect, rank-based",repeated measures,Confirms no rank difference in success/reward across algorithms.
+Factorial ANOVA,"OLS y ~ algo*per*noisy + seed, Type-II SS; partial eta^2",Main effects + interactions,balanced design (10/cell),Seed dominates (eta^2~0.20); Noisy & Algo x Noisy significant for optimality_ratio.
+Pairwise (paired),Wilcoxon signed-rank (exact); paired t as secondary,Localise differences between algorithm pairs,"paired, matched seeds",No pair survives Holm correction on any metric.
+Effect size (paired),Cohen's d_z = mean(d)/sd(d); Cliff's delta; rank-biserial r,Magnitude independent of n,-,Effects are small/negligible on success/reward; up to medium for Noisy on optimality_ratio.
+Correction,Holm: p_(i)*(m-i+1) monotone; BH: p_(i)*m/i,Control FWER (Holm) / FDR (BH),family of tests,Holm applied within each metric's 6 pairwise / 3 enhancement contrasts.

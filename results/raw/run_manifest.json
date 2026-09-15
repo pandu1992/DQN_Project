@@ -1,0 +1,1291 @@
+{
+  "experiment_id": "bintulu_dqn_q1_factorial_v2",
+  "started": "2026-09-15T06:47:49.541Z",
+  "cells": [
+    {
+      "config_id": "DQN",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 9632
+    },
+    {
+      "config_id": "DQN",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 13348
+    },
+    {
+      "config_id": "DQN",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 14420
+    },
+    {
+      "config_id": "DQN",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12825
+    },
+    {
+      "config_id": "DQN",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12769
+    },
+    {
+      "config_id": "DQN",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22652
+    },
+    {
+      "config_id": "DQN",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 17706
+    },
+    {
+      "config_id": "DQN",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 10248
+    },
+    {
+      "config_id": "DQN",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12560
+    },
+    {
+      "config_id": "DQN",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19795
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 11377
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 11977
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12361
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12860
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12347
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 20115
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 18601
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12117
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 15232
+    },
+    {
+      "config_id": "DQN+PER",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19776
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 11447
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 9362
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19017
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 11935
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12225
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12803
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21199
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 10118
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 15146
+    },
+    {
+      "config_id": "DQN+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 15397
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 10541
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 11087
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19243
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 10367
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12820
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12727
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22413
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 10154
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 13781
+    },
+    {
+      "config_id": "DQN+PER+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 13353
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12365
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12745
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 18541
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 17452
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 20368
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 18032
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22705
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 14437
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 17466
+    },
+    {
+      "config_id": "DoubleDQN",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 20691
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12199
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 13592
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 15222
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 13833
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12430
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 17733
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21738
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 20957
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 16858
+    },
+    {
+      "config_id": "DoubleDQN+PER",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 17462
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 11845
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 10884
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 18270
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 14081
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 17134
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 24996
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 25819
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 13256
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22154
+    },
+    {
+      "config_id": "DoubleDQN+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19567
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 14220
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 12783
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 26446
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 13858
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 16544
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 20581
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22689
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 14465
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19699
+    },
+    {
+      "config_id": "DoubleDQN+PER+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 14777
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 25836
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 30710
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 26324
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 20841
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 16839
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 31932
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 30593
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22203
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 27829
+    },
+    {
+      "config_id": "DuelingDQN",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 26380
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 37304
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 24797
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 18425
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19096
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 17690
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 29950
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22637
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 25332
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 24721
+    },
+    {
+      "config_id": "DuelingDQN+PER",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19671
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 23723
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 15680
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 36780
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22225
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21554
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21094
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 36953
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22130
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 18314
+    },
+    {
+      "config_id": "DuelingDQN+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 25679
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21458
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19952
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 37429
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 23557
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21352
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19316
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 26503
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 19041
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22961
+    },
+    {
+      "config_id": "DuelingDQN+PER+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 23755
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 43731
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21973
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 29562
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 29262
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 22858
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 35247
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 37055
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 35659
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 35391
+    },
+    {
+      "config_id": "DuelingDoubleDQN",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 32562
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 44299
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 26711
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 24516
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 23526
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 24954
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 36694
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 30191
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 25887
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 39496
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 25666
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 34306
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 21405
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 44068
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 31684
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 26045
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 36941
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 44093
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 31419
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 23204
+    },
+    {
+      "config_id": "DuelingDoubleDQN+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 31676
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 0,
+      "env_seed": 42,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 30754
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 1,
+      "env_seed": 43,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 23016
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 2,
+      "env_seed": 44,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 27014
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 3,
+      "env_seed": 45,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 32145
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 4,
+      "env_seed": 46,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 24117
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 5,
+      "env_seed": 47,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 27100
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 6,
+      "env_seed": 48,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 29116
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 7,
+      "env_seed": 49,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 25847
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 8,
+      "env_seed": 50,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 26768
+    },
+    {
+      "config_id": "DuelingDoubleDQN+PER+Noisy",
+      "seed": 9,
+      "env_seed": 51,
+      "trainEps": 150,
+      "evalEps": 40,
+      "ms": 29075
+    }
+  ],
+  "nan_inf_flags": [],
+  "finished": "2026-09-15T07:52:51.040Z",
+  "total_cells": 160,
+  "eval_rows": 6400,
+  "train_rows": 24000
+}
