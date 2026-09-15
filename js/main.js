@@ -1,6 +1,13 @@
 /* ============================================================
  * BINTULU PORT — Web DQN Simulation
  * main.js — rendering, training loop, UI wiring
+ *
+ * Features:
+ *   - Real-time DQN training over the Bintulu-style channel map
+ *   - Waypoint / route visit HEATMAP overlay (RouteHeatmap-style)
+ *   - CSV benchmark export of per-episode metrics (Sprint 7.3/7.4)
+ *   - North (L02) vs South (L08) per-lane comparison stats
+ *   - Representative episode REPLAY (best / worst reward)
  * ============================================================ */
 
 (function () {
@@ -21,6 +28,12 @@
   const speedSlider = $("speedSlider");
   const speedLabel = $("speedLabel");
 
+  // feature controls (may be null until index.html adds them)
+  const btnHeatmap = $("btnHeatmap");
+  const btnExport = $("btnExport");
+  const btnReplayBest = $("btnReplayBest");
+  const btnReplayWorst = $("btnReplayWorst");
+
   // ---------- State ----------
   let env, agent;
   let running = false;
@@ -31,6 +44,21 @@
   let obs, lastQ = [0, 0, 0], lastAction = -1;
   let animFrame = null;
 
+  // feature state
+  let showHeatmap = false;
+  let visitCounts = {};     // waypointId -> visits
+  let maxVisit = 1;
+  let episodeRecords = [];  // per-episode benchmark rows (Sprint 7.3/7.4)
+  let laneStats = {};       // lane -> {n, success, reward, steps}
+  let bestEpisode = null;   // {reward, trajectory, start, goal, lane}
+  let worstEpisode = null;
+  let replay = null;        // {trajectory, index, label} while replaying
+
+  // current-episode trajectory accumulator
+  let curTrajectory = [];
+  let curActionCounts = [0, 0, 0];
+  let curInvalid = 0;
+
   const TOTAL_STEPS = 50000;
 
   function init() {
@@ -39,13 +67,36 @@
     episode = 0;
     rewardHistory = [];
     successHistory = [];
+    visitCounts = {};
+    maxVisit = 1;
+    episodeRecords = [];
+    laneStats = {};
+    bestEpisode = null;
+    worstEpisode = null;
+    replay = null;
+    curTrajectory = [];
+    curActionCounts = [0, 0, 0];
+    curInvalid = 0;
     obs = env.reset();
     lastQ = agent.qValues(obs);
     lastAction = -1;
+    startNewEpisodeTracking();
     updateMissionPanel();
     render();
     updateMetrics();
+    updateFeaturePanels();
     drawChart();
+  }
+
+  function startNewEpisodeTracking() {
+    curTrajectory = [env.currentWp];
+    curActionCounts = [0, 0, 0];
+    curInvalid = 0;
+  }
+
+  function recordVisit(wpId) {
+    visitCounts[wpId] = (visitCounts[wpId] || 0) + 1;
+    if (visitCounts[wpId] > maxVisit) maxVisit = visitCounts[wpId];
   }
 
   // ---------- One environment step ----------
@@ -53,18 +104,28 @@
     const action = agent.act(obs, greedyMode);
     lastAction = action;
     lastQ = agent.qValues(obs);
+    curActionCounts[action]++;
     const { obs: nextObs, reward, terminated, truncated, info } = env.step(action);
+    if (info.invalid) curInvalid++;
     if (!greedyMode) {
       agent.observe(obs, action, reward, nextObs, terminated);
     }
     obs = nextObs;
 
+    // track visit + trajectory
+    recordVisit(env.currentWp);
+    curTrajectory.push(env.currentWp);
+
     if (terminated || truncated) {
       episode++;
-      rewardHistory.push(env.totalReward);
+      const totalR = env.totalReward;
+      rewardHistory.push(totalR);
       successHistory.push(info.reachedGoal ? 1 : 0);
       if (rewardHistory.length > 5000) rewardHistory.shift();
       if (successHistory.length > 5000) successHistory.shift();
+
+      finalizeEpisode(totalR, info);
+
       // greedy demo runs a single episode then stops
       if (greedyMode) {
         greedyMode = false;
@@ -72,13 +133,74 @@
         setButtons();
       }
       obs = env.reset();
+      startNewEpisodeTracking();
       updateMissionPanel();
     }
+  }
+
+  function finalizeEpisode(totalR, info) {
+    const lane = env.states[env.startWp].lane;
+    const steps = curTrajectory.length - 1;
+    const success = info.reachedGoal ? 1 : 0;
+
+    // per-episode record (Sprint 7.3/7.4 benchmark row)
+    episodeRecords.push({
+      episode,
+      lane,
+      start: env.startWp,
+      goal: env.goalWp,
+      success,
+      reward: +totalR.toFixed(3),
+      steps,
+      wait: curActionCounts[0],
+      forward: curActionCounts[1],
+      backward: curActionCounts[2],
+      invalid: curInvalid,
+      plannedDistance: +env.plannedDistance.toFixed(2),
+      plannedCost: +env.plannedCost.toFixed(2),
+      epsilon: +agent.epsilon.toFixed(4),
+    });
+    if (episodeRecords.length > 20000) episodeRecords.shift();
+
+    // per-lane aggregate
+    if (!laneStats[lane]) laneStats[lane] = { n: 0, success: 0, reward: 0, steps: 0 };
+    const ls = laneStats[lane];
+    ls.n++;
+    ls.success += success;
+    ls.reward += totalR;
+    ls.steps += steps;
+
+    // best / worst episode by reward (store trajectory for replay)
+    const snapshot = {
+      episode,
+      reward: totalR,
+      trajectory: curTrajectory.slice(),
+      planned: env.plannedPath.slice(),
+      start: env.startWp,
+      goal: env.goalWp,
+      lane,
+      success,
+    };
+    if (!bestEpisode || totalR > bestEpisode.reward) bestEpisode = snapshot;
+    if (!worstEpisode || totalR < worstEpisode.reward) worstEpisode = snapshot;
   }
 
   // ---------- Main loop ----------
   function loop() {
     if (!running) return;
+
+    if (replay) {
+      // replay mode: advance one trajectory node per frame (visual)
+      replay.index++;
+      if (replay.index >= replay.trajectory.length) {
+        running = false;
+        setButtons();
+      }
+      render();
+      animFrame = requestAnimationFrame(loop);
+      return;
+    }
+
     const stepsPerFrame = parseInt(speedSlider.value, 10);
     for (let i = 0; i < stepsPerFrame; i++) {
       stepOnce();
@@ -86,6 +208,7 @@
     }
     render();
     updateMetrics();
+    updateFeaturePanels();
     drawChart();
     animFrame = requestAnimationFrame(loop);
   }
@@ -95,6 +218,27 @@
   // ============================================================
   function laneColor(lane) {
     return { L02: "#2f6db8", L08: "#8a5cc0", L01: "#3aa06a" }[lane] || "#456";
+  }
+
+  // YlOrRd-ish ramp for heatmap intensity t in [0,1]
+  function heatColor(t, alpha) {
+    t = Math.max(0, Math.min(1, t));
+    const stops = [
+      [255, 255, 178],
+      [254, 204, 92],
+      [253, 141, 60],
+      [240, 59, 32],
+      [189, 0, 38],
+    ];
+    const x = t * (stops.length - 1);
+    const i = Math.floor(x);
+    const f = x - i;
+    const a = stops[i];
+    const b = stops[Math.min(i + 1, stops.length - 1)];
+    const r = Math.round(a[0] + (b[0] - a[0]) * f);
+    const g = Math.round(a[1] + (b[1] - a[1]) * f);
+    const bl = Math.round(a[2] + (b[2] - a[2]) * f);
+    return `rgba(${r},${g},${bl},${alpha})`;
   }
 
   function render() {
@@ -139,11 +283,32 @@
     }
     ctx.setLineDash([]);
 
+    // ---- HEATMAP overlay (waypoint visit frequency) ----
+    if (showHeatmap) {
+      for (const id of Object.keys(env.states)) {
+        const s = env.states[id];
+        const v = visitCounts[id] || 0;
+        if (v <= 0) continue;
+        const t = v / maxVisit;
+        const radius = 8 + t * 20;
+        ctx.fillStyle = heatColor(t, 0.55);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
     // ---- planned path ----
     drawPath(env.plannedPath, "#37d67a", 3, 1);
 
-    // ---- actual path (recent trail) ----
-    drawPath(env.actualPath, "#ff9f43", 2.5, 0.9);
+    // ---- actual / replay path ----
+    if (replay) {
+      const shown = replay.trajectory.slice(0, replay.index + 1);
+      drawPath(replay.planned, "#37d67a", 3, 0.7);
+      drawPath(shown, "#ff9f43", 2.6, 0.95);
+    } else {
+      drawPath(env.actualPath, "#ff9f43", 2.5, 0.9);
+    }
 
     // ---- waypoints ----
     for (const id of Object.keys(env.states)) {
@@ -165,12 +330,20 @@
       ctx.fill();
     }
 
-    // ---- start & goal markers ----
-    markNode(env.startWp, "#37d67a", "S");
-    markNode(env.goalWp, "#ffd54a", "G");
+    // ---- start & goal markers (use replay's mission if replaying) ----
+    const startId = replay ? replay.start : env.startWp;
+    const goalId = replay ? replay.goal : env.goalWp;
+    markNode(startId, "#37d67a", "S");
+    markNode(goalId, "#ffd54a", "G");
 
     // ---- ship ----
-    const sh = env.states[env.currentWp];
+    let shipId;
+    if (replay) {
+      shipId = replay.trajectory[Math.min(replay.index, replay.trajectory.length - 1)];
+    } else {
+      shipId = env.currentWp;
+    }
+    const sh = env.states[shipId];
     if (sh) {
       const ang = (sh.heading || 0) * (Math.PI / 180);
       ctx.save();
@@ -188,6 +361,37 @@
       ctx.fill();
       ctx.stroke();
       ctx.restore();
+    }
+
+    // ---- replay banner ----
+    if (replay) {
+      ctx.fillStyle = "rgba(4,18,31,.75)";
+      ctx.fillRect(10, 10, 260, 30);
+      ctx.fillStyle = "#ffd54a";
+      ctx.font = "bold 13px sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(
+        `REPLAY: ${replay.label} · reward ${replay.reward.toFixed(1)}`,
+        20, 26
+      );
+    }
+
+    // ---- heatmap legend ----
+    if (showHeatmap && !replay) {
+      const lx = MAP_W - 150, ly = 16, lw = 120, lh = 10;
+      for (let i = 0; i < lw; i++) {
+        mapCtx.fillStyle = heatColor(i / lw, 0.9);
+        mapCtx.fillRect(lx + i, ly, 1, lh);
+      }
+      mapCtx.fillStyle = "#cfe0ff";
+      mapCtx.font = "10px sans-serif";
+      mapCtx.textAlign = "left";
+      mapCtx.fillText("low", lx, ly + 22);
+      mapCtx.textAlign = "right";
+      mapCtx.fillText(`high (max ${maxVisit})`, lx + lw, ly + 22);
+      mapCtx.textAlign = "center";
+      mapCtx.fillText("waypoint visits", lx + lw / 2, ly - 4);
     }
   }
 
@@ -252,7 +456,6 @@
     if (min === max) { min -= 1; max += 1; }
     const pad = 26;
 
-    // zero line
     const yFor = (v) => H - pad - ((v - min) / (max - min)) * (H - pad * 2);
     ctx.strokeStyle = "rgba(138,160,198,.25)";
     ctx.lineWidth = 1;
@@ -291,7 +494,6 @@
     }
     ctx.stroke();
 
-    // axis labels
     ctx.fillStyle = "#8aa0c6";
     ctx.font = "10px sans-serif";
     ctx.textAlign = "left";
@@ -322,12 +524,11 @@
       $("mSucc").textContent = rate.toFixed(0) + "%";
     }
 
-    // Q-bars
     const maxAbs = Math.max(1, ...lastQ.map((q) => Math.abs(q)));
     for (let a = 0; a < 3; a++) {
       const bar = $("q" + a);
       const val = lastQ[a] || 0;
-      const w = (Math.abs(val) / maxAbs) * 50; // % of half-width
+      const w = (Math.abs(val) / maxAbs) * 50;
       bar.style.width = w + "%";
       bar.style.left = val >= 0 ? "50%" : 50 - w + "%";
       bar.style.background = a === lastAction ? "#37d67a" : "#4da3ff";
@@ -345,15 +546,118 @@
   }
 
   // ============================================================
+  // FEATURE PANELS: lane comparison + replay availability
+  // ============================================================
+  function updateFeaturePanels() {
+    // North (L02) vs South (L08) comparison table
+    const laneRow = (lane) => {
+      const ls = laneStats[lane];
+      if (!ls || ls.n === 0) return { succ: "—", reward: "—", steps: "—", n: 0 };
+      return {
+        succ: ((100 * ls.success) / ls.n).toFixed(0) + "%",
+        reward: (ls.reward / ls.n).toFixed(1),
+        steps: (ls.steps / ls.n).toFixed(1),
+        n: ls.n,
+      };
+    };
+    const north = laneRow("L02");
+    const south = laneRow("L08");
+    if ($("cmpNorthN")) {
+      $("cmpNorthN").textContent = north.n;
+      $("cmpNorthSucc").textContent = north.succ;
+      $("cmpNorthReward").textContent = north.reward;
+      $("cmpNorthSteps").textContent = north.steps;
+      $("cmpSouthN").textContent = south.n;
+      $("cmpSouthSucc").textContent = south.succ;
+      $("cmpSouthReward").textContent = south.reward;
+      $("cmpSouthSteps").textContent = south.steps;
+    }
+
+    // replay buttons + labels
+    if (btnReplayBest) {
+      btnReplayBest.disabled = !bestEpisode || running;
+      btnReplayWorst.disabled = !worstEpisode || running;
+      if ($("bestLabel"))
+        $("bestLabel").textContent = bestEpisode
+          ? `#${bestEpisode.episode} · ${bestEpisode.lane} · r=${bestEpisode.reward.toFixed(1)}`
+          : "—";
+      if ($("worstLabel"))
+        $("worstLabel").textContent = worstEpisode
+          ? `#${worstEpisode.episode} · ${worstEpisode.lane} · r=${worstEpisode.reward.toFixed(1)}`
+          : "—";
+    }
+    if (btnExport) btnExport.disabled = episodeRecords.length === 0;
+  }
+
+  // ============================================================
+  // CSV EXPORT (Sprint 7.3 / 7.4 benchmark dump)
+  // ============================================================
+  function exportCSV() {
+    if (episodeRecords.length === 0) return;
+    const cols = [
+      "episode", "lane", "start", "goal", "success", "reward", "steps",
+      "wait", "forward", "backward", "invalid",
+      "plannedDistance", "plannedCost", "epsilon",
+    ];
+    const lines = [cols.join(",")];
+    for (const r of episodeRecords) {
+      lines.push(cols.map((c) => r[c]).join(","));
+    }
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bintulu_dqn_benchmark_${episodeRecords.length}ep.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ============================================================
+  // REPLAY (best / worst representative episode)
+  // ============================================================
+  function startReplay(which) {
+    const snap = which === "best" ? bestEpisode : worstEpisode;
+    if (!snap) return;
+    if (animFrame) cancelAnimationFrame(animFrame);
+    greedyMode = false;
+    replay = {
+      trajectory: snap.trajectory,
+      planned: snap.planned,
+      start: snap.start,
+      goal: snap.goal,
+      reward: snap.reward,
+      label: which === "best" ? "BEST reward" : "WORST reward",
+      index: 0,
+    };
+    running = true;
+    setButtons();
+    animFrame = requestAnimationFrame(loop);
+  }
+
+  // ============================================================
   // CONTROLS
   // ============================================================
   function setButtons() {
     btnTrain.disabled = running;
     btnPause.disabled = !running;
+    if (btnReplayBest) {
+      btnReplayBest.disabled = !bestEpisode || running;
+      btnReplayWorst.disabled = !worstEpisode || running;
+    }
+  }
+
+  function stopReplayIfAny() {
+    if (replay) {
+      replay = null;
+      running = false;
+    }
   }
 
   btnTrain.addEventListener("click", () => {
     if (running) return;
+    stopReplayIfAny();
     greedyMode = false;
     running = true;
     setButtons();
@@ -362,8 +666,10 @@
 
   btnPause.addEventListener("click", () => {
     running = false;
+    replay = null;
     setButtons();
     if (animFrame) cancelAnimationFrame(animFrame);
+    render();
   });
 
   btnReset.addEventListener("click", () => {
@@ -374,11 +680,12 @@
   });
 
   btnGreedy.addEventListener("click", () => {
-    // run one deterministic (greedy) episode using the learned policy
     if (animFrame) cancelAnimationFrame(animFrame);
+    stopReplayIfAny();
     greedyMode = true;
     running = true;
     obs = env.reset();
+    startNewEpisodeTracking();
     updateMissionPanel();
     setButtons();
     animFrame = requestAnimationFrame(loop);
@@ -388,6 +695,31 @@
     speedLabel.textContent = speedSlider.value + "×";
   });
 
+  if (btnHeatmap) {
+    btnHeatmap.addEventListener("click", () => {
+      showHeatmap = !showHeatmap;
+      btnHeatmap.classList.toggle("active", showHeatmap);
+      btnHeatmap.textContent = showHeatmap ? "🔥 Heatmap: ON" : "🔥 Heatmap: OFF";
+      render();
+    });
+  }
+  if (btnExport) btnExport.addEventListener("click", exportCSV);
+  if (btnReplayBest) btnReplayBest.addEventListener("click", () => startReplay("best"));
+  if (btnReplayWorst) btnReplayWorst.addEventListener("click", () => startReplay("worst"));
+
   // ---------- boot ----------
   init();
+
+  // expose a tiny hook for headless testing
+  window.__bintulu = {
+    getState: () => ({
+      episode,
+      records: episodeRecords.length,
+      lanes: Object.keys(laneStats),
+      best: bestEpisode ? bestEpisode.reward : null,
+      worst: worstEpisode ? worstEpisode.reward : null,
+      maxVisit,
+    }),
+    exportCSV,
+  };
 })();

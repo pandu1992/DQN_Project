@@ -27,6 +27,22 @@ Simply open `index.html` in any modern browser. That's it.
 - **Q-values** — live bar display of Q(s,·) for WAIT / FORWARD / BACKWARD and
   the chosen action.
 
+### Analysis features (ported from the notebook)
+
+- **🔥 Waypoint visit heatmap** — toggle an overlay coloring each waypoint by
+  how often the agent has visited it (YlOrRd ramp), like the notebook's
+  `RouteHeatmap`. Reveals channel bottlenecks.
+- **⬇ CSV benchmark export** — download per-episode metrics (lane, start,
+  goal, success, reward, steps, action counts, invalid moves, planned
+  distance/cost, epsilon) as a CSV, mirroring the Sprint 7.3 / 7.4 benchmark
+  dumps.
+- **North (L02) vs South (L08) comparison** — a live table aggregating
+  per-lane episode count, success rate, average reward, and average steps —
+  the head-to-head channel analysis from the notebook.
+- **🏆 / 💥 Representative episode replay** — the best and worst episodes (by
+  reward) are recorded with their trajectories; replay them on the map to
+  inspect optimal vs failed navigation, like the notebook's episode animator.
+
 ## How it maps to the research notebook
 
 | Notebook sprint | Web module |

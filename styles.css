@@ -105,6 +105,7 @@ canvas {
 .btn.primary { background: var(--accent); border-color: var(--accent); color: #04121f; }
 .btn.danger { border-color: #52304a; }
 .btn.danger:hover { border-color: var(--red); }
+.btn.active { background: rgba(255,159,67,.18); border-color: var(--actual); color: var(--actual); }
 #btnGreedy { grid-column: span 2; }
 
 .slider-row { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
@@ -115,6 +116,16 @@ canvas {
 .metrics td { padding: 5px 6px; border-bottom: 1px solid rgba(34,50,82,.55); }
 .metrics td:first-child { color: var(--muted); }
 .metrics td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.metrics.cmp th {
+  font-size: 11px; color: var(--muted); font-weight: 600;
+  text-align: right; padding: 4px 6px; border-bottom: 1px solid var(--line);
+}
+.metrics.cmp th:first-child { text-align: left; }
+.metrics.cmp td { text-align: right; }
+.metrics.cmp td:first-child { text-align: left; color: var(--muted); }
+.metrics.cmp td:nth-child(2) { color: #7fb2ff; }
+.metrics.cmp td:nth-child(3) { color: #c39be6; }
 
 .qbars { display: grid; gap: 8px; margin: 4px 0 6px; }
 .qbar-row { display: grid; grid-template-columns: 74px 1fr 52px; align-items: center; gap: 8px; font-size: 12px; }
