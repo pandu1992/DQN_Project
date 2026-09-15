@@ -399,13 +399,21 @@ ranges from 0% (seed 5, a training collapse) to 75% (seed 8) success.
 
 ## 17. Limitations
 
-- **Environment scope.** Metrics that require physics/sensing/comms are **not
-  implemented** and were not fabricated: observation/state **noise**,
-  communication **packet-error rate**, **collision** rate, **docking accuracy**,
-  **cross-track error**, **IALA compliance**, physical **travel time**.
-  Consequently the protocol's Scenario B/C, and the safety/efficiency trade-offs,
-  are out of scope. These define the **Option-2 extension** (add a physical /
-  sensing / comms layer, then re-run this exact pipeline).
+- **Environment scope (at the time of this study).** Metrics that require
+  physics/sensing/comms were **not implemented in `VesselEnvV2`** and were not
+  fabricated here: observation/state **noise**, communication **packet-error
+  rate**, **collision** rate, **docking accuracy**, **cross-track error**,
+  **IALA compliance**, physical **travel time**. Consequently the protocol's
+  Scenario B/C and the safety/efficiency trade-offs were out of scope for *this*
+  study.
+  **Update — these are now implemented** as the Option-2 extension
+  `js/environmentV3.js` (`VesselEnvV3`), which adds a real continuous-kinematics
+  dynamics layer plus a sensing/comms model with configurable `noiseStd` and
+  `packetErrorRate`; all six mechanisms are genuinely measured and validated
+  (see `results/reports/V3_EXTENSION.md`). The results in *this* report were
+  produced on `VesselEnvV2` and are **not** revised by V3; a separate follow-up
+  **Algorithm × Noise × Packet-Error** factorial study can now be run on V3 with
+  this same statistical pipeline.
 - **Environment substitution.** Results pertain to `VesselEnvV2` (a graph-
   navigation MDP built on the project's real graph), not the saturated deployed
   `VesselEnv`, which cannot support comparative statistics.
