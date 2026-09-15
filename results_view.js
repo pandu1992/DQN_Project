@@ -61,9 +61,40 @@
     s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
     return s;
   }
+  // ---------- cross-reference + TOC state ----------
+  function slugify(s) {
+    return s.toLowerCase()
+      .replace(/[^\w\s-]/g, "")   // drop punctuation
+      .trim().replace(/\s+/g, "-").slice(0, 60);
+  }
   let eqCounter = 0;
-  function renderMarkdown(md) {
+  let tocEntries = [];      // {id, level, text, num} for the report TOC
+  let collectToc = false;   // only collect for the main report render
+
+  // Turn "Eq. (3)", "Equation (3)", "Section 5", "§5", "Figure 8", "Table 6"
+  // into clickable cross-references. Called on already-inlined HTML fragments.
+  function linkCrossRefs(html) {
+    // equations -> same-tab anchor #eq-N
+    html = html.replace(/\b(Eq(?:uation)?\.?)\s*\((\d+)\)/g,
+      (m, kw, n) => `<a class="xref xref-eq" href="#eq-${n}" data-eq="${n}">${kw} (${n})</a>`);
+    // sections -> #sec-... (resolved to a heading id at click time by number)
+    html = html.replace(/\b(Section)\s+(\d+)\b/g,
+      (m, kw, n) => `<a class="xref xref-sec" data-sec="${n}">${kw} ${n}</a>`);
+    html = html.replace(/§\s*(\d+)\b/g,
+      (m, n) => `<a class="xref xref-sec" data-sec="${n}">§${n}</a>`);
+    // figures -> switch to Figures tab + scroll
+    html = html.replace(/\b(Figure|Fig\.?)\s+(\d+)/g,
+      (m, kw, n) => `<a class="xref xref-fig" data-fig="${n}">${kw} ${n}</a>`);
+    // tables -> switch to Tables tab + scroll
+    html = html.replace(/\b(Table)\s+(\d+)/g,
+      (m, kw, n) => `<a class="xref xref-tbl" data-tbl="${n}">${kw} ${n}</a>`);
+    return html;
+  }
+
+  function renderMarkdown(md, opts) {
     eqCounter = 0; // equation numbers restart per document
+    if (opts && opts.toc) { collectToc = true; tocEntries = []; }
+    else collectToc = false;
     md = protectMath(md.replace(/\r/g, ""));
     const lines = md.split("\n");
     let html = "", i = 0;
@@ -123,7 +154,14 @@
       if (/^#{1,6}\s/.test(line)) {
         flushList();
         const lvl = line.match(/^#+/)[0].length;
-        html += `<h${lvl}>${inlineMd(line.replace(/^#+\s/, ""))}</h${lvl}>`;
+        const rawText = line.replace(/^#+\s/, "");
+        const id = "sec-" + slugify(rawText);
+        // collect h2 (and their number if "N. Title") for the table of contents
+        if (collectToc && (lvl === 2)) {
+          const numMatch = rawText.match(/^(\d+)\.\s+(.*)$/);
+          tocEntries.push({ id, level: lvl, text: rawText, num: numMatch ? numMatch[1] : null });
+        }
+        html += `<h${lvl} id="${id}">${inlineMd(rawText)}</h${lvl}>`;
       } else if (/^\s*>\s?/.test(line)) {
         flushList();
         // merge consecutive blockquote lines into a single block
@@ -161,6 +199,8 @@
       }
     }
     flushList(); flushTable();
+    // add cross-reference links BEFORE restoring math (so KaTeX HTML is untouched)
+    html = linkCrossRefs(html);
     return restoreMath(html);
   }
 
@@ -240,13 +280,32 @@
     document.getElementById(elId).innerHTML = renderMarkdown(md);
   }
 
+  // build the clickable table of contents from the collected h2 entries
+  function buildToc() {
+    const nav = document.getElementById("tocNav");
+    if (!nav) return;
+    if (!tocEntries.length) { nav.innerHTML = ""; return; }
+    nav.innerHTML = '<div class="toc-title">Contents</div>' +
+      tocEntries.map((e) => {
+        const label = e.num ? `<span class="toc-num">${e.num}.</span> ${esc(e.text.replace(/^\d+\.\s+/, ""))}`
+                            : esc(e.text);
+        return `<a class="toc-link" href="#${e.id}" data-target="${e.id}">${label}</a>`;
+      }).join("");
+  }
+
   // ---------- loaders ----------
   async function loadReport() {
     try {
       const md = await fetchText("results/reports/Q1_experimental_report.md");
       mdCache.report = md;
-      renderMdInto("reportBody", md);
-      if (!katexReady) whenKatexReady(() => renderMdInto("reportBody", mdCache.report));
+      document.getElementById("reportBody").innerHTML = renderMarkdown(md, { toc: true });
+      buildToc();
+      if (!katexReady) whenKatexReady(() => {
+        document.getElementById("reportBody").innerHTML = renderMarkdown(mdCache.report, { toc: true });
+        buildToc();
+        setupScrollSpy();
+      });
+      setupScrollSpy();
     } catch (e) {
       document.getElementById("reportBody").innerHTML =
         `<p class='loading'>Could not load report (${e.message}).</p>`;
@@ -275,6 +334,8 @@
     for (const [file, title] of TABLES) {
       const block = document.createElement("div");
       block.className = "csv-block";
+      const tnum = (file.match(/table(\d+)/) || [])[1];
+      if (tnum) block.id = "table-" + tnum;
       block.innerHTML = `<div class="csv-title">${title}</div>
         <div class="csv-desc"><a class="rp-dl" href="results/tables/${file}.csv" download>⬇ CSV</a>
         <a class="rp-dl" href="results/tables/${file}.tex" download>⬇ LaTeX</a></div>
@@ -302,6 +363,8 @@
     for (const fig of FIGURES) {
       const card = document.createElement("div");
       card.className = "fig-card";
+      const fnum = (fig.match(/^fig(\d+)/) || [])[1];
+      if (fnum) card.id = "figure-" + fnum;
       const cap = captions[fig] || "";
       card.innerHTML =
         `<img loading="lazy" src="results/figures/${fig}.png" alt="${fig}" />
@@ -439,6 +502,69 @@ ${reportHtml}
     const b = e.target.closest(".rp-tab");
     if (b) activate(b.dataset.tab);
   });
+
+  // ---------- navigation: smooth scroll + flash highlight ----------
+  function scrollToEl(el) {
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("xref-flash");
+    setTimeout(() => el.classList.remove("xref-flash"), 1600);
+  }
+  function scrollToId(id) { scrollToEl(document.getElementById(id)); }
+
+  function sectionIdByNumber(n) {
+    const e = tocEntries.find((t) => t.num === String(n));
+    return e ? e.id : null;
+  }
+
+  // TOC clicks
+  document.getElementById("tocNav").addEventListener("click", (e) => {
+    const a = e.target.closest(".toc-link");
+    if (!a) return;
+    e.preventDefault();
+    if (!loaded.report) activate("report");
+    scrollToId(a.dataset.target);
+  });
+
+  // Cross-reference clicks (delegated across the whole dashboard)
+  document.querySelector(".rp-wrap").addEventListener("click", (e) => {
+    const a = e.target.closest(".xref");
+    if (!a) return;
+    e.preventDefault();
+    if (a.dataset.eq) {                       // equation -> report tab
+      activate("report"); scrollToId("eq-" + a.dataset.eq);
+    } else if (a.dataset.sec) {               // section number -> report heading
+      activate("report");
+      const id = sectionIdByNumber(a.dataset.sec);
+      if (id) scrollToId(id);
+    } else if (a.dataset.fig) {               // figure -> figures tab
+      activate("figures");
+      setTimeout(() => scrollToId("figure-" + a.dataset.fig), 350);
+    } else if (a.dataset.tbl) {               // table -> tables tab
+      activate("tables");
+      setTimeout(() => scrollToId("table-" + a.dataset.tbl), 350);
+    }
+  });
+
+  // ---------- scroll spy: highlight the active TOC entry ----------
+  let spyBound = false;
+  function setupScrollSpy() {
+    if (spyBound) return;
+    spyBound = true;
+    const onScroll = () => {
+      const panel = document.getElementById("panel-report");
+      if (!panel.classList.contains("active")) return;
+      let currentId = null;
+      for (const t of tocEntries) {
+        const h = document.getElementById(t.id);
+        if (h && h.getBoundingClientRect().top <= 140) currentId = t.id;
+      }
+      document.querySelectorAll(".toc-link").forEach((a) =>
+        a.classList.toggle("active", a.dataset.target === currentId));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
 
   // initial
   activate("report");
