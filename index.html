@@ -237,7 +237,7 @@
         <a href="results/figures/fig1_overall_performance.png" target="_blank" rel="noopener">
           <img loading="lazy" src="results/figures/fig1_overall_performance.png" alt="Overall performance of the four DQN variants with 95% CIs" />
         </a>
-        <figcaption>Overall success &amp; reward per algorithm (mean ± 95% CI, 10 seeds). Overlapping CIs → no significant algorithm effect.</figcaption>
+        <figcaption>Overall success &amp; reward per algorithm (mean ± 95% CI, 10 seeds). Overlapping CIs &rarr; no significant algorithm effect.</figcaption>
       </figure>
       <figure>
         <a href="results/figures/fig4_per_seed_distributions.png" target="_blank" rel="noopener">
@@ -251,6 +251,64 @@
         </a>
         <figcaption>Variance explained (partial η²): the Seed block outweighs every design factor.</figcaption>
       </figure>
+    </div>
+  </section>
+
+  <!-- ============ THREE STUDIES (conceptual overview + workflow) ============ -->
+  <section class="studies" id="studies">
+    <div class="studies-head">
+      <h2>The Three Studies — What Each Adds</h2>
+      <p class="studies-sub">
+        All three studies run on the same seeded testbed and statistical protocol;
+        each is a progressively richer, more realistic evaluation. Read the unified
+        paper, or open any study's full report, tables, figures, and PDF.
+      </p>
+    </div>
+
+    <figure class="studies-fig">
+      <img loading="lazy" src="assets/schematics/study_comparison.png"
+           alt="Conceptual comparison of Study 1 (clean), Study 2 (noise, packet-loss, collisions, IALA, docking, CTE), and Study 3 (rule-based COLREGs baseline vs DQN)" />
+      <figcaption>
+        <b>Study&nbsp;1</b> compares four DQN variants in a clean environment (navigation success, reward, route optimality).
+        <b>Study&nbsp;2</b> adds sensor noise, communication packet-loss, obstacles/collisions, IALA channel markers,
+        docking accuracy and cross-track error. <b>Study&nbsp;3</b> introduces a COLREGs-aware rule-based baseline and
+        raises the seed count to 15 for confirmatory power.
+      </figcaption>
+    </figure>
+
+    <div class="studies-cards">
+      <a class="study-card s1" href="results.html">
+        <span class="study-tag">Study 1</span>
+        <h3>Clean comparison</h3>
+        <p>4 DQN variants × PER × Noisy · 10 seeds. <b>Finding:</b> the variants are statistically indistinguishable — run-to-run <b>seed variance dominates</b>.</p>
+        <span class="study-link">Open Study 1 →</span>
+      </a>
+      <a class="study-card s2" href="results_v3.html">
+        <span class="study-tag">Study 2</span>
+        <h3>Robustness &amp; safety</h3>
+        <p>+ noise × packet-error · real safety/precision metrics. <b>Finding:</b> sensing/comms <b>dominate safety</b>; the variants degrade in parallel.</p>
+        <span class="study-link">Open Study 2 →</span>
+      </a>
+      <a class="study-card s3" href="results_study3.html">
+        <span class="study-tag">Study 3</span>
+        <h3>Rule-based baseline</h3>
+        <p>COLREGs rule-based vs DQN · 15 seeds. <b>Finding:</b> the baseline keeps the channel <b>~2× better</b> under stress (significant).</p>
+        <span class="study-link">Open Study 3 →</span>
+      </a>
+    </div>
+
+    <figure class="studies-fig">
+      <img loading="lazy" src="assets/schematics/workflow.png"
+           alt="Shared experimental pipeline and how each study specializes the environment, factors, seeds and metrics" />
+      <figcaption>
+        <b>Shared workflow.</b> Every study uses the same pipeline — seeded environment → train/evaluate →
+        per-episode real metrics → per-seed aggregation → statistics → tables &amp; figures — and differs only in
+        the environment build, factors, seed count, and metrics.
+      </figcaption>
+    </figure>
+
+    <div class="studies-cta">
+      <a class="btn report-btn" href="manuscript.html">📄 Read the unified paper (Studies 1–3)</a>
     </div>
   </section>
 
