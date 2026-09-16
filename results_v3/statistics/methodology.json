@@ -1,0 +1,19 @@
+{
+  "design": "Algorithm(4) x Noise(3) x PacketError(3) factorial, shared 6 seeds (paired/randomized-block).",
+  "unit": "per-seed scalar (n=6 per cell).",
+  "normality_fraction_passing_shapiro": {
+    "collision_rate": 0.028,
+    "collisions_per_ep": 0.028,
+    "cte_mean": 0.028,
+    "docking_accuracy": 0.031,
+    "dropped_frames": 0.042,
+    "iala_violations": 0.031,
+    "mean_reward": 0.028,
+    "optimality_ratio": 0.028,
+    "success_rate": 0.028
+  },
+  "omnibus": "three-way factorial ANOVA y ~ algorithm*noise*per + seed (Type-II SS, partial eta^2).",
+  "robustness_definition": "worst condition (noise=0.25, PER=0.4) vs clean (0,0), paired Wilcoxon + Cohen's d_z, Holm-corrected within metric.",
+  "posthoc": "pairwise algorithm comparison at the harshest condition; paired Wilcoxon (exact) + Holm + BH; Cohen's d_z + Cliff's delta.",
+  "alpha": 0.05
+}

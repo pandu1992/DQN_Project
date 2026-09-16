@@ -1,0 +1,74 @@
+{
+  "experiment_id": "bintulu_dqn_v3_robustness_factorial",
+  "description": "Full factorial robustness study on VesselEnvV3: how the four value-based DQN variants withstand sensor observation noise and communication packet-error, measured with REAL physical/sensing/comms metrics (collision rate, docking accuracy, cross-track error, IALA compliance, dropped frames) alongside navigation success, reward, and route optimality. All metrics are genuinely computed by the environment; none are fabricated.",
+  "date_designed": "2026-09-15",
+  "environment": {
+    "module": "js/environmentV3.js",
+    "class": "VesselEnvV3",
+    "reuses": "same graph topology, edge attributes, and Dijkstra planner as environment.js / VesselEnvV2",
+    "obs_dim": 28,
+    "n_actions": 4,
+    "max_episode_steps": 60,
+    "obstacle_count": 6,
+    "mechanisms": "continuous kinematics + control drift; Gaussian observation noise (noiseStd); communication packet-error rate (packetErrorRate, dropped frames held stale); obstacle collision; docking accuracy; cross-track error vs Dijkstra plan; IALA channel-departure violations",
+    "validation": "see results/reports/V3_EXTENSION.md — each mechanism is ~0 at ideal conditions and degrades monotonically with noise/PER; drop fraction matches configured rate; follow-Dijkstra optimality validated in V2"
+  },
+  "factors": {
+    "algorithm": ["DQN", "DoubleDQN", "DuelingDQN", "DuelingDoubleDQN"],
+    "noise_std": [0.0, 0.1, 0.25],
+    "packet_error_rate": [0.0, 0.2, 0.4]
+  },
+  "n_algorithms": 4,
+  "n_noise_levels": 3,
+  "n_per_levels": 3,
+  "n_conditions": 9,
+  "n_cells_per_algorithm": 54,
+  "seeds": [0, 1, 2, 3, 4, 5],
+  "n_seeds": 6,
+  "seed_policy": "The SAME 6 seeds are used for every (algorithm, noise, PER) cell (shared/paired design). env_seed = 42 + seed controls graph + mission + obstacle field; agent-side RNG = mulberry32(seed*1000003 + 12345) controls weight init / exploration / replay. Enables paired tests across matched seeds and clean factorial ANOVA.",
+  "training": {
+    "train_episodes": 130,
+    "total_steps_budget": 3900,
+    "total_steps_budget_formula": "train_episodes * 30",
+    "budget_justification": "Calibration showed the V3 task is genuinely hard (continuous kinematics + obstacles + 60-step budget): clean-condition success plateaus around 20-35% for these small pure-JS DQN agents and does not improve (and gets noisier) beyond ~130-150 episodes. 130 episodes gives a competent-but-non-saturated baseline (~15s/cell) from which degradation under noise/PER is measurable. This is a hard robustness benchmark by design, not a saturated one."
+  },
+  "evaluation": {
+    "eval_episodes": 30,
+    "policy": "greedy (no exploration; Noisy layers still resample per action as in source)",
+    "learning_during_eval": false,
+    "rationale": "Converged policy measured on held-out missions from the same seeded stream; per-seed scalar = unit of analysis (n=6 per cell)."
+  },
+  "total_cells": 216,
+  "total_eval_episodes": 6480,
+  "metrics": {
+    "primary_navigation": ["success_rate", "mean_reward"],
+    "safety": ["collision_rate", "collisions_per_ep", "iala_violations"],
+    "precision": ["docking_accuracy", "cte_mean"],
+    "efficiency_routing": ["optimality_ratio", "mean_steps"],
+    "comms": ["dropped_frames"],
+    "definitions": {
+      "success_rate": "% of eval episodes reaching the goal within the step budget",
+      "mean_reward": "mean episodic return under REWARD_CONFIG_V3",
+      "collision_rate": "% of eval episodes with >=1 collision",
+      "collisions_per_ep": "mean collision count per episode (real hull-vs-obstacle contacts)",
+      "iala_violations": "mean per-episode count of channel-departure (outboard-of-buoy) violations",
+      "docking_accuracy": "mean Euclidean distance (final pose to dock point) over solved episodes; lower is better",
+      "cte_mean": "mean cross-track error vs the Dijkstra-planned route; lower is better",
+      "optimality_ratio": "route navigation_cost / Dijkstra optimum over solved episodes (>=1)",
+      "dropped_frames": "mean per-episode dropped observation frames (comms packet loss)"
+    }
+  },
+  "analysis_plan": {
+    "unit_of_analysis": "per-seed scalar (n=6 per cell)",
+    "assumption_checks": ["Shapiro-Wilk normality", "Levene/Brown-Forsythe homogeneity"],
+    "omnibus": "three-way factorial ANOVA: y ~ algorithm * noise * packet_error + seed (Type-II SS, partial eta^2); main effects + all interactions",
+    "robustness_focus": "Algorithm x Noise and Algorithm x Packet-Error interactions answer 'do algorithms degrade differently?'; degradation = clean vs worst-condition (absolute, relative, variance change)",
+    "posthoc": "paired Wilcoxon signed-rank (primary; non-normal) + paired t (secondary), Holm + Benjamini-Hochberg correction, effect sizes Cohen's d_z + Cliff's delta",
+    "alpha": 0.05
+  },
+  "scope_notes": [
+    "VesselEnvV3 is a synthesized physical/sensing/comms testbed on the project's graph — a research environment, not a validated hydrodynamic or RF simulator.",
+    "This study is SEPARATE from the earlier Q1 study (which used VesselEnvV2 and is not revised).",
+    "The deployed web application (environment.js) is unaffected; V3 is offline research code."
+  ]
+}

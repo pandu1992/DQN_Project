@@ -1,0 +1,8 @@
+Analysis,Formula / Method,Assumption,Interpretation
+Per-seed aggregation,"collapse 30 eval eps -> one scalar/seed, then n=6 seeds are the unit",independence,Episodes within a seed are not independent; seeds are.
+95% CI,"$\bar x \pm t_{0.975,n-1} s/\sqrt n$; percentile bootstrap cross-check",approx normal mean,Wide half-widths (n=6) => modest precision.
+Normality,Shapiro-Wilk per cell,n>=3,~3% pass => non-parametric primary tests.
+Variance homogeneity,Levene (Brown-Forsythe),independent groups,Checked across algorithms at clean.
+Factorial ANOVA,"y ~ algorithm*noise*PER + seed, Type-II SS, partial $\eta^2$",balanced (6/cell),Main effects + interactions; pools the grid for power.
+Robustness contrast,"worst (0.25,0.4) vs clean (0,0), paired Wilcoxon exact + Cohen's d_z",paired seeds,Large d_z but n=6 caps Holm-adjusted p at ~0.125.
+Pairwise post-hoc,"paired Wilcoxon at harshest condition + Holm + BH; Cohen d_z, Cliff delta",paired,Localises algorithm differences under maximal stress.

@@ -1,0 +1,8 @@
+Factor,Levels / Value,Detail,Interpretation
+Environment,VesselEnvV3 (graph-nav MDP + physical/sensing/comms layer),reuses same graph/edges/Dijkstra as the deployed sim,Real dynamics enable genuine safety/precision metrics.
+Algorithms,"DQN, Double DQN, Dueling DQN, Dueling Double DQN",4 value-based variants (js/dqn.js),Same agents compared under degradation.
+Noise levels,"0.0, 0.1, 0.25",Gaussian sensor/observation noise std,Spans clean to heavy sensing degradation.
+Packet-error levels,"0.0, 0.2, 0.4",comms frame-drop probability (stale hold),Spans reliable to lossy communication.
+Seeds,6 shared seeds (0-5),env_seed=42+seed; paired design,Enables factorial ANOVA + paired tests.
+Budget,130 train / 30 eval episodes,greedy held-out evaluation,"Competent, non-saturated hard benchmark."
+Cells,4x3x3x6 = 216,"6,480 evaluation episodes",Balanced full factorial.

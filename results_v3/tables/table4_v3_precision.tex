@@ -1,0 +1,10 @@
+\begin{tabular}{llllll}
+\toprule
+Algorithm & Docking (clean) & Docking (harsh) & CTE (clean) & CTE (harsh) & Interpretation \\
+\midrule
+DQN & 0.00±0.00 & 9.72±2.24 & 28.3±38.9 & 27.7±9.5 & Docking error 0.0→9.7 and CTE 28.3→27.7 under stress: localisation/tracking precision worsens with sensing+comms degradation. \\
+Double DQN & 0.00±0.00 & 11.05±3.03 & 43.2±44.5 & 43.6±19.2 & Docking error 0.0→11.1 and CTE 43.2→43.6 under stress: localisation/tracking precision worsens with sensing+comms degradation. \\
+Dueling DQN & 0.00±0.00 & 10.88±4.04 & 15.0±18.2 & 45.5±34.4 & Docking error 0.0→10.9 and CTE 15.0→45.5 under stress: localisation/tracking precision worsens with sensing+comms degradation. \\
+Dueling Double DQN & 0.00±0.00 & 10.38±1.83 & 20.9±17.7 & 35.7±10.8 & Docking error 0.0→10.4 and CTE 20.9→35.7 under stress: localisation/tracking precision worsens with sensing+comms degradation. \\
+\bottomrule
+\end{tabular}

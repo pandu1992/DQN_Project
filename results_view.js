@@ -7,6 +7,37 @@
 (function () {
   "use strict";
 
+  // ---------- content configuration ----------
+  // Defaults describe the Q1 study; a page can override via window.RESULTS_CONFIG
+  // to point the same renderer at a different study (e.g. the V3 robustness study).
+  const DEFAULT_CFG = {
+    dir: "results",                                  // base folder for reports/tables/figures
+    report: "reports/Q1_experimental_report.md",
+    methodsDocs: ["reports/SATURATED_BENCHMARK_FINDING.md", "reports/REPRODUCIBILITY.md"],
+    pdfTitle: "Bintulu Port — Autonomous Vessel Navigation",
+    pdfSubtitle: "Q1-grade comparative experimental evaluation of value-based DRL agents",
+    tables: [
+      ["table1_configuration", "Table 1 — Algorithm & Experimental Configuration"],
+      ["table2_overall_performance", "Table 2 — Overall Performance (mean ± 95% CI)"],
+      ["table3_omnibus_algorithm", "Table 3 — Omnibus Algorithm Effect"],
+      ["table4_factorial_effects", "Table 4 — Factorial Main Effects & Interactions"],
+      ["table5_full_matrix", "Table 5 — Full 16-Configuration Matrix"],
+      ["table6_statistical_comparison", "Table 6 — Pairwise Statistical Comparison"],
+      ["table7_robustness", "Table 7 — Enhancement / Robustness"],
+      ["table8_overall_findings", "Table 8 — Overall Findings"],
+      ["table_methods", "Table — Mathematical & Statistical Methods"],
+    ],
+    figures: [
+      "fig1_overall_performance", "fig2_success_across_configs", "fig3_reward_across_configs",
+      "fig4_per_seed_distributions", "fig5_ci_comparison", "fig6_significance_matrix",
+      "fig7_enhancement_tradeoff", "fig8_variance_dominance",
+    ],
+  };
+  const CFG = Object.assign({}, DEFAULT_CFG, (typeof window !== "undefined" && window.RESULTS_CONFIG) || {});
+  const P = (rel) => CFG.dir + "/" + rel;                 // report/doc path
+  const TPATH = (file, ext) => CFG.dir + "/tables/" + file + "." + ext;
+  const FPATH = (fig, ext) => CFG.dir + "/figures/" + fig + "." + ext;
+
   // ---------- math (KaTeX) handling ----------
   // We extract $$...$$ (display) and $...$ (inline) math into placeholders
   // BEFORE markdown processing so the markdown/escaping steps can't mangle
@@ -241,23 +272,9 @@
     return res.text();
   }
 
-  // ---------- content definitions ----------
-  const TABLES = [
-    ["table1_configuration", "Table 1 — Algorithm & Experimental Configuration"],
-    ["table2_overall_performance", "Table 2 — Overall Performance (mean ± 95% CI)"],
-    ["table3_omnibus_algorithm", "Table 3 — Omnibus Algorithm Effect"],
-    ["table4_factorial_effects", "Table 4 — Factorial Main Effects & Interactions"],
-    ["table5_full_matrix", "Table 5 — Full 16-Configuration Matrix"],
-    ["table6_statistical_comparison", "Table 6 — Pairwise Statistical Comparison"],
-    ["table7_robustness", "Table 7 — Enhancement / Robustness"],
-    ["table8_overall_findings", "Table 8 — Overall Findings"],
-    ["table_methods", "Table — Mathematical & Statistical Methods"],
-  ];
-  const FIGURES = [
-    "fig1_overall_performance", "fig2_success_across_configs", "fig3_reward_across_configs",
-    "fig4_per_seed_distributions", "fig5_ci_comparison", "fig6_significance_matrix",
-    "fig7_enhancement_tradeoff", "fig8_variance_dominance",
-  ];
+  // ---------- content definitions (from CFG) ----------
+  const TABLES = CFG.tables;
+  const FIGURES = CFG.figures;
 
   // ---------- KaTeX readiness ----------
   // KaTeX is loaded with `defer`, so it may not be ready when a panel first
@@ -296,7 +313,7 @@
   // ---------- loaders ----------
   async function loadReport() {
     try {
-      const md = await fetchText("results/reports/Q1_experimental_report.md");
+      const md = await fetchText(P(CFG.report));
       mdCache.report = md;
       document.getElementById("reportBody").innerHTML = renderMarkdown(md, { toc: true });
       buildToc();
@@ -314,12 +331,9 @@
 
   async function loadMethods() {
     try {
-      const [repro, finding] = await Promise.all([
-        fetchText("results/reports/REPRODUCIBILITY.md"),
-        fetchText("results/reports/SATURATED_BENCHMARK_FINDING.md"),
-      ]);
-      const combine = () => renderMarkdown(mdCache.methodsFinding) + "<hr/>" + renderMarkdown(mdCache.methodsRepro);
-      mdCache.methodsFinding = finding; mdCache.methodsRepro = repro;
+      const docs = await Promise.all(CFG.methodsDocs.map((d) => fetchText(P(d)).catch(() => "")));
+      const combine = () => docs.map((d) => renderMarkdown(d)).join("<hr/>");
+      mdCache.methodsDocs = docs;
       document.getElementById("methodsBody").innerHTML = combine();
       if (!katexReady) whenKatexReady(() => { document.getElementById("methodsBody").innerHTML = combine(); });
     } catch (e) {
@@ -337,12 +351,12 @@
       const tnum = (file.match(/table(\d+)/) || [])[1];
       if (tnum) block.id = "table-" + tnum;
       block.innerHTML = `<div class="csv-title">${title}</div>
-        <div class="csv-desc"><a class="rp-dl" href="results/tables/${file}.csv" download>⬇ CSV</a>
-        <a class="rp-dl" href="results/tables/${file}.tex" download>⬇ LaTeX</a></div>
+        <div class="csv-desc"><a class="rp-dl" href="${TPATH(file, "csv")}" download>⬇ CSV</a>
+        <a class="rp-dl" href="${TPATH(file, "tex")}" download>⬇ LaTeX</a></div>
         <div class="loading">Loading…</div>`;
       host.appendChild(block);
       try {
-        const txt = await fetchText("results/tables/" + file + ".csv");
+        const txt = await fetchText(TPATH(file, "csv"));
         block.querySelector(".loading").outerHTML = csvToTable(parseCSV(txt));
       } catch (e) {
         block.querySelector(".loading").textContent = "Could not load (" + e.message + ")";
@@ -355,7 +369,7 @@
     host.innerHTML = "";
     let captions = {};
     try {
-      const capMd = await fetchText("results/figures/figures_captions.md");
+      const capMd = await fetchText(P("figures/figures_captions.md"));
       // parse "## name\n\ncaption"
       const re = /##\s+(\S+)\s*\n+([^#]+)/g; let m;
       while ((m = re.exec(capMd))) captions[m[1].trim()] = m[2].trim();
@@ -367,11 +381,11 @@
       if (fnum) card.id = "figure-" + fnum;
       const cap = captions[fig] || "";
       card.innerHTML =
-        `<img loading="lazy" src="results/figures/${fig}.png" alt="${fig}" />
+        `<img loading="lazy" src="${FPATH(fig, "png")}" alt="${fig}" />
          <div class="fig-cap">${esc(cap)}</div>
          <div class="fig-links">
-           <a class="rp-dl" href="results/figures/${fig}.png" download>⬇ PNG (320 dpi)</a>
-           <a class="rp-dl" href="results/figures/${fig}.svg" download>⬇ SVG</a>
+           <a class="rp-dl" href="${FPATH(fig, "png")}" download>⬇ PNG (320 dpi)</a>
+           <a class="rp-dl" href="${FPATH(fig, "svg")}" download>⬇ SVG</a>
          </div>`;
       host.appendChild(card);
     }
@@ -386,24 +400,20 @@
     btn.textContent = "Preparing PDF…";
     btn.disabled = true;
     try {
-      const base = location.href.replace(/[^/]*$/, ""); // dir of results.html
-      const [reportMd, findingMd, reproMd, capMd] = await Promise.all([
-        mdCache.report ? Promise.resolve(mdCache.report) : fetchText("results/reports/Q1_experimental_report.md"),
-        fetchText("results/reports/SATURATED_BENCHMARK_FINDING.md"),
-        fetchText("results/reports/REPRODUCIBILITY.md"),
-        fetchText("results/figures/figures_captions.md").catch(() => ""),
-      ]);
+      const base = location.href.replace(/[^/]*$/, ""); // dir of the page
+      const reportMd = mdCache.report ? mdCache.report : await fetchText(P(CFG.report));
       mdCache.report = reportMd;
+      const methodsMd = await Promise.all(CFG.methodsDocs.map((d) => fetchText(P(d)).catch(() => "")));
+      const capMd = await fetchText(P("figures/figures_captions.md")).catch(() => "");
 
       const reportHtml = renderMarkdown(reportMd);
-      const findingHtml = renderMarkdown(findingMd);
-      const reproHtml = renderMarkdown(reproMd);
+      const methodsHtml = methodsMd.map((d) => renderMarkdown(d)).join('<div class="pagebreak"></div>');
 
       // tables section
       let tablesHtml = "";
       for (const [file, title] of TABLES) {
         try {
-          const rows = parseCSV(await fetchText("results/tables/" + file + ".csv"));
+          const rows = parseCSV(await fetchText(TPATH(file, "csv")));
           tablesHtml += `<h3 class="pdf-tbl-title">${esc(title)}</h3>` + csvToTable(rows);
         } catch (e) { /* skip */ }
       }
@@ -414,14 +424,14 @@
       while ((m = re.exec(capMd))) captions[m[1].trim()] = m[2].trim();
       let figsHtml = "";
       for (const fig of FIGURES) {
-        figsHtml += `<figure class="pdf-fig"><img src="${base}results/figures/${fig}.png"/>` +
+        figsHtml += `<figure class="pdf-fig"><img src="${base}${FPATH(fig, "png")}"/>` +
                     `<figcaption>${esc(captions[fig] || fig)}</figcaption></figure>`;
       }
 
       const katexCss = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
       const now = new Date().toISOString().slice(0, 10);
       const doc = `<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Bintulu Port DQN — Q1 Experimental Report</title>
+<title>${esc(CFG.pdfTitle)} — Report</title>
 <link rel="stylesheet" href="${katexCss}">
 <style>
   @page { size: A4; margin: 18mm 16mm; }
@@ -456,15 +466,14 @@
   a { color:#0b5; text-decoration:none; }
 </style></head><body>
 <div class="pdf-cover">
-  <h1>Bintulu Port — Autonomous Vessel Navigation</h1>
-  <div class="sub">Q1-grade comparative experimental evaluation of value-based DRL agents · generated ${now}</div>
+  <h1>${esc(CFG.pdfTitle)}</h1>
+  <div class="sub">${esc(CFG.pdfSubtitle)} · generated ${now}</div>
   <div class="sub">Source: https://pandu1992.github.io/DQN_Project/</div>
 </div>
 ${reportHtml}
 <div class="pagebreak"></div><h2>Appendix A — All Tables</h2>${tablesHtml}
 <div class="pagebreak"></div><h2>Appendix B — Figures</h2>${figsHtml}
-<div class="pagebreak"></div><h2>Appendix C — Experimental Design Note</h2>${findingHtml}
-<h2>Appendix D — Reproducibility</h2>${reproHtml}
+<div class="pagebreak"></div><h2>Appendix C — Methodology & Reproducibility</h2>${methodsHtml}
 </body></html>`;
 
       const w = window.open("", "_blank");
