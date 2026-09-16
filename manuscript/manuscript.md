@@ -1,13 +1,14 @@
-# Robustness of Value-Based Deep Reinforcement Learning for Autonomous Vessel Navigation: A Three-Study Comparison Against a Classical COLREGs-Aware Baseline
+# Robustness of Value-Based Deep Reinforcement Learning for Autonomous Vessel Navigation: A Five-Study Comparison Against a Classical COLREGs-Aware Baseline, Extended to Multi-Vessel Encounters and Round-Trip Missions
 
 **A reproducible experimental investigation on a Synthetic Port channel-navigation testbed**
 
 > **Reproducibility statement.** Every quantitative claim in this manuscript is
 > computed from committed experiment data (`results/`, `results_v3/`,
-> `results_study3/`) by the scripts in `experiments/`, and is regenerable
-> end-to-end. No metric is hand-set or fabricated. All environments reuse the
-> same synthesized port graph, edge attributes, and Dijkstra planner; the
-> deployed browser simulation is unchanged by any of this analysis.
+> `results_study3/`, `results_study4/`, `results_study5/`) by the scripts in
+> `experiments/`, and is regenerable end-to-end. No metric is hand-set or
+> fabricated. All environments reuse the same synthesized port graph, edge
+> attributes, and Dijkstra planner; the deployed browser simulation is unchanged
+> by any of this analysis.
 
 ---
 
@@ -16,9 +17,9 @@
 Deep reinforcement learning (DRL) is increasingly proposed for autonomous
 maritime navigation, yet its *robustness* to imperfect perception and
 communication — and its standing relative to classical rule-based control — is
-rarely quantified with statistical rigor. We present three linked experiments on
-a reproducible Synthetic Port channel-navigation testbed. **Study 1** compares four
-value-based DRL agents (DQN, Double DQN, Dueling DQN, Dueling Double DQN) with
+rarely quantified with statistical rigor. We present **five** linked experiments
+on a reproducible Synthetic Port channel-navigation testbed. **Study 1** compares
+four value-based DRL agents (DQN, Double DQN, Dueling DQN, Dueling Double DQN) with
 Prioritized Experience Replay and Noisy Nets in a clean environment
 (4×2×2 factorial, 10 seeds, 6,400 evaluation episodes). **Study 2** subjects the
 same four agents to graded sensor-observation noise and communication
@@ -27,8 +28,15 @@ computed safety and precision metrics (collisions, IALA channel compliance,
 docking accuracy, cross-track error). **Study 3** adds a non-learning
 COLREGs-aware rule-based controller and raises the seed count to 15 for
 confirmatory power (5 agents × 3 conditions × 15 seeds, 6,750 episodes).
+**Study 4** extends the testbed to **two independent vessels** that share the
+channel and must avoid each other (4 pairings × 3 conditions × 8 seeds; 5,760
+per-vessel rows / 2,880 encounters), measuring real inter-vessel collision,
+near-miss, and closest-point-of-approach geometry. **Study 5** adds two
+operational-realism patterns — a **two-phase round-trip mission**
+(inbound→dock→outbound) and **two-way opposing traffic** on a shared lane
+(120 cells, 5,760 rows).
 
-Three findings emerge. (i) In clean conditions the four DRL variants are
+Five findings emerge. (i) In clean conditions the four DRL variants are
 **statistically indistinguishable** on task success; the dominant source of
 variance is the **random seed** (partial $\eta^2 \approx 0.20$), not the
 algorithm. (ii) Under degradation, safety and precision collapse and are governed
@@ -38,13 +46,24 @@ choice of DRL variant explains ≈1–5%. (iii) A simple **chart-following
 COLREGs-aware baseline keeps the navigable channel roughly twice as well as every
 DRL variant under harsh degradation** (all four contrasts significant after Holm
 correction, large effect sizes), a difference the 15-seed design resolves where a
-6-seed design could not. We argue that, for this class of task, robustness is
+6-seed design could not. (iv) With two independent vessels, the **vessel pairing
+dominates inter-vessel safety** (partial $\eta^2$ up to 0.70 for closest-approach);
+two *learned* vessels keep roughly twice the separation of two classical
+controllers but complete far fewer missions — a large, significant
+**safety-versus-completion tradeoff**. (v) A full **round-trip port call roughly
+halves** success relative to a one-way transit, and in **two-way traffic** the
+classical controller carries the flow (but, modelling only static hazards, meets
+oncoming vessels head-on), whereas the learned agents largely fail to transit —
+an honest negative result. We argue that, for this class of task, robustness is
 primarily a *perception/communication and control-architecture* problem rather
-than a value-function-refinement problem, and that safety-relevant metrics must
-be reported alongside task success, which alone conceals the risk.
+than a value-function-refinement problem; that multi-vessel safety is governed by
+the control architecture rather than the degradation level; and that
+safety-relevant metrics must be reported alongside task success, which alone
+conceals the risk.
 
 **Keywords:** deep reinforcement learning, autonomous surface vessels, robustness,
-sensor noise, communication reliability, COLREGs, reproducibility.
+sensor noise, communication reliability, COLREGs, multi-vessel collision
+avoidance, two-way traffic, round-trip missions, reproducibility.
 
 ---
 
@@ -64,33 +83,48 @@ however, are under-examined in that literature and are decisive for deployment:
    and communication (packet-loss) are imperfect — the normal condition at sea?
 3. **Is learning even the right tool**, or does a classical rule-based controller
    remain competitive, particularly on safety-relevant behaviour?
+4. **Do these single-vessel, one-way conclusions hold** when the water is shared
+   with *another* vessel that must be avoided, and when the mission is a realistic
+   round trip or two-way traffic rather than a single one-way transit?
 
-This manuscript answers all three with a single, reproducible testbed and a
+This manuscript answers all four with a single, reproducible testbed and a
 consistent statistical protocol. Our contributions are: (a) a controlled
 comparison of four value-based DRL variants with two Rainbow-style enhancements
 that isolates the effect of algorithm choice from seed variance
 ([Study 1](#study1)); (b) a factorial *robustness* analysis under genuinely
 implemented sensing and communication degradation, with real safety and precision
-metrics ([Study 2](#study2)); and (c) a confirmatory study introducing a
+metrics ([Study 2](#study2)); (c) a confirmatory study introducing a
 COLREGs-aware rule-based baseline at higher statistical power
-([Study 3](#study3)). Throughout, we prioritize honest reporting: we state where
-effects are absent, where power is limited, and where the testbed is a synthesized
-model rather than a validated simulator.
+([Study 3](#study3)); (d) a **multi-vessel** extension in which two independent
+agents share the channel and must avoid each other, with real inter-vessel
+collision geometry ([Study 4](#study4)); and (e) two **operational-realism**
+scenarios — a two-phase inbound→dock→outbound round trip and two-way opposing
+traffic ([Study 5](#study5)). Throughout, we prioritize honest reporting: we state
+where effects are absent, where power is limited, where a learned agent simply
+fails, and where the testbed is a synthesized model rather than a validated
+simulator.
 
 > [!INSIGHT]
-> **Framing.** The three studies form a deliberate arc: *do the algorithms
+> **Framing.** The five studies form a deliberate arc: *do the algorithms
 > differ?* (largely no), *how do they fail under stress?* (badly, and in
-> parallel), and *can a classical controller do better?* (yes, significantly, on
-> channel compliance). This reframes the design question from "which DRL variant
-> wins" to "what confers robustness in this domain".
+> parallel), *can a classical controller do better?* (yes, significantly, on
+> channel compliance), *do two vessels avoid each other?* (the learned ones keep
+> more separation but complete less; the pairing dominates), and *can they run a
+> full round trip and share two-way traffic?* (the round trip roughly halves
+> success, and classical control carries the traffic while learning largely
+> fails). This reframes the design question from "which DRL variant wins" to
+> "what confers robust, complete, multi-vessel behaviour in this domain".
 
-![Overview of the three studies](assets/schematics/study_comparison.png)
-**Figure 1 (Overview).** The three studies on one testbed, progressively richer:
+![Overview of the five studies](assets/schematics/study_comparison.png)
+**Figure 1 (Overview).** The five studies on one testbed, progressively richer:
 **Study 1** compares four DQN variants on a clean channel-navigation task;
 **Study 2** adds sensor noise, communication packet-loss, obstacles/collisions,
 IALA channel markers, docking accuracy and cross-track error; **Study 3** adds a
 COLREGs-aware rule-based baseline (which follows the charted channel) versus the
-DQN variants (which deviate under stress), at higher statistical power.
+DQN variants (which deviate under stress), at higher statistical power;
+**Study 4** puts two independent vessels on the same water that must avoid each
+other; **Study 5** adds a full inbound→dock→outbound round trip and two-way
+opposing traffic.
 
 ---
 
@@ -138,13 +172,30 @@ builds that reuse the *same graph, attributes, and planner*:
   noise, a communication packet-error channel (dropped frames held stale), a
   seeded obstacle field with collision detection, docking accuracy, cross-track
   error, and IALA channel-departure detection. Observation dimension 28.
+- **`MultiVesselEnvV4`** (Study 4): composes *two* `VesselEnvV3` vessels over the
+  *same* world. The two vessels step in lockstep; on every macro-step the real
+  Euclidean separation between the hulls is measured across synchronized
+  continuous sub-steps, yielding inter-vessel **collision** (hull separation <
+  18 units), **near-miss** (< 40), and **closest-point-of-approach (CPA)** events.
+  Each vessel's observation is extended with the *sensed* relative position and
+  range of its partner (obs 28→31), passed through the same noise/packet-loss
+  pipeline; a COLREGs give-way/stand-on role is computed from real bearing for
+  attribution. Distinct-event counting avoids saturation from single-file locked
+  encounters.
+- **`TwoPhaseEnvV5` / `TwoWayEnvV5`** (Study 5): two operational-realism builds on
+  `VesselEnvV3`. `TwoPhaseEnvV5` requires a single vessel to complete a full port
+  call in one episode — inbound to the harbour berth (dock), then outbound to a
+  channel exit (obs 28→30 with a phase flag; success = the full cycle).
+  `TwoWayEnvV5` places an inbound and an outbound vessel on the same access lane
+  with overlapping paths, forcing head-on encounters, and reuses the Study-4
+  inter-vessel geometry (obs 28→31).
 
 > [!INSIGHT]
 > **The benchmark had to be made discriminative before it could be studied.**
 > Reconstructing the task as a genuine routing MDP (V2) and then adding a real
 > physical/sensing/comms layer (V3) is the pivotal design step that makes both
 > the algorithm comparison and the robustness analysis meaningful — and it is
-> done on the *same* underlying chart, so the three studies are commensurable.
+> done on the *same* underlying chart, so all five studies are commensurable.
 
 ### 3.2 Agents
 
@@ -221,7 +272,7 @@ for ordinal robustness). The shared-seed design makes all contrasts within-block
 train (RL) or run (rule-based) → held-out greedy evaluation → per-episode real
 metrics → per-seed aggregation → statistics → tables and figures — and how each
 study specializes it (environment build, factors, seed count, and metrics). Only
-these differ across the three studies; the graph, planner, agents, and
+these differ across the five studies; the graph, planner, agents, and
 statistical protocol are shared.
 
 <a name="study1"></a>
@@ -364,11 +415,104 @@ invariant to degradation.
 fan out (significant agent×condition interaction, partial $\eta^2=0.49$): the DRL
 variants' violations rise far more steeply than the rule-based baseline's.
 
+<a name="study4"></a>
+
+## 7. Study 4 — Two Independent Vessels That Must Avoid Each Other
+
+**Design.** Studies 1–3 evaluate a *single* vessel on empty water. Study 4 puts
+**two independent vessels** (each its own policy, its own mission, *no* central
+controller) on the same channel via `MultiVesselEnvV4`, so the safety-critical
+event becomes an *inter-vessel* collision. Four **pairings** — `DQN×DQN`,
+`DuelingDouble×DuelingDouble`, `DQN×Rule-based`, `Rule-based×Rule-based` — × three
+degradation conditions × 8 shared seeds (96 cells; 5,760 per-vessel eval rows /
+2,880 encounters). Learned agents train against the live partner (self-play
+style). Vessel B's mission is re-rolled so the two never share a berth.
+
+**Results — a safety-versus-completion tradeoff, dominated by the pairing.** Two
+classical vessels **complete the most missions** (~48%, invariant to degradation)
+but **collide with each other most often** (38–41% of encounters) and pass
+**closest** (CPA ≈ 118): the rule-based controller models only *static* hazards,
+so two of them follow their charted channels straight into one another. The
+**learned** pairings do the opposite — keeping vessels much farther apart
+(CPA ≈ 190–233) and colliding less (14–30%) — but at a large cost to mission
+completion (14–27%). A two-way factorial ANOVA (pairing × condition + seed) shows
+the **pairing dominates** every inter-vessel outcome: closest-approach partial
+$\eta^2=0.70$, collision rate 0.52, collisions/encounter 0.50, mission success
+0.69 (all $p<0.001$); sensing/comms condition contributes a smaller but real
+effect on the collision metrics ($\eta^2\approx0.11$–$0.14$). The classical
+reference vs each pairing gives **49 of 90** Holm-significant contrasts; at harsh
+degradation the learned pairings' larger CPA ($d_z\approx-1.5$ to $-1.7$) and lower
+success ($d_z\approx2.0$) are both large and significant.
+
+| Pairing | Collision rate (clean→harsh) | Min CPA | Success (clean→harsh) |
+|---|---|---|---|
+| Rule × Rule | 40.8% → 37.9% | 118 → 120 | 48.3% (invariant) |
+| DQN × Rule-based | 23.3% → 25.8% | 186 → 192 | 26.9% → 27.3% |
+| DQN × DQN | 15.8% → 24.6% | 224 → 199 | 15.6% → 21.7% |
+| Dueling-Double × Dueling-Double | 13.8% → 29.6% | 233 → 194 | 13.5% → 17.5% |
+
+> [!INSIGHT]
+> **Two learned vessels genuinely avoid each other** — roughly doubling the
+> closest point of approach relative to two classical controllers — **but they
+> pay for it in mission completion.** The classical controller completes reliably
+> yet is blind to the moving partner. Which controller you pick, not how degraded
+> the sensing is, governs multi-vessel safety.
+
+<a name="fig-s4-tradeoff"></a>
+![Study 4 — safety–completion tradeoff](results_study4/figures/figS4_tradeoff_scatter.png)
+**Figure 6.** Study 4: the safety–completion tradeoff. Each point is a
+(pairing, condition) cell (c/m/h = clean/mid/harsh). The classical Rule×Rule
+pairing (upper-right) completes the most missions but collides most; the
+learned/mixed pairings sit lower-left — fewer inter-vessel collisions at the cost
+of completion.
+
+<a name="study5"></a>
+
+## 8. Study 5 — Round-Trip Missions and Two-Way Opposing Traffic
+
+**Design.** Study 5 adds two operational-realism patterns, each under the Study-2
+degradation grid. **Scenario A** (`TwoPhaseEnvV5`): a single vessel must complete
+a full port call — inbound → dock → outbound — in one episode (success = the full
+cycle); agents are the rule-based controller and DQN (48 cells). **Scenario B**
+(`TwoWayEnvV5`): an inbound and an outbound vessel share one lane in opposing
+directions, forcing head-on encounters; pairings `Rule×Rule`, `DQN×Rule`,
+`DQN×DQN` (72 cells). 8 shared seeds; 5,760 evaluation rows total.
+
+**Results — the outbound leg is costly, and classical control carries the
+traffic.** For the rule-based controller a full round trip succeeds only about
+**half** as often as merely docking (dock 43.3% → full-cycle **21.7%**, invariant
+to degradation, $d_z\approx1.25$); the learned DQN docks occasionally but almost
+never completes the round trip (≤5.4%). In two-way traffic the **pairing again
+dominates** (success partial $\eta^2=0.70$, collision rate 0.55, closest-approach
+0.56, all $p<0.001$; a significant pairing×condition interaction on head-on events,
+$\eta^2=0.20$). Two rule-based vessels transit reliably and meet head-on (42.5% of
+encounters collide, CPA ≈ 92, success 45.2%), while the DQN pairings **barely
+transit** — their low collision counts (0% at clean, rising to 21.7% at harsh as
+noise perturbs them into motion) are a **stall artefact**, not learned avoidance
+(2–10% success).
+
+> [!INSIGHT]
+> **A full port call is materially harder than a one-way transit** (the outbound
+> leg roughly halves success), and **classical control is what actually carries
+> two-way traffic** on this testbed — though, modelling only static hazards, it
+> meets oncoming vessels head-on. The value-based DQN does not master the harbour
+> transit, the round trip, or two-way traffic here; we verified this is a genuine
+> property of the harbour-goal mission (a plain `VesselEnvV3` DQN also fails it),
+> not a wiring bug, and we report it as an honest negative result consistent with
+> Studies 1 and 3.
+
+<a name="fig-s5-phase"></a>
+![Study 5 — two-phase success](results_study5/figures/figS5_twophase_dock_vs_full.png)
+**Figure 7.** Study 5 Scenario A: for each agent and condition, reaching the dock
+(light) succeeds far more often than completing the FULL inbound→dock→outbound
+cycle (dark). The outbound leg roughly halves the rule-based controller's success
+and all but eliminates the DQN's.
+
 ---
 
-## 7. Discussion
+## 9. Discussion
 
-The three studies converge on a coherent, and somewhat cautionary, picture for
+The five studies converge on a coherent, and somewhat cautionary, picture for
 DRL-based vessel autonomy on this class of task.
 
 **Algorithm choice is a weak lever.** Neither in clean conditions (Study 1) nor
@@ -393,14 +537,36 @@ for hybrid designs in which a classical, chart- and rules-aware layer guards
 safety-critical behaviour while learning is reserved for aspects where it
 demonstrably helps.
 
+**The control architecture governs multi-vessel safety.** When two vessels share
+the water (Study 4), the *pairing* — not the degradation level — dominated every
+inter-vessel outcome (partial $\eta^2$ up to 0.70). Two learned vessels genuinely
+learn to keep their distance, roughly doubling the closest point of approach, but
+sacrifice mission completion; two classical vessels complete reliably yet, blind
+to the moving partner, collide head-on. This is a **safety-versus-completion
+tradeoff** that any deployed multi-vessel system must confront, and it argues
+again for hybrid designs — a classical layer for reliable transit, a
+partner-aware layer (learned or explicit COLREGs) for avoidance.
+
+**Realistic missions are harder than one-way benchmarks, and learning can simply
+fail.** Requiring a full round trip (Study 5) roughly halved success; in two-way
+traffic the classical controller carried the flow while the value-based DQN failed
+to transit at all. We report this negative result plainly rather than tuning it
+away: on this testbed, at this budget, learned value-based control is not the
+capable navigator for full port calls or two-way traffic, whereas the classical
+controller is. One-way single-vessel success — the metric most papers report —
+substantially overstates end-to-end capability.
+
 **Reporting practice.** Task success alone was nearly insensitive to degradation
-even as collisions and channel violations climbed steeply. A paper reporting only
-success would have concluded the agents were robust; the multi-metric evaluation
-shows they are not. Safety-relevant metrics are not optional.
+even as collisions and channel violations climbed steeply; and one-way success
+concealed both the multi-vessel collision risk (Study 4) and the round-trip /
+two-way completion gap (Study 5). A paper reporting only single-vessel one-way
+success would have drawn a far rosier conclusion than the full multi-metric,
+multi-vessel evaluation supports. Safety-relevant and end-to-end metrics are not
+optional.
 
 ---
 
-## 8. Limitations
+## 10. Limitations
 
 - **Synthesized testbed.** `VesselEnvV2/V3` are research models on a synthesized
   port graph, not validated hydrodynamic or radio-frequency simulators. Absolute
@@ -417,25 +583,44 @@ shows they are not. Safety-relevant metrics are not optional.
   presumes an accurate chart. "COLREGs-aware" denotes rule-of-the-road *inspired*
   behaviour, not formal regulatory compliance.
 - **Training budget.** Small pure-in-browser networks trained for 130–150 episodes;
-  larger models or longer training could shift absolute performance.
+  larger models or longer training could shift absolute performance. In particular
+  the value-based DQN's failure on the harbour transit, the round trip, and
+  two-way traffic (Study 5) is a property of this testbed *at this budget*; it
+  should not be read as a general claim about value-based RL for maritime autonomy.
+- **Multi-vessel scope.** Studies 4–5 use exactly two vessels; higher-density
+  traffic ($n>2$) is future work. `MultiVesselEnvV4` / `TwoWayEnvV5` are
+  synthesized multi-vessel testbeds, and the COLREGs give-way role is a geometric
+  heuristic for attribution, not a certified rule engine. The 8-seed design gives
+  the pooled omnibus good power but floor-limits per-cell paired robustness tests
+  (as in Study 2).
 
 ---
 
-## 9. Conclusion
+## 11. Conclusion
 
-Across three reproducible experiments (19,630 evaluation episodes in total) we
-find that, for autonomous channel navigation on a Synthetic Port testbed, the choice
-among four value-based DRL variants is not a statistically meaningful lever;
-run-to-run seed variance dominates in clean conditions, and sensing/communication
-degradation dominates safety and precision under stress, affecting all variants in
-parallel. A simple COLREGs-aware, chart-following rule-based controller matches or
-exceeds the learned policies on success and is *significantly* more compliant with
-channel-keeping under degradation. We recommend that DRL navigation studies (i)
-budget enough seeds to separate algorithm from seed variance, (ii) evaluate under
-degraded perception/communication, (iii) always report safety-relevant metrics
-alongside success, and (iv) include a classical baseline. Promising future work
-includes hybrid classical–learned controllers, policy-gradient baselines, and
-validation on higher-fidelity simulators.
+Across five reproducible experiments (**31,150 evaluation episodes/rows** in
+total) we find that, for autonomous channel navigation on a Synthetic Port
+testbed, the choice among four value-based DRL variants is not a statistically
+meaningful lever; run-to-run seed variance dominates in clean conditions, and
+sensing/communication degradation dominates safety and precision under stress,
+affecting all variants in parallel. A simple COLREGs-aware, chart-following
+rule-based controller matches or exceeds the learned policies on success and is
+*significantly* more compliant with channel-keeping under degradation. Extending
+to two vessels, the **control pairing** — not the degradation level — governs
+inter-vessel safety: learned agents keep roughly twice the separation of two
+classical controllers but complete far fewer missions, a large
+safety-versus-completion tradeoff. Extending to realistic missions, a full
+round-trip port call roughly halves success, and classical control carries
+two-way traffic (meeting oncoming vessels head-on) while the learned agents fail
+to transit — an honest negative result. We recommend that DRL navigation studies
+(i) budget enough seeds to separate algorithm from seed variance, (ii) evaluate
+under degraded perception/communication, (iii) always report safety-relevant
+metrics alongside success, (iv) include a classical baseline, and (v) test
+multi-vessel encounters and full round-trip / two-way missions rather than
+single-vessel one-way transits alone. Promising future work includes hybrid
+classical–learned controllers, partner-aware and explicit-COLREGs avoidance
+layers, higher-density traffic, policy-gradient baselines, and validation on
+higher-fidelity simulators.
 
 ---
 
@@ -443,9 +628,10 @@ validation on higher-fidelity simulators.
 
 All raw per-episode data, aggregated statistics, tables, figures, frozen
 configurations, and analysis scripts are committed to the project repository under
-`results/` (Study 1), `results_v3/` (Study 2), `results_study3/` (Study 3), and
-`experiments/`. Interactive dashboards for each study, and a downloadable PDF of
-this manuscript, are available from the project site.
+`results/` (Study 1), `results_v3/` (Study 2), `results_study3/` (Study 3),
+`results_study4/` (Study 4), `results_study5/` (Study 5), and `experiments/`.
+Interactive dashboards for each study, and a downloadable PDF of this manuscript,
+are available from the project site.
 
 *(Appendix tables follow: full per-study configuration, performance, factorial,
 and pairwise-significance tables. See the Tables tab / Appendix.)*

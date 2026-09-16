@@ -1,7 +1,7 @@
 # Appendix
 
 This appendix collects the mathematical and statistical methods and the full
-result tables for all three studies. The tables themselves are rendered from the
+result tables for all five studies. The tables themselves are rendered from the
 committed CSVs in the **Appendix — Tables** tab; this document provides the
 formal methods reference and an index to those tables.
 
