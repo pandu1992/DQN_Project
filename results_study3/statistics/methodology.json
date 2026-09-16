@@ -1,0 +1,18 @@
+{
+  "design": "agent(5) x condition(3), shared 15 seeds (paired).",
+  "unit": "per-seed scalar (n=15).",
+  "normality_fraction_passing_shapiro": {
+    "collision_rate": 0.071,
+    "collisions_per_ep": 0.071,
+    "cte_mean": 0.067,
+    "docking_accuracy": 0.1,
+    "iala_violations": 0.1,
+    "mean_reward": 0.067,
+    "optimality_ratio": 0.083,
+    "success_rate": 0.067
+  },
+  "omnibus": "two-way factorial ANOVA y ~ agent*condition + seed (Type-II, partial eta^2).",
+  "primary_contrast": "RuleBased vs each DQN per condition; paired Wilcoxon exact + paired t; Holm + BH within (metric,condition); Cohen's d_z + Cliff's delta.",
+  "robustness": "clean vs harsh per agent, paired, n=15.",
+  "alpha": 0.05
+}
