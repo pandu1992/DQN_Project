@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Q1 Experimental Analysis — Bintulu Port DQN</title>
+<title>V3 Robustness Study — Bintulu Port DQN</title>
 <link rel="stylesheet" href="styles.css" />
-<!-- KaTeX for math rendering (report formulas). Falls back gracefully if unavailable. -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
       integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
@@ -34,38 +33,24 @@
   button.rp-dl { cursor:pointer; font-family:inherit; }
   .rp-dl-primary { background:var(--accent,#4da3ff); color:#04121f; border-color:var(--accent,#4da3ff); font-weight:700; }
   .rp-dl-primary:disabled { opacity:.6; cursor:default; }
-  /* report layout: sticky TOC + body */
   .report-layout { display:grid; grid-template-columns:230px 1fr; gap:26px; align-items:start; }
   .toc { position:sticky; top:70px; max-height:calc(100vh - 90px); overflow-y:auto;
     border:1px solid var(--line); border-radius:10px; padding:12px 12px 14px; background:#0c1526; font-size:12.5px; }
-  .toc-title { font-weight:700; color:#cfe0ff; font-size:12px; text-transform:uppercase;
-    letter-spacing:.5px; margin-bottom:8px; }
+  .toc-title { font-weight:700; color:#cfe0ff; font-size:12px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
   .toc-link { display:block; color:var(--muted); text-decoration:none; padding:4px 8px;
     border-radius:6px; border-left:2px solid transparent; line-height:1.35; margin-bottom:1px; }
   .toc-link:hover { color:var(--ink); background:rgba(77,163,255,.08); }
   .toc-link.active { color:var(--accent,#4da3ff); background:rgba(77,163,255,.12);
     border-left-color:var(--accent,#4da3ff); font-weight:600; }
   .toc-num { color:var(--accent,#4da3ff); font-weight:700; margin-right:2px; }
-  /* cross-reference links */
-  .xref { color:var(--accent,#4da3ff); text-decoration:none; border-bottom:1px dotted rgba(77,163,255,.5);
-    cursor:pointer; }
+  .xref { color:var(--accent,#4da3ff); text-decoration:none; border-bottom:1px dotted rgba(77,163,255,.5); cursor:pointer; }
   .xref:hover { border-bottom-style:solid; }
-  /* flash highlight when a cross-ref/TOC target is reached */
   .xref-flash { animation:xrefFlash 1.6s ease-out; border-radius:6px; }
-  @keyframes xrefFlash {
-    0% { background:rgba(255,207,107,.45); box-shadow:0 0 0 6px rgba(255,207,107,.25); }
-    100% { background:transparent; box-shadow:none; }
-  }
-  @media (max-width:900px) {
-    .report-layout { grid-template-columns:1fr; }
-    .toc { position:static; max-height:none; margin-bottom:8px; }
-  }
-  /* markdown */
+  @keyframes xrefFlash { 0% { background:rgba(255,207,107,.45); box-shadow:0 0 0 6px rgba(255,207,107,.25); } 100% { background:transparent; box-shadow:none; } }
+  @media (max-width:900px) { .report-layout { grid-template-columns:1fr; } .toc { position:static; max-height:none; margin-bottom:8px; } }
   .md h1 { font-size:24px; margin:22px 0 8px; }
-  .md h2 { scroll-margin-top:70px; }
-  .md h3 { scroll-margin-top:70px; }
-  .md h2 { font-size:19px; margin:26px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
-  .md h3 { font-size:15px; margin:18px 0 6px; color:#cfe0ff; }
+  .md h2 { scroll-margin-top:70px; font-size:19px; margin:26px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  .md h3 { scroll-margin-top:70px; font-size:15px; margin:18px 0 6px; color:#cfe0ff; }
   .md p, .md li { font-size:14px; line-height:1.65; color:var(--ink); text-align:justify; }
   .md code { background:#16223b; padding:1px 5px; border-radius:4px; font-size:12.5px; }
   .md pre { background:#0c1526; border:1px solid var(--line); border-radius:8px; padding:12px; overflow:auto; }
@@ -76,7 +61,6 @@
   .md th, .md td { border:1px solid var(--line); padding:6px 9px; text-align:left; }
   .md th { background:#16223b; }
   .md a { color:var(--accent,#4da3ff); }
-  /* csv tables */
   .csv-block { margin:0 0 30px; }
   .csv-title { font-size:15px; font-weight:700; margin:0 0 4px; color:#cfe0ff; }
   .csv-desc { font-size:12px; color:var(--muted); margin:0 0 8px; }
@@ -86,21 +70,18 @@
   table.csv th { background:#16223b; position:sticky; top:0; font-weight:700; }
   table.csv td:last-child { min-width:260px; color:var(--muted); }
   table.csv tr:nth-child(even) td { background:rgba(22,34,59,.35); }
-  /* figures */
   .fig-grid { display:grid; grid-template-columns:1fr; gap:26px; }
   .fig-card { border:1px solid var(--line); border-radius:10px; padding:12px; background:#0c1526; }
   .fig-card img { width:100%; height:auto; border-radius:6px; background:#fff; }
   .fig-cap { font-size:12px; color:var(--muted); line-height:1.55; margin:10px 2px 2px; }
   .fig-links { font-size:11px; margin-top:6px; }
   .loading { color:var(--muted); font-size:13px; padding:20px 0; }
-  /* admonitions (insight callouts) */
   .admonition { border:1px solid rgba(212,160,23,.5); border-left:4px solid #d4a017;
     background:rgba(212,160,23,.10); border-radius:8px; padding:12px 16px; margin:16px 0; }
   .admonition-insight { border-left-color:#ffcf6b; background:rgba(255,207,107,.10); border-color:rgba(255,207,107,.4); }
   .admonition-title { font-weight:700; color:#ffcf6b; font-size:13.5px; margin-bottom:6px; }
   .admonition-body { font-size:14px; line-height:1.65; color:var(--ink); text-align:justify; }
   .admonition-body strong { color:#fff; }
-  /* math */
   .math-display { margin:14px 0; overflow-x:auto; text-align:center; position:relative;
     display:flex; align-items:center; justify-content:center; gap:12px; scroll-margin-top:80px; }
   .math-display .math-eq { flex:0 1 auto; }
@@ -116,37 +97,34 @@
   <div class="rp-wrap">
     <div class="rp-hero">
       <div>
-        <h1>Q1 Experimental Analysis</h1>
-        <p>Comparative evaluation of 4 value-based DQN variants × PER × Noisy Nets · 10 seeds · 6,400 evaluation episodes</p>
+        <h1>V3 Robustness Study</h1>
+        <p>How 4 DQN variants withstand sensor noise &amp; communication packet-loss · 4×3×3 factorial · 6 seeds · 6,480 evaluation episodes</p>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <a class="rp-back btn" href="results_v3.html">🌊 V3 Robustness Study →</a>
-        <a class="rp-back btn" href="index.html">← Back to live simulation</a>
+        <a class="rp-back btn" href="results.html">← Q1 Study</a>
+        <a class="rp-back btn" href="index.html">Live simulation</a>
       </div>
     </div>
 
     <div class="rp-note">
-      <b>Scope:</b> Real metrics only — no fabricated baselines or metrics. Analysis runs on an offline
-      research build (<code>VesselEnvV2</code>) that reuses the same graph, edge attributes, and Dijkstra
-      planner as the live simulation. See the report's Limitations for what is out of scope.
-      <br /><b>See also:</b> the <a href="results_v3.html">V3 Robustness Study</a> — how these algorithms
-      withstand sensor noise &amp; communication packet-loss (collision, docking, CTE, IALA compliance).
+      <b>Scope:</b> Real safety/precision metrics (collision rate, docking accuracy, cross-track error,
+      IALA compliance) genuinely computed by <code>VesselEnvV3</code> — a physical/sensing/comms testbed on
+      the same graph. Separate follow-up to the Q1 study; the deployed web app is unaffected.
     </div>
 
     <div class="rp-tabs" id="rpTabs">
       <button class="rp-tab active" data-tab="report">📄 Full Report</button>
       <button class="rp-tab" data-tab="tables">📊 Tables</button>
       <button class="rp-tab" data-tab="figures">📈 Figures</button>
-      <button class="rp-tab" data-tab="methods">🧪 Design &amp; Reproducibility</button>
+      <button class="rp-tab" data-tab="methods">🧪 Extension &amp; Reproducibility</button>
     </div>
 
-    <!-- REPORT -->
     <section class="rp-panel active" id="panel-report">
       <div class="rp-downloads">
         <button class="rp-dl rp-dl-primary" id="btnDownloadPdf">⬇ Download report (PDF)</button>
-        <a class="rp-dl" href="results/reports/Q1_experimental_report.md" download>⬇ Report (Markdown)</a>
-        <a class="rp-dl" href="results/tables/all_tables.xlsx" download>⬇ All tables (Excel)</a>
-        <a class="rp-dl" href="results/raw/eval_episodes.csv" download>⬇ Raw eval data (CSV)</a>
+        <a class="rp-dl" href="results_v3/reports/V3_robustness_report.md" download>⬇ Report (Markdown)</a>
+        <a class="rp-dl" href="results_v3/tables/all_tables_v3.xlsx" download>⬇ All tables (Excel)</a>
+        <a class="rp-dl" href="results_v3/raw/eval_episodes.csv" download>⬇ Raw eval data (CSV)</a>
       </div>
       <div class="report-layout">
         <aside class="toc" id="tocNav"></aside>
@@ -154,30 +132,51 @@
       </div>
     </section>
 
-    <!-- TABLES -->
     <section class="rp-panel" id="panel-tables">
       <div class="rp-downloads">
-        <a class="rp-dl" href="results/tables/all_tables.xlsx" download>⬇ All tables (Excel workbook)</a>
+        <a class="rp-dl" href="results_v3/tables/all_tables_v3.xlsx" download>⬇ All tables (Excel workbook)</a>
       </div>
       <div id="tablesBody"><p class="loading">Loading tables…</p></div>
     </section>
 
-    <!-- FIGURES -->
     <section class="rp-panel" id="panel-figures">
       <div class="fig-grid" id="figuresBody"><p class="loading">Loading figures…</p></div>
     </section>
 
-    <!-- METHODS / REPRO -->
     <section class="rp-panel" id="panel-methods">
       <div class="rp-downloads">
-        <a class="rp-dl" href="results/reports/REPRODUCIBILITY.md" download>⬇ Reproducibility (Markdown)</a>
-        <a class="rp-dl" href="results/reports/SATURATED_BENCHMARK_FINDING.md" download>⬇ Benchmark finding (Markdown)</a>
-        <a class="rp-dl" href="results/configs/experiment_config.json" download>⬇ Frozen config (JSON)</a>
+        <a class="rp-dl" href="results/reports/V3_EXTENSION.md" download>⬇ V3 extension note (Markdown)</a>
+        <a class="rp-dl" href="results_v3/configs/experiment_config_v3.json" download>⬇ Frozen config (JSON)</a>
       </div>
       <div class="md" id="methodsBody"><p class="loading">Loading…</p></div>
     </section>
   </div>
 
+  <script>
+    // point the shared renderer at the V3 study artifacts
+    window.RESULTS_CONFIG = {
+      dir: "results_v3",
+      report: "reports/V3_robustness_report.md",
+      methodsDocs: ["../results/reports/V3_EXTENSION.md"],
+      pdfTitle: "Bintulu Port — DRL Robustness to Sensing & Communication Degradation",
+      pdfSubtitle: "V3 factorial robustness study (Algorithm \u00d7 Noise \u00d7 Packet-error)",
+      tables: [
+        ["table1_v3_configuration", "Table 1 — Study Configuration"],
+        ["table2_v3_navigation", "Table 2 — Navigation Performance Across Conditions"],
+        ["table3_v3_safety", "Table 3 — Safety (Collision Rate & IALA), Clean vs Harsh"],
+        ["table4_v3_precision", "Table 4 — Precision (Docking Accuracy & CTE)"],
+        ["table5_v3_factorial", "Table 5 — Factorial ANOVA Effects (partial \u03b7\u00b2)"],
+        ["table6_v3_robustness", "Table 6 — Robustness: Worst vs Clean (effect sizes)"],
+        ["table7_v3_ranking", "Table 7 — Robustness Ranking"],
+        ["table_v3_methods", "Table — Mathematical & Statistical Methods"]
+      ],
+      figures: [
+        "figV3_effect_sizes", "figV3_success_vs_noise", "figV3_collision_vs_noise",
+        "figV3_iala_vs_per", "figV3_docking_vs_per", "figV3_iala_heatmap",
+        "figV3_collision_heatmap", "figV3_robustness_ranking", "figV3_collision_distributions"
+      ]
+    };
+  </script>
   <script src="results_view.js"></script>
 </body>
 </html>

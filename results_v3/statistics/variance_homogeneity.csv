@@ -1,0 +1,10 @@
+metric,levene_W,p_value,homoscedastic
+success_rate,0.9919436052366561,0.4167370486344675,True
+mean_reward,0.7950389150517141,0.5110015415195661,True
+collision_rate,1.051230871590153,0.3917375071467454,True
+collisions_per_ep,1.0512308715901535,0.3917375071467454,True
+iala_violations,,,
+cte_mean,0.7609838773676759,0.5291464873338774,True
+docking_accuracy,,,
+dropped_frames,,,
+optimality_ratio,0.502441238942593,0.6851276701453524,True
