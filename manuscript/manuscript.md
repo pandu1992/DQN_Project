@@ -84,6 +84,14 @@ model rather than a validated simulator.
 > channel compliance). This reframes the design question from "which DRL variant
 > wins" to "what confers robustness in this domain".
 
+![Overview of the three studies](assets/schematics/study_comparison.png)
+**Figure 1 (Overview).** The three studies on one testbed, progressively richer:
+**Study 1** compares four DQN variants on a clean channel-navigation task;
+**Study 2** adds sensor noise, communication packet-loss, obstacles/collisions,
+IALA channel markers, docking accuracy and cross-track error; **Study 3** adds a
+COLREGs-aware rule-based baseline (which follows the charted channel) versus the
+DQN variants (which deviate under stress), at higher statistical power.
+
 ---
 
 ## 2. Related Work and Positioning
@@ -206,6 +214,14 @@ secondary) with **Holm** and **Benjamini–Hochberg** multiple-comparison
 correction. Paired effect size is Cohen's $d_z=\bar d/s_d$ (with Cliff's $\delta$
 for ordinal robustness). The shared-seed design makes all contrasts within-block
 (paired). $\alpha=0.05$ throughout.
+
+![Shared experimental workflow](assets/schematics/workflow.png)
+**Figure 2 (Workflow).** The shared experimental pipeline — seeded environment →
+train (RL) or run (rule-based) → held-out greedy evaluation → per-episode real
+metrics → per-seed aggregation → statistics → tables and figures — and how each
+study specializes it (environment build, factors, seed count, and metrics). Only
+these differ across the three studies; the graph, planner, agents, and
+statistical protocol are shared.
 
 <a name="study1"></a>
 
