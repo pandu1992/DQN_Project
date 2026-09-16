@@ -91,19 +91,21 @@
   <div class="rp-wrap">
     <div class="rp-hero">
       <div>
-        <h1>Robustness of Value-Based DRL for Autonomous Vessel Navigation vs a Classical COLREGs-Aware Baseline</h1>
-        <p>Unified manuscript merging Studies 1–3 · 19,630 evaluation episodes · reproducible testbed</p>
+        <h1>Robustness of Value-Based DRL for Autonomous Vessel Navigation vs a Classical COLREGs-Aware Baseline — Extended to Multi-Vessel Encounters &amp; Round-Trip Missions</h1>
+        <p>Unified manuscript merging Studies 1–5 · 31,150 evaluation episodes/rows · reproducible testbed</p>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <a class="rp-back btn" href="results.html">Study 1</a>
         <a class="rp-back btn" href="results_v3.html">Study 2</a>
         <a class="rp-back btn" href="results_study3.html">Study 3</a>
+        <a class="rp-back btn" href="results_study4.html">Study 4</a>
+        <a class="rp-back btn" href="results_study5.html">Study 5</a>
         <a class="rp-back btn" href="index.html">Live sim</a>
       </div>
     </div>
 
     <div class="rp-note">
-      <b>Draft manuscript</b> synthesizing all three studies into one Q1-style paper. Figures are embedded inline;
+      <b>Draft manuscript</b> synthesizing all five studies into one Q1-style paper. Figures are embedded inline;
       all tables are collected in the <b>Appendix — Tables</b> tab. Use <b>⬇ Download manuscript (PDF)</b> for a
       single self-contained document (paper + appendix methods + all tables). Every number is computed from the
       committed study data; nothing is fabricated.
@@ -148,7 +150,7 @@
       methodsDocs: ["appendix.md"],
       pdfLayout: "manuscript",
       pdfTitle: "Robustness of Value-Based DRL for Autonomous Vessel Navigation",
-      pdfSubtitle: "A three-study comparison against a classical COLREGs-aware baseline",
+      pdfSubtitle: "A five-study comparison against a classical COLREGs-aware baseline, extended to multi-vessel encounters and round-trip missions",
       figures: [
         {fig:"fig1_overall_performance", dir:"results", group:"Study 1 — Clean comparison"},
         {fig:"fig8_variance_dominance", dir:"results", group:"Study 1 — Clean comparison"},
@@ -161,7 +163,15 @@
         {fig:"figS3_iala_interaction", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
         {fig:"figS3_iala_harsh", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
         {fig:"figS3_effect_matrix", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
-        {fig:"figS3_success_vs_condition", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"}
+        {fig:"figS3_success_vs_condition", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
+        {fig:"figS4_tradeoff_scatter", dir:"results_study4", group:"Study 4 — Two independent vessels"},
+        {fig:"figS4_anova_eta2", dir:"results_study4", group:"Study 4 — Two independent vessels"},
+        {fig:"figS4_cpa_distributions", dir:"results_study4", group:"Study 4 — Two independent vessels"},
+        {fig:"figS4_collrate_vs_condition", dir:"results_study4", group:"Study 4 — Two independent vessels"},
+        {fig:"figS5_twophase_dock_vs_full", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"},
+        {fig:"figS5_twoway_tradeoff", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"},
+        {fig:"figS5_twoway_anova_eta2", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"},
+        {fig:"figS5_twoway_cpa_distributions", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"}
       ],
       tables: [
         {file:"table1_configuration", title:"Table S1.1 — Configuration", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
@@ -187,7 +197,21 @@
         {file:"table4_s3_factorial", title:"Table S3.4 — Factorial ANOVA (agent × condition)", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
         {file:"table5_s3_baseline_vs_dqn_harsh", title:"Table S3.5 — Rule-based vs DQN at harsh (sig + effect)", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
         {file:"table6_s3_robustness", title:"Table S3.6 — Robustness clean vs harsh", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
-        {file:"table7_s3_findings", title:"Table S3.7 — Overall findings", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"}
+        {file:"table7_s3_findings", title:"Table S3.7 — Overall findings", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
+        {file:"table1_s4_configuration", title:"Table S4.1 — Configuration", dir:"results_study4", group:"Appendix A.4 — Study 4 Tables"},
+        {file:"table2_s4_intervessel_safety", title:"Table S4.2 — Inter-vessel collision rate", dir:"results_study4", group:"Appendix A.4 — Study 4 Tables"},
+        {file:"table3_s4_tradeoff", title:"Table S4.3 — Safety–completion tradeoff", dir:"results_study4", group:"Appendix A.4 — Study 4 Tables"},
+        {file:"table4_s4_factorial", title:"Table S4.4 — Factorial ANOVA (pairing × condition)", dir:"results_study4", group:"Appendix A.4 — Study 4 Tables"},
+        {file:"table5_s4_reference_contrasts_harsh", title:"Table S4.5 — Reference vs pairing at harsh", dir:"results_study4", group:"Appendix A.4 — Study 4 Tables"},
+        {file:"table6_s4_robustness", title:"Table S4.6 — Robustness clean vs harsh", dir:"results_study4", group:"Appendix A.4 — Study 4 Tables"},
+        {file:"table7_s4_findings", title:"Table S4.7 — Overall findings", dir:"results_study4", group:"Appendix A.4 — Study 4 Tables"},
+        {file:"table1_s5_configuration", title:"Table S5.1 — Configuration", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
+        {file:"table2_s5_twophase_success", title:"Table S5.2 — Two-phase dock vs full-cycle", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
+        {file:"table3_s5_dock_vs_full", title:"Table S5.3 — Outbound-leg drop (significance)", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
+        {file:"table4_s5_twoway_safety", title:"Table S5.4 — Two-way collision rate", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
+        {file:"table5_s5_twoway_factorial", title:"Table S5.5 — Two-way factorial ANOVA", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
+        {file:"table6_s5_reference_contrasts_harsh", title:"Table S5.6 — Reference vs pairing at harsh", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
+        {file:"table7_s5_findings", title:"Table S5.7 — Overall findings", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"}
       ]
     };
   </script>
