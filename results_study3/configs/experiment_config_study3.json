@@ -1,0 +1,73 @@
+{
+  "experiment_id": "bintulu_study3_rulebased_vs_dqn_confirmatory",
+  "title": "Study 3 — Confirmatory replication with a COLREGs-aware rule-based baseline",
+  "description": "A confirmatory robustness study on VesselEnvV3 that (a) adds a non-learning COLREGs-aware rule-based controller as a classical baseline against the four value-based DQN variants, and (b) raises the seed count to 15 to give the paired post-hoc the statistical power that was floor-limited (n=6) in Study 2. Focused 3-condition grid (clean, mid, harsh) keeps the 15-seed design computationally feasible. All metrics are genuinely computed by the environment; nothing is fabricated. The deployed web app is unaffected.",
+  "date_designed": "2026-09-15",
+  "motivation": [
+    "Study 2 found large degradation effect sizes but its per-algorithm paired Wilcoxon tests were floor-limited at n=6 (min Holm-adjusted p ~ 0.125). Study 3 uses 15 seeds so paired tests can cross significance.",
+    "A rule-based COLREGs-aware controller provides a meaningful non-RL reference point: is a classical charted-channel-following controller more robust to sensing/comms degradation than learned value-based policies?"
+  ],
+  "environment": {
+    "module": "js/environmentV3.js",
+    "class": "VesselEnvV3",
+    "obs_dim": 28,
+    "n_actions": 4,
+    "max_episode_steps": 60,
+    "obstacle_count": 6,
+    "reuses": "same graph/edges/Dijkstra/buoys as Study 1 & 2"
+  },
+  "agents": {
+    "RuleBased": {
+      "module": "js/rulebased.js",
+      "class": "RuleBasedAgent",
+      "type": "non-learning classical controller",
+      "policy": "charted-channel following (Dijkstra plan) + COLREGs-style collision avoidance + channel/IALA keeping; uses the SENSED goal bearing from the observation so it is subject to the same sensor noise / comms loss as the RL agents; no training"
+    },
+    "DQN": {"module": "js/dqn.js", "type": "value-based RL"},
+    "DoubleDQN": {"module": "js/dqn.js", "type": "value-based RL"},
+    "DuelingDQN": {"module": "js/dqn.js", "type": "value-based RL"},
+    "DuelingDoubleDQN": {"module": "js/dqn.js", "type": "value-based RL"}
+  },
+  "factors": {
+    "agent": ["RuleBased", "DQN", "DoubleDQN", "DuelingDQN", "DuelingDoubleDQN"],
+    "condition": [
+      {"name": "clean", "noise_std": 0.0, "packet_error_rate": 0.0},
+      {"name": "mid", "noise_std": 0.1, "packet_error_rate": 0.2},
+      {"name": "harsh", "noise_std": 0.25, "packet_error_rate": 0.4}
+    ]
+  },
+  "n_agents": 5,
+  "n_conditions": 3,
+  "seeds": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],
+  "n_seeds": 15,
+  "seed_policy": "SAME 15 seeds for every (agent, condition) cell (shared/paired). env_seed = 42 + seed. RL agent-side RNG = mulberry32(seed*1000003 + 12345). RuleBased is deterministic given env_seed (its only randomness is any tie-breaking, which is fixed).",
+  "training": {
+    "train_episodes": 130,
+    "total_steps_budget": 3900,
+    "note": "RL agents train 130 episodes as in Study 2; RuleBased does not train (evaluated directly)."
+  },
+  "evaluation": {"eval_episodes": 30, "policy": "greedy (RL) / deterministic (RuleBased); held-out missions from the seeded stream"},
+  "total_cells": 225,
+  "cells_breakdown": "5 agents x 3 conditions x 15 seeds = 225 (45 RuleBased instant + 180 RL ~15s each)",
+  "total_eval_episodes": 6750,
+  "metrics": {
+    "navigation": ["success_rate", "mean_reward"],
+    "safety": ["collision_rate", "collisions_per_ep", "iala_violations"],
+    "precision": ["docking_accuracy", "cte_mean"],
+    "routing": ["optimality_ratio", "mean_steps"],
+    "comms": ["dropped_frames"]
+  },
+  "analysis_plan": {
+    "unit_of_analysis": "per-seed scalar (n=15 per cell)",
+    "assumption_checks": ["Shapiro-Wilk", "Levene/Brown-Forsythe"],
+    "omnibus": "two-way factorial: agent (5) x condition (3), y ~ agent*condition + seed, partial eta^2",
+    "primary_contrast": "RuleBased vs each DQN variant, per condition — paired Wilcoxon (n=15 now has power) + Holm + BH, Cohen's d_z + Cliff's delta",
+    "robustness": "clean vs harsh per agent (paired), with 15 seeds",
+    "alpha": 0.05
+  },
+  "scope_notes": [
+    "Confirmatory + baseline extension; separate from Study 1 (VesselEnvV2) and Study 2 (VesselEnvV3, 6 seeds).",
+    "VesselEnvV3 is a synthesized physical/sensing/comms testbed, not a validated hydrodynamic/RF simulator.",
+    "Deployed web application (environment.js) is unaffected; all Study 3 code is offline research."
+  ]
+}
