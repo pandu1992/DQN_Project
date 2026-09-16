@@ -1,0 +1,12 @@
+\begin{tabular}{lllllllll}
+\toprule
+Metric & Reference vs & Rule×Rule & Pairing & Δ & adj p (Holm) & Cohen d\_z & Sig & Interpretation \\
+\midrule
+Collision \% & DQN vs Rule & 42.50 & 30.83 & +11.67 & 0.195 & 0.60 & no & Rule×Rule 42.5 vs DQN vs Rule 30.8 (d\_z=0.60, medium); n.s. after Holm (adj p=0.195). \\
+Collision \% & DQN vs DQN & 42.50 & 21.67 & +20.83 & 0.078 & 1.01 & no & Rule×Rule 42.5 vs DQN vs DQN 21.7 (d\_z=1.01, large); n.s. after Holm (adj p=0.078). \\
+Min CPA & DQN vs Rule & 93.75 & 163.06 & -69.31 & 0.055 & -0.85 & no & Rule×Rule 93.7 vs DQN vs Rule 163.1 (d\_z=-0.85, large); n.s. after Holm (adj p=0.055). \\
+Min CPA & DQN vs DQN & 93.75 & 184.07 & -90.32 & 0.016 & -2.66 & yes & Rule×Rule 93.7 vs DQN vs DQN 184.1 (d\_z=-2.66, large); Holm-significant. \\
+Success \% & DQN vs Rule & 45.21 & 28.75 & +16.46 & 0.063 & 0.78 & no & Rule×Rule 45.2 vs DQN vs Rule 28.8 (d\_z=0.78, medium); n.s. after Holm (adj p=0.063). \\
+Success \% & DQN vs DQN & 45.21 & 9.58 & +35.62 & 0.031 & 1.62 & yes & Rule×Rule 45.2 vs DQN vs DQN 9.6 (d\_z=1.62, large); Holm-significant. \\
+\bottomrule
+\end{tabular}

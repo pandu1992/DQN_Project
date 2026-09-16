@@ -1,0 +1,9 @@
+{
+  "design_twophase": "agent(2) x condition(3), shared 8 seeds (paired).",
+  "design_twoway": "pairing(3) x condition(3), shared 8 seeds (paired).",
+  "unit": "per-seed cell scalar (n=8).",
+  "twophase_primary": "paired dock% vs full-cycle% per (agent,condition): does the outbound leg significantly cut success? Wilcoxon exact + Holm; d_z + Cliff's delta.",
+  "twoway_primary": "Rule_vs_Rule reference vs each pairing per condition; paired Wilcoxon + Holm + BH; d_z + Cliff's delta.",
+  "robustness": "clean vs harsh, paired, n=8.",
+  "alpha": 0.05
+}

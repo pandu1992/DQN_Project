@@ -1,0 +1,4 @@
+Pairing,Coll% clean,Coll% mid,Coll% harsh,Interpretation
+Rule vs Rule,42.5±15.3%,42.5±15.3%,42.5±15.3%,Competent classical traffic: vessels transit and meet head-on.
+DQN vs Rule,32.9±22.5%,25.4±13.2%,30.8±14.6%,Mixed: the classical vessel carries the traffic.
+DQN vs DQN,0.0±0.0%,7.5±4.4%,21.7±9.7%,"Learned pair barely transits (low collisions = a stall artefact, not safety)."
