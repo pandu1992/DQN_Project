@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manuscript — Robustness of DRL for Autonomous Vessel Navigation</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+        integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg"
+        crossorigin="anonymous"></script>
+<style>
+  .rp-wrap { max-width: 1080px; margin: 0 auto; padding: 18px 20px 80px; }
+  .rp-hero { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:8px; }
+  .rp-hero h1 { font-size:21px; margin:0 0 4px; max-width:760px; line-height:1.3; }
+  .rp-hero p { margin:0; color:var(--muted); font-size:13px; }
+  .rp-back { font-size:13px; }
+  .rp-tabs { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 18px; position:sticky; top:0;
+    background:var(--bg,#0a1220); padding:10px 0; z-index:5; border-bottom:1px solid var(--line); }
+  .rp-tab { padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:#16223b;
+    color:var(--ink); cursor:pointer; font-size:13px; }
+  .rp-tab.active { background:var(--accent,#4da3ff); color:#04121f; border-color:transparent; font-weight:700; }
+  .rp-panel { display:none; } .rp-panel.active { display:block; }
+  .rp-note { font-size:12px; color:var(--muted); background:rgba(77,163,255,.08);
+    border:1px solid rgba(77,163,255,.3); border-radius:8px; padding:10px 12px; margin:0 0 16px; line-height:1.5; }
+  .rp-downloads { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 22px; }
+  .rp-dl { font-size:12px; padding:7px 12px; border-radius:8px; background:#16223b; border:1px solid var(--line);
+    color:var(--ink); text-decoration:none; }
+  .rp-dl:hover { border-color:var(--accent,#4da3ff); }
+  button.rp-dl { cursor:pointer; font-family:inherit; }
+  .rp-dl-primary { background:var(--accent,#4da3ff); color:#04121f; border-color:var(--accent,#4da3ff); font-weight:700; }
+  .rp-dl-primary:disabled { opacity:.6; cursor:default; }
+  .report-layout { display:grid; grid-template-columns:240px 1fr; gap:26px; align-items:start; }
+  .toc { position:sticky; top:70px; max-height:calc(100vh - 90px); overflow-y:auto;
+    border:1px solid var(--line); border-radius:10px; padding:12px 12px 14px; background:#0c1526; font-size:12.5px; }
+  .toc-title { font-weight:700; color:#cfe0ff; font-size:12px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+  .toc-link { display:block; color:var(--muted); text-decoration:none; padding:4px 8px;
+    border-radius:6px; border-left:2px solid transparent; line-height:1.35; margin-bottom:1px; }
+  .toc-link:hover { color:var(--ink); background:rgba(77,163,255,.08); }
+  .toc-link.active { color:var(--accent,#4da3ff); background:rgba(77,163,255,.12); border-left-color:var(--accent,#4da3ff); font-weight:600; }
+  .toc-num { color:var(--accent,#4da3ff); font-weight:700; margin-right:2px; }
+  .xref { color:var(--accent,#4da3ff); text-decoration:none; border-bottom:1px dotted rgba(77,163,255,.5); cursor:pointer; }
+  .xref:hover { border-bottom-style:solid; }
+  .xref-flash { animation:xrefFlash 1.6s ease-out; border-radius:6px; }
+  @keyframes xrefFlash { 0% { background:rgba(255,207,107,.45); box-shadow:0 0 0 6px rgba(255,207,107,.25); } 100% { background:transparent; box-shadow:none; } }
+  @media (max-width:900px) { .report-layout { grid-template-columns:1fr; } .toc { position:static; max-height:none; margin-bottom:8px; } }
+  .md h1 { font-size:23px; margin:22px 0 8px; line-height:1.3; }
+  .md h2 { scroll-margin-top:70px; font-size:19px; margin:26px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  .md h3 { scroll-margin-top:70px; font-size:15px; margin:18px 0 6px; color:#cfe0ff; }
+  .md p, .md li { font-size:14px; line-height:1.7; color:var(--ink); text-align:justify; }
+  .md code { background:#16223b; padding:1px 5px; border-radius:4px; font-size:12.5px; }
+  .md pre { background:#0c1526; border:1px solid var(--line); border-radius:8px; padding:12px; overflow:auto; }
+  .md blockquote { border-left:3px solid var(--accent,#4da3ff); margin:12px 0; padding:6px 14px; background:rgba(77,163,255,.06); color:var(--muted); border-radius:0 8px 8px 0; }
+  .md table { border-collapse:collapse; width:100%; margin:12px 0; font-size:12.5px; display:block; overflow-x:auto; }
+  .md th, .md td { border:1px solid var(--line); padding:6px 9px; text-align:left; }
+  .md th { background:#16223b; }
+  .md a { color:var(--accent,#4da3ff); }
+  .md-fig { margin:16px 0; text-align:center; }
+  .md-fig img { max-width:100%; height:auto; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  .csv-block { margin:0 0 30px; } .csv-title { font-size:15px; font-weight:700; margin:0 0 4px; color:#cfe0ff; }
+  .csv-desc { font-size:12px; color:var(--muted); margin:0 0 8px; }
+  .csv-scroll { overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+  table.csv { border-collapse:collapse; width:100%; font-size:12px; }
+  table.csv th, table.csv td { border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top; }
+  table.csv th { background:#16223b; position:sticky; top:0; font-weight:700; }
+  table.csv td:last-child { min-width:260px; color:var(--muted); }
+  table.csv tr:nth-child(even) td { background:rgba(22,34,59,.35); }
+  .table-group, .fig-group { font-size:16px; font-weight:700; color:#ffcf6b; margin:26px 0 8px; padding-bottom:4px; border-bottom:1px solid rgba(255,207,107,.35); }
+  .fig-grid { display:grid; grid-template-columns:1fr; gap:26px; }
+  .fig-card { border:1px solid var(--line); border-radius:10px; padding:12px; background:#0c1526; }
+  .fig-card img { width:100%; height:auto; border-radius:6px; background:#fff; }
+  .fig-cap { font-size:12px; color:var(--muted); line-height:1.55; margin:10px 2px 2px; }
+  .fig-links { font-size:11px; margin-top:6px; }
+  .loading { color:var(--muted); font-size:13px; padding:20px 0; }
+  .admonition { border:1px solid rgba(212,160,23,.5); border-left:4px solid #d4a017; background:rgba(212,160,23,.10); border-radius:8px; padding:12px 16px; margin:16px 0; }
+  .admonition-insight { border-left-color:#ffcf6b; background:rgba(255,207,107,.10); border-color:rgba(255,207,107,.4); }
+  .admonition-title { font-weight:700; color:#ffcf6b; font-size:13.5px; margin-bottom:6px; }
+  .admonition-body { font-size:14px; line-height:1.65; color:var(--ink); text-align:justify; }
+  .admonition-body strong { color:#fff; }
+  .math-display { margin:14px 0; overflow-x:auto; text-align:center; position:relative; display:flex; align-items:center; justify-content:center; gap:12px; scroll-margin-top:80px; }
+  .math-display .math-eq { flex:0 1 auto; }
+  .eq-num { color:var(--muted); font-size:13px; flex:0 0 auto; min-width:34px; text-align:right; }
+  .katex { font-size:1.02em; color:var(--ink); } .katex-display { margin:12px 0; }
+  .math-fallback-block { display:block; white-space:pre-wrap; background:#0c1526; border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin:12px 0; font-size:12.5px; color:#cfe0ff; }
+  .math-fallback-inline { color:#cfe0ff; }
+</style>
+</head>
+<body>
+  <div class="rp-wrap">
+    <div class="rp-hero">
+      <div>
+        <h1>Robustness of Value-Based DRL for Autonomous Vessel Navigation vs a Classical COLREGs-Aware Baseline</h1>
+        <p>Unified manuscript merging Studies 1–3 · 19,630 evaluation episodes · reproducible testbed</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a class="rp-back btn" href="results.html">Study 1</a>
+        <a class="rp-back btn" href="results_v3.html">Study 2</a>
+        <a class="rp-back btn" href="results_study3.html">Study 3</a>
+        <a class="rp-back btn" href="index.html">Live sim</a>
+      </div>
+    </div>
+
+    <div class="rp-note">
+      <b>Draft manuscript</b> synthesizing all three studies into one Q1-style paper. Figures are embedded inline;
+      all tables are collected in the <b>Appendix — Tables</b> tab. Use <b>⬇ Download manuscript (PDF)</b> for a
+      single self-contained document (paper + appendix methods + all tables). Every number is computed from the
+      committed study data; nothing is fabricated.
+    </div>
+
+    <div class="rp-tabs" id="rpTabs">
+      <button class="rp-tab active" data-tab="report">📄 Manuscript</button>
+      <button class="rp-tab" data-tab="figures">📈 Figures</button>
+      <button class="rp-tab" data-tab="tables">📊 Appendix — Tables</button>
+      <button class="rp-tab" data-tab="methods">🧪 Appendix — Methods</button>
+    </div>
+
+    <section class="rp-panel active" id="panel-report">
+      <div class="rp-downloads">
+        <button class="rp-dl rp-dl-primary" id="btnDownloadPdf">⬇ Download manuscript (PDF)</button>
+        <a class="rp-dl" href="manuscript/manuscript.md" download>⬇ Manuscript (Markdown)</a>
+        <a class="rp-dl" href="manuscript/appendix.md" download>⬇ Appendix (Markdown)</a>
+      </div>
+      <div class="report-layout">
+        <aside class="toc" id="tocNav"></aside>
+        <div class="md" id="reportBody"><p class="loading">Loading manuscript…</p></div>
+      </div>
+    </section>
+
+    <section class="rp-panel" id="panel-figures">
+      <div class="fig-grid" id="figuresBody"><p class="loading">Loading figures…</p></div>
+    </section>
+
+    <section class="rp-panel" id="panel-tables">
+      <div id="tablesBody"><p class="loading">Loading appendix tables…</p></div>
+    </section>
+
+    <section class="rp-panel" id="panel-methods">
+      <div class="md" id="methodsBody"><p class="loading">Loading…</p></div>
+    </section>
+  </div>
+
+  <script>
+    window.RESULTS_CONFIG = {
+      dir: "manuscript",
+      report: "manuscript.md",
+      methodsDocs: ["appendix.md"],
+      pdfLayout: "manuscript",
+      pdfTitle: "Robustness of Value-Based DRL for Autonomous Vessel Navigation",
+      pdfSubtitle: "A three-study comparison against a classical COLREGs-aware baseline",
+      figures: [
+        {fig:"fig1_overall_performance", dir:"results", group:"Study 1 — Clean comparison"},
+        {fig:"fig8_variance_dominance", dir:"results", group:"Study 1 — Clean comparison"},
+        {fig:"fig5_ci_comparison", dir:"results", group:"Study 1 — Clean comparison"},
+        {fig:"fig6_significance_matrix", dir:"results", group:"Study 1 — Clean comparison"},
+        {fig:"figV3_effect_sizes", dir:"results_v3", group:"Study 2 — Robustness"},
+        {fig:"figV3_success_vs_noise", dir:"results_v3", group:"Study 2 — Robustness"},
+        {fig:"figV3_collision_vs_noise", dir:"results_v3", group:"Study 2 — Robustness"},
+        {fig:"figV3_iala_heatmap", dir:"results_v3", group:"Study 2 — Robustness"},
+        {fig:"figS3_iala_interaction", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
+        {fig:"figS3_iala_harsh", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
+        {fig:"figS3_effect_matrix", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
+        {fig:"figS3_success_vs_condition", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"}
+      ],
+      tables: [
+        {file:"table1_configuration", title:"Table S1.1 — Configuration", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table2_overall_performance", title:"Table S1.2 — Overall performance (mean ± 95% CI)", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table3_omnibus_algorithm", title:"Table S1.3 — Omnibus algorithm effect", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table4_factorial_effects", title:"Table S1.4 — Factorial effects (partial η²)", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table5_full_matrix", title:"Table S1.5 — Full 16-configuration matrix", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table6_statistical_comparison", title:"Table S1.6 — Pairwise comparison", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table7_robustness", title:"Table S1.7 — Enhancement / robustness", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table8_overall_findings", title:"Table S1.8 — Overall findings", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table_methods", title:"Table S1.M — Methods", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
+        {file:"table1_v3_configuration", title:"Table S2.1 — Configuration", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table2_v3_navigation", title:"Table S2.2 — Navigation across conditions", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table3_v3_safety", title:"Table S2.3 — Safety (collision & IALA)", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table4_v3_precision", title:"Table S2.4 — Precision (docking & CTE)", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table5_v3_factorial", title:"Table S2.5 — Factorial ANOVA (partial η²)", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table6_v3_robustness", title:"Table S2.6 — Robustness worst vs clean", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table7_v3_ranking", title:"Table S2.7 — Robustness ranking", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table_v3_methods", title:"Table S2.M — Methods", dir:"results_v3", group:"Appendix A.2 — Study 2 Tables"},
+        {file:"table1_s3_configuration", title:"Table S3.1 — Configuration", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
+        {file:"table2_s3_navigation", title:"Table S3.2 — Navigation success", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
+        {file:"table3_s3_safety", title:"Table S3.3 — Safety (collisions & IALA)", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
+        {file:"table4_s3_factorial", title:"Table S3.4 — Factorial ANOVA (agent × condition)", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
+        {file:"table5_s3_baseline_vs_dqn_harsh", title:"Table S3.5 — Rule-based vs DQN at harsh (sig + effect)", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
+        {file:"table6_s3_robustness", title:"Table S3.6 — Robustness clean vs harsh", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"},
+        {file:"table7_s3_findings", title:"Table S3.7 — Overall findings", dir:"results_study3", group:"Appendix A.3 — Study 3 Tables"}
+      ]
+    };
+  </script>
+  <script src="results_view.js"></script>
+</body>
+</html>

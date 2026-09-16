@@ -35,8 +35,23 @@
   };
   const CFG = Object.assign({}, DEFAULT_CFG, (typeof window !== "undefined" && window.RESULTS_CONFIG) || {});
   const P = (rel) => CFG.dir + "/" + rel;                 // report/doc path
-  const TPATH = (file, ext) => CFG.dir + "/tables/" + file + "." + ext;
-  const FPATH = (fig, ext) => CFG.dir + "/figures/" + fig + "." + ext;
+  // TPATH/FPATH take an optional explicit dir so a page can source tables/
+  // figures from MULTIPLE directories (e.g. the unified manuscript pulling
+  // figures from results/, results_v3/, results_study3/).
+  const TPATH = (file, ext, dir) => (dir || CFG.dir) + "/tables/" + file + "." + ext;
+  const FPATH = (fig, ext, dir) => (dir || CFG.dir) + "/figures/" + fig + "." + ext;
+
+  // Normalise a figure entry to {fig, dir, caption?} and a table entry to
+  // {file, title, dir, group?}. Existing formats (string fig, [file,title])
+  // still work and default to CFG.dir.
+  function normFig(e) {
+    if (typeof e === "string") return { fig: e, dir: CFG.dir };
+    return { fig: e.fig, dir: e.dir || CFG.dir, caption: e.caption, group: e.group };
+  }
+  function normTable(e) {
+    if (Array.isArray(e)) return { file: e[0], title: e[1], dir: CFG.dir };
+    return { file: e.file, title: e.title, dir: e.dir || CFG.dir, group: e.group };
+  }
 
   // ---------- math (KaTeX) handling ----------
   // We extract $$...$$ (display) and $...$ (inline) math into placeholders
@@ -222,6 +237,12 @@
         listBuf.push(line.replace(/^\s*\d+\.\s+/, ""));
       } else if (/^\s*---\s*$/.test(line)) {
         flushList(); html += "<hr/>";
+      } else if (/^\s*!\[[^\]]*\]\([^)]+\)\s*$/.test(line)) {
+        // block image -> figure
+        flushList();
+        const mimg = line.match(/^\s*!\[([^\]]*)\]\(([^)]+)\)/);
+        const alt = esc(mimg[1] || ""); const src = mimg[2];
+        html += `<figure class="md-fig"><img src="${src}" alt="${alt}"/></figure>`;
       } else if (line.trim() === "") {
         flushList();
       } else {
@@ -345,18 +366,27 @@
   async function loadTables() {
     const host = document.getElementById("tablesBody");
     host.innerHTML = "";
-    for (const [file, title] of TABLES) {
+    let lastGroup = null;
+    let gi = 0;
+    for (const raw of TABLES) {
+      const t = normTable(raw);
+      if (t.group && t.group !== lastGroup) {
+        lastGroup = t.group;
+        const gh = document.createElement("div");
+        gh.className = "table-group";
+        gh.textContent = t.group;
+        host.appendChild(gh);
+      }
       const block = document.createElement("div");
       block.className = "csv-block";
-      const tnum = (file.match(/table(\d+)/) || [])[1];
-      if (tnum) block.id = "table-" + tnum;
-      block.innerHTML = `<div class="csv-title">${title}</div>
-        <div class="csv-desc"><a class="rp-dl" href="${TPATH(file, "csv")}" download>⬇ CSV</a>
-        <a class="rp-dl" href="${TPATH(file, "tex")}" download>⬇ LaTeX</a></div>
+      gi += 1; block.id = "table-" + gi;  // sequential anchor for cross-refs
+      block.innerHTML = `<div class="csv-title">${t.title}</div>
+        <div class="csv-desc"><a class="rp-dl" href="${TPATH(t.file, "csv", t.dir)}" download>⬇ CSV</a>
+        <a class="rp-dl" href="${TPATH(t.file, "tex", t.dir)}" download>⬇ LaTeX</a></div>
         <div class="loading">Loading…</div>`;
       host.appendChild(block);
       try {
-        const txt = await fetchText(TPATH(file, "csv"));
+        const txt = await fetchText(TPATH(t.file, "csv", t.dir));
         block.querySelector(".loading").outerHTML = csvToTable(parseCSV(txt));
       } catch (e) {
         block.querySelector(".loading").textContent = "Could not load (" + e.message + ")";
@@ -364,28 +394,44 @@
     }
   }
 
+  const _capCache = {};   // dir -> {figname: caption}
+  async function captionsFor(dir) {
+    if (_capCache[dir]) return _capCache[dir];
+    const caps = {};
+    try {
+      const capMd = await fetchText(dir + "/figures/figures_captions.md");
+      const re = /##\s+(\S+)\s*\n+([^#]+)/g; let m;
+      while ((m = re.exec(capMd))) caps[m[1].trim()] = m[2].trim();
+    } catch (e) { /* optional */ }
+    _capCache[dir] = caps;
+    return caps;
+  }
+
   async function loadFigures() {
     const host = document.getElementById("figuresBody");
     host.innerHTML = "";
-    let captions = {};
-    try {
-      const capMd = await fetchText(P("figures/figures_captions.md"));
-      // parse "## name\n\ncaption"
-      const re = /##\s+(\S+)\s*\n+([^#]+)/g; let m;
-      while ((m = re.exec(capMd))) captions[m[1].trim()] = m[2].trim();
-    } catch (e) { /* captions optional */ }
-    for (const fig of FIGURES) {
+    let gi = 0;
+    let lastFigGroup = null;
+    for (const raw of FIGURES) {
+      const f = normFig(raw);
+      const caps = await captionsFor(f.dir);
+      if (f.group && f.group !== lastFigGroup) {
+        lastFigGroup = f.group;
+        const gh = document.createElement("div");
+        gh.className = "fig-group";
+        gh.textContent = f.group;
+        host.appendChild(gh);
+      }
       const card = document.createElement("div");
       card.className = "fig-card";
-      const fnum = (fig.match(/^fig(\d+)/) || [])[1];
-      if (fnum) card.id = "figure-" + fnum;
-      const cap = captions[fig] || "";
+      gi += 1; card.id = "figure-" + gi;   // sequential anchor for cross-refs
+      const cap = f.caption || caps[f.fig] || "";
       card.innerHTML =
-        `<img loading="lazy" src="${FPATH(fig, "png")}" alt="${fig}" />
+        `<img loading="lazy" src="${FPATH(f.fig, "png", f.dir)}" alt="${f.fig}" />
          <div class="fig-cap">${esc(cap)}</div>
          <div class="fig-links">
-           <a class="rp-dl" href="${FPATH(fig, "png")}" download>⬇ PNG (320 dpi)</a>
-           <a class="rp-dl" href="${FPATH(fig, "svg")}" download>⬇ SVG</a>
+           <a class="rp-dl" href="${FPATH(f.fig, "png", f.dir)}" download>⬇ PNG (320 dpi)</a>
+           <a class="rp-dl" href="${FPATH(f.fig, "svg", f.dir)}" download>⬇ SVG</a>
          </div>`;
       host.appendChild(card);
     }
@@ -406,26 +452,44 @@
       const methodsMd = await Promise.all(CFG.methodsDocs.map((d) => fetchText(P(d)).catch(() => "")));
       const capMd = await fetchText(P("figures/figures_captions.md")).catch(() => "");
 
-      const reportHtml = renderMarkdown(reportMd);
+      const manuscriptLayout = CFG.pdfLayout === "manuscript";
+      let reportHtml = renderMarkdown(reportMd);
+      // in manuscript layout, figures are embedded inline in the report; make
+      // their (relative) src absolute so the print window can load them.
+      if (manuscriptLayout) {
+        reportHtml = reportHtml.replace(/<img([^>]*?)src="(?!https?:|\/|data:)([^"]+)"/g,
+          (mm, pre, src) => `<img${pre}src="${base}${src}"`);
+      }
       const methodsHtml = methodsMd.map((d) => renderMarkdown(d)).join('<div class="pagebreak"></div>');
 
-      // tables section
-      let tablesHtml = "";
-      for (const [file, title] of TABLES) {
-        try {
-          const rows = parseCSV(await fetchText(TPATH(file, "csv")));
-          tablesHtml += `<h3 class="pdf-tbl-title">${esc(title)}</h3>` + csvToTable(rows);
-        } catch (e) { /* skip */ }
+      // figures section (absolute URLs so the print window can load them);
+      // multi-dir aware, captions loaded per dir.
+      let figsHtml = "";
+      let lastFigGroup = null;
+      for (const raw of FIGURES) {
+        const f = normFig(raw);
+        const caps = await captionsFor(f.dir);
+        if (f.group && f.group !== lastFigGroup) {
+          lastFigGroup = f.group;
+          figsHtml += `<h3 class="pdf-tbl-title">${esc(f.group)}</h3>`;
+        }
+        figsHtml += `<figure class="pdf-fig"><img src="${base}${FPATH(f.fig, "png", f.dir)}"/>` +
+                    `<figcaption>${esc(f.caption || caps[f.fig] || f.fig)}</figcaption></figure>`;
       }
 
-      // figures section (absolute URLs so the print window can load them)
-      const captions = {};
-      const re = /##\s+(\S+)\s*\n+([^#]+)/g; let m;
-      while ((m = re.exec(capMd))) captions[m[1].trim()] = m[2].trim();
-      let figsHtml = "";
-      for (const fig of FIGURES) {
-        figsHtml += `<figure class="pdf-fig"><img src="${base}${FPATH(fig, "png")}"/>` +
-                    `<figcaption>${esc(captions[fig] || fig)}</figcaption></figure>`;
+      // tables section (Appendix); multi-dir + group headers
+      let tablesHtml = "";
+      let lastTblGroup = null;
+      for (const raw of TABLES) {
+        const t = normTable(raw);
+        if (t.group && t.group !== lastTblGroup) {
+          lastTblGroup = t.group;
+          tablesHtml += `<h3 class="pdf-tbl-title" style="border-top:1px solid #999;padding-top:6pt">${esc(t.group)}</h3>`;
+        }
+        try {
+          const rows = parseCSV(await fetchText(TPATH(t.file, "csv", t.dir)));
+          tablesHtml += `<h4 class="pdf-tbl-title">${esc(t.title)}</h4>` + csvToTable(rows);
+        } catch (e) { /* skip */ }
       }
 
       const katexCss = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
@@ -471,9 +535,12 @@
   <div class="sub">Source: https://pandu1992.github.io/DQN_Project/</div>
 </div>
 ${reportHtml}
-<div class="pagebreak"></div><h2>Appendix A — All Tables</h2>${tablesHtml}
+${manuscriptLayout
+  ? `<div class="pagebreak"></div><h2>Appendix — Methods &amp; Reproducibility</h2>${methodsHtml}
+<div class="pagebreak"></div><h2>Appendix — Tables</h2>${tablesHtml}`
+  : `<div class="pagebreak"></div><h2>Appendix A — All Tables</h2>${tablesHtml}
 <div class="pagebreak"></div><h2>Appendix B — Figures</h2>${figsHtml}
-<div class="pagebreak"></div><h2>Appendix C — Methodology & Reproducibility</h2>${methodsHtml}
+<div class="pagebreak"></div><h2>Appendix C — Methodology & Reproducibility</h2>${methodsHtml}`}
 </body></html>`;
 
       const w = window.open("", "_blank");
