@@ -1,0 +1,18 @@
+\begin{tabular}{lllllllll}
+\toprule
+Metric & Reference vs & RB×2 mean & Pairing mean & Δ & adj p (Holm) & Cohen d\_z & Sig & Interpretation \\
+\midrule
+Collision \% & DQN vs DQN & 37.92 & 24.58 & +13.33 & 0.070 & 1.25 & no & Rule-based×2 37.9 vs DQN vs DQN 24.6 (d\_z=1.25, large); n.s. after Holm (adj p=0.070). \\
+Collision \% & Duel-Double vs Duel-Double & 37.92 & 29.58 & +8.33 & 0.176 & 0.56 & no & Rule-based×2 37.9 vs Duel-Double vs Duel-Double 29.6 (d\_z=0.56, medium); n.s. after Holm (adj p=0.176). \\
+Collision \% & DQN vs Rule-based & 37.92 & 25.83 & +12.08 & 0.109 & 0.81 & no & Rule-based×2 37.9 vs DQN vs Rule-based 25.8 (d\_z=0.81, large); n.s. after Holm (adj p=0.109). \\
+Min CPA & DQN vs DQN & 119.70 & 198.78 & -79.07 & 0.047 & -1.66 & yes & Rule-based×2 119.7 vs DQN vs DQN 198.8 (d\_z=-1.66, large); Holm-significant. \\
+Min CPA & Duel-Double vs Duel-Double & 119.70 & 193.68 & -73.98 & 0.047 & -1.49 & yes & Rule-based×2 119.7 vs Duel-Double vs Duel-Double 193.7 (d\_z=-1.49, large); Holm-significant. \\
+Min CPA & DQN vs Rule-based & 119.70 & 192.45 & -72.74 & 0.047 & -1.56 & yes & Rule-based×2 119.7 vs DQN vs Rule-based 192.4 (d\_z=-1.56, large); Holm-significant. \\
+Near-miss/enc & DQN vs DQN & 0.60 & 0.62 & -0.03 & 1.000 & -0.06 & no & Rule-based×2 0.6 vs DQN vs DQN 0.6 (d\_z=-0.06, negligible); n.s. after Holm (adj p=1.000). \\
+Near-miss/enc & Duel-Double vs Duel-Double & 0.60 & 0.55 & +0.05 & 1.000 & 0.08 & no & Rule-based×2 0.6 vs Duel-Double vs Duel-Double 0.5 (d\_z=0.08, negligible); n.s. after Holm (adj p=1.000). \\
+Near-miss/enc & DQN vs Rule-based & 0.60 & 0.28 & +0.32 & 0.164 & 0.92 & no & Rule-based×2 0.6 vs DQN vs Rule-based 0.3 (d\_z=0.92, large); n.s. after Holm (adj p=0.164). \\
+Success \% & DQN vs DQN & 48.33 & 21.67 & +26.67 & 0.023 & 2.00 & yes & Rule-based×2 48.3 vs DQN vs DQN 21.7 (d\_z=2.00, large); Holm-significant. \\
+Success \% & Duel-Double vs Duel-Double & 48.33 & 17.50 & +30.83 & 0.023 & 1.96 & yes & Rule-based×2 48.3 vs Duel-Double vs Duel-Double 17.5 (d\_z=1.96, large); Holm-significant. \\
+Success \% & DQN vs Rule-based & 48.33 & 27.29 & +21.04 & 0.023 & 1.99 & yes & Rule-based×2 48.3 vs DQN vs Rule-based 27.3 (d\_z=1.99, large); Holm-significant. \\
+\bottomrule
+\end{tabular}

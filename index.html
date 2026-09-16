@@ -205,10 +205,11 @@
       <div>
         <h2>Key Findings — Experimental Studies</h2>
         <p class="findings-sub">
-          Three rigorous, reproducible studies: <b>Study 1</b> — algorithm comparison
+          Rigorous, reproducible studies: <b>Study 1</b> — algorithm comparison
           (4 DQN variants × PER × Noisy Nets, 10 seeds); <b>Study 2</b> — robustness to sensor
           noise &amp; communication loss; <b>Study 3</b> — confirmatory replication with a
-          COLREGs-aware rule-based baseline. Highlights below; full reports, tables, figures,
+          COLREGs-aware rule-based baseline; <b>Study 4</b> — two independent vessels that must
+          avoid each other. Highlights below; full reports, tables, figures,
           and PDF in the analysis pages.
         </p>
       </div>
@@ -258,11 +259,13 @@
   <!-- ============ THREE STUDIES (conceptual overview + workflow) ============ -->
   <section class="studies" id="studies">
     <div class="studies-head">
-      <h2>The Three Studies — What Each Adds</h2>
+      <h2>The Studies — What Each Adds</h2>
       <p class="studies-sub">
-        All three studies run on the same seeded testbed and statistical protocol;
-        each is a progressively richer, more realistic evaluation. Read the unified
-        paper, or open any study's full report, tables, figures, and PDF.
+        Every study runs on the same seeded testbed and statistical protocol;
+        each is a progressively richer, more realistic evaluation. Studies 1–3
+        evaluate a single vessel; <b>Study 4</b> adds a second independent vessel that
+        must be avoided. Read the unified paper, or open any study's full report,
+        tables, figures, and PDF.
       </p>
     </div>
 
@@ -295,6 +298,12 @@
         <h3>Rule-based baseline</h3>
         <p>COLREGs rule-based vs DQN · 15 seeds. <b>Finding:</b> the baseline keeps the channel <b>~2× better</b> under stress (significant).</p>
         <span class="study-link">Open Study 3 →</span>
+      </a>
+      <a class="study-card s4" href="results_study4.html">
+        <span class="study-tag">Study 4</span>
+        <h3>Two vessels avoiding</h3>
+        <p>Two <b>independent</b> vessels share the channel · 4 pairings · 8 seeds. <b>Finding:</b> learned agents keep vessels <b>~2× farther apart</b> than two classical controllers — but complete fewer missions (a safety–completion tradeoff).</p>
+        <span class="study-link">Open Study 4 →</span>
       </a>
     </div>
 

@@ -236,15 +236,17 @@ canvas {
 .studies-fig img { width: 100%; height: auto; border-radius: 8px; display: block; }
 .studies-fig figcaption { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top: 10px; text-align: justify; }
 .studies-fig figcaption b { color: var(--ink); }
-.studies-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0; }
+.studies-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
 .study-card { display: block; text-decoration: none; background: #0c1526; border: 1px solid var(--line);
   border-radius: 12px; padding: 14px 16px; transition: border-color .15s, transform .15s; }
 .study-card:hover { transform: translateY(-2px); }
 .study-card.s1 { border-left: 4px solid #4da3ff; } .study-card.s1:hover { border-color: #4da3ff; }
 .study-card.s2 { border-left: 4px solid #ff9f43; } .study-card.s2:hover { border-color: #ff9f43; }
 .study-card.s3 { border-left: 4px solid #ffcf6b; } .study-card.s3:hover { border-color: #ffcf6b; }
+.study-card.s4 { border-left: 4px solid #55c99a; } .study-card.s4:hover { border-color: #55c99a; }
 .study-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
 .study-card.s1 .study-tag { color: #7fb2ff; } .study-card.s2 .study-tag { color: #ffb877; } .study-card.s3 .study-tag { color: #ffd98a; }
+.study-card.s4 .study-tag { color: #7fe0bd; }
 .study-card h3 { margin: 4px 0 6px; font-size: 15px; color: var(--ink); }
 .study-card p { margin: 0 0 8px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
 .study-card p b { color: var(--ink); }

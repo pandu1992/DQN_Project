@@ -1,0 +1,20 @@
+{
+  "design": "pairing(4) x condition(3), shared 8 seeds (paired).",
+  "unit": "per-seed cell scalar (n=8). Inter-vessel metrics per encounter; navigation/physical per vessel (both) then averaged.",
+  "normality_fraction_passing_shapiro": {
+    "cte_mean": 0.083,
+    "docking_accuracy": 0.125,
+    "give_way_events": 0.083,
+    "mean_reward": 0.083,
+    "min_cpa": 0.083,
+    "near_misses_per_ep": 0.083,
+    "optimality_ratio": 0.111,
+    "success_rate": 0.083,
+    "vessel_collision_rate": 0.083,
+    "vessel_collisions_per_ep": 0.083
+  },
+  "omnibus": "two-way factorial ANOVA y ~ pairing*condition + seed (Type-II, partial eta^2).",
+  "primary_contrast": "RuleBased_vs_RuleBased (classical reference) vs each learned/mixed pairing per condition; paired Wilcoxon exact + paired t; Holm + BH within (metric,condition); Cohen's d_z + Cliff's delta.",
+  "robustness": "clean vs harsh per pairing, paired, n=8.",
+  "alpha": 0.05
+}

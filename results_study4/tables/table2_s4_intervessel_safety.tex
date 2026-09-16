@@ -1,0 +1,10 @@
+\begin{tabular}{lllll}
+\toprule
+Pairing & Coll\% clean & Coll\% mid & Coll\% harsh & Interpretation \\
+\midrule
+DQN vs DQN & 15.8±7.7\% & 23.8±6.6\% & 24.6±6.3\% & Min CPA 224→199 clean→harsh. Learned/mixed pair keeps vessels farther apart (larger CPA, fewer collisions). \\
+Duel-Double vs Duel-Double & 13.8±7.4\% & 19.6±8.6\% & 29.6±5.3\% & Min CPA 233→194 clean→harsh. Learned/mixed pair keeps vessels farther apart (larger CPA, fewer collisions). \\
+DQN vs Rule-based & 23.3±7.6\% & 27.9±10.6\% & 25.8±8.4\% & Min CPA 186→192 clean→harsh. Learned/mixed pair keeps vessels farther apart (larger CPA, fewer collisions). \\
+Rule-based vs Rule-based & 40.8±10.9\% & 40.8±10.9\% & 37.9±10.9\% & Min CPA 118→120 clean→harsh. Classical pair ignores the moving partner → highest collision rate. \\
+\bottomrule
+\end{tabular}

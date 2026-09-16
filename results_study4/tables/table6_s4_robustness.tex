@@ -1,0 +1,22 @@
+\begin{tabular}{lllllll}
+\toprule
+Pairing & Metric & Clean & Harsh & Δ & Cohen d\_z & Interpretation \\
+\midrule
+DQN vs DQN & Collision \% & 15.83 & 24.58 & +8.75 & 0.81 & 15.8→24.6 (d\_z=0.81, large); not Holm-sig at n=8 (see omnibus). \\
+DQN vs DQN & Min CPA & 224.15 & 198.78 & -25.37 & -0.59 & 224.1→198.8 (d\_z=-0.59, medium); not Holm-sig at n=8 (see omnibus). \\
+DQN vs DQN & Near-miss/enc & 0.76 & 0.62 & -0.14 & -0.20 & 0.8→0.6 (d\_z=-0.20, small); not Holm-sig at n=8 (see omnibus). \\
+DQN vs DQN & Success \% & 15.62 & 21.67 & +6.04 & 0.54 & 15.6→21.7 (d\_z=0.54, medium); not Holm-sig at n=8 (see omnibus). \\
+Duel-Double vs Duel-Double & Collision \% & 13.75 & 29.58 & +15.83 & 1.72 & 13.8→29.6 (d\_z=1.72, large); not Holm-sig at n=8 (see omnibus). \\
+Duel-Double vs Duel-Double & Min CPA & 233.06 & 193.68 & -39.37 & -1.34 & 233.1→193.7 (d\_z=-1.34, large); not Holm-sig at n=8 (see omnibus). \\
+Duel-Double vs Duel-Double & Near-miss/enc & 0.51 & 0.55 & +0.04 & 0.08 & 0.5→0.5 (d\_z=0.08, negligible); not Holm-sig at n=8 (see omnibus). \\
+Duel-Double vs Duel-Double & Success \% & 13.54 & 17.50 & +3.96 & 0.52 & 13.5→17.5 (d\_z=0.52, medium); not Holm-sig at n=8 (see omnibus). \\
+DQN vs Rule-based & Collision \% & 23.33 & 25.83 & +2.50 & 0.59 & 23.3→25.8 (d\_z=0.59, medium); not Holm-sig at n=8 (see omnibus). \\
+DQN vs Rule-based & Min CPA & 185.70 & 192.45 & +6.75 & 0.18 & 185.7→192.4 (d\_z=0.18, negligible); not Holm-sig at n=8 (see omnibus). \\
+DQN vs Rule-based & Near-miss/enc & 0.14 & 0.28 & +0.14 & 1.60 & 0.1→0.3 (d\_z=1.60, large); Holm-sig. \\
+DQN vs Rule-based & Success \% & 26.88 & 27.29 & +0.42 & 0.04 & 26.9→27.3 (d\_z=0.04, negligible); not Holm-sig at n=8 (see omnibus). \\
+Rule-based vs Rule-based & Collision \% & 40.83 & 37.92 & -2.92 & -1.37 & 40.8→37.9 (d\_z=-1.37, large); not Holm-sig at n=8 (see omnibus). \\
+Rule-based vs Rule-based & Min CPA & 117.74 & 119.70 & +1.96 & 0.80 & 117.7→119.7 (d\_z=0.80, large); not Holm-sig at n=8 (see omnibus). \\
+Rule-based vs Rule-based & Near-miss/enc & 0.53 & 0.60 & +0.07 & 0.82 & 0.5→0.6 (d\_z=0.82, large); not Holm-sig at n=8 (see omnibus). \\
+Rule-based vs Rule-based & Success \% & 48.33 & 48.33 & +0.00 & 0.00 & 48.3→48.3 (d\_z=0.00, negligible); not Holm-sig at n=8 (see omnibus). \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,10 @@
+\begin{tabular}{llllll}
+\toprule
+Pairing & Success \% (clean) & Coll/enc (clean) & Near-miss/enc (clean) & Min CPA (clean) & Interpretation \\
+\midrule
+DQN vs DQN & 15.6 & 0.18 & 0.76 & 224 & Success 16\%; collisions/enc 0.18; CPA 224. Avoids the partner (fewer collisions, larger CPA) at a large completion cost. \\
+Duel-Double vs Duel-Double & 13.5 & 0.16 & 0.51 & 233 & Success 14\%; collisions/enc 0.16; CPA 233. Avoids the partner (fewer collisions, larger CPA) at a large completion cost. \\
+DQN vs Rule-based & 26.9 & 0.38 & 0.14 & 186 & Success 27\%; collisions/enc 0.38; CPA 186. Avoids the partner (fewer collisions, larger CPA) at a large completion cost. \\
+Rule-based vs Rule-based & 48.3 & 1.07 & 0.53 & 118 & Success 48\%; collisions/enc 1.07; CPA 118. High completion but blind to partner (most collisions, smallest CPA). \\
+\bottomrule
+\end{tabular}
