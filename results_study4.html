@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Study 4 — Two Independent Vessels Avoiding Each Other (Synthetic Port DQN)</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+        integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg"
+        crossorigin="anonymous"></script>
+<style>
+  .rp-wrap { max-width: 1080px; margin: 0 auto; padding: 18px 20px 80px; }
+  .rp-hero { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:8px; }
+  .rp-hero h1 { font-size:22px; margin:0 0 4px; }
+  .rp-hero p { margin:0; color:var(--muted); font-size:13px; }
+  .rp-back { font-size:13px; }
+  .rp-tabs { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 18px; position:sticky; top:0;
+    background:var(--bg,#0a1220); padding:10px 0; z-index:5; border-bottom:1px solid var(--line); }
+  .rp-tab { padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:#16223b;
+    color:var(--ink); cursor:pointer; font-size:13px; }
+  .rp-tab.active { background:var(--accent,#4da3ff); color:#04121f; border-color:transparent; font-weight:700; }
+  .rp-panel { display:none; }
+  .rp-panel.active { display:block; }
+  .rp-note { font-size:12px; color:var(--muted); background:rgba(77,163,255,.08);
+    border:1px solid rgba(77,163,255,.3); border-radius:8px; padding:10px 12px; margin:0 0 16px; line-height:1.5; }
+  .rp-downloads { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 22px; }
+  .rp-dl { font-size:12px; padding:7px 12px; border-radius:8px; background:#16223b; border:1px solid var(--line);
+    color:var(--ink); text-decoration:none; }
+  .rp-dl:hover { border-color:var(--accent,#4da3ff); }
+  button.rp-dl { cursor:pointer; font-family:inherit; }
+  .rp-dl-primary { background:var(--accent,#4da3ff); color:#04121f; border-color:var(--accent,#4da3ff); font-weight:700; }
+  .rp-dl-primary:disabled { opacity:.6; cursor:default; }
+  .report-layout { display:grid; grid-template-columns:230px 1fr; gap:26px; align-items:start; }
+  .toc { position:sticky; top:70px; max-height:calc(100vh - 90px); overflow-y:auto;
+    border:1px solid var(--line); border-radius:10px; padding:12px 12px 14px; background:#0c1526; font-size:12.5px; }
+  .toc-title { font-weight:700; color:#cfe0ff; font-size:12px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+  .toc-link { display:block; color:var(--muted); text-decoration:none; padding:4px 8px;
+    border-radius:6px; border-left:2px solid transparent; line-height:1.35; margin-bottom:1px; }
+  .toc-link:hover { color:var(--ink); background:rgba(77,163,255,.08); }
+  .toc-link.active { color:var(--accent,#4da3ff); background:rgba(77,163,255,.12);
+    border-left-color:var(--accent,#4da3ff); font-weight:600; }
+  .toc-num { color:var(--accent,#4da3ff); font-weight:700; margin-right:2px; }
+  .xref { color:var(--accent,#4da3ff); text-decoration:none; border-bottom:1px dotted rgba(77,163,255,.5); cursor:pointer; }
+  .xref:hover { border-bottom-style:solid; }
+  .xref-flash { animation:xrefFlash 1.6s ease-out; border-radius:6px; }
+  @keyframes xrefFlash { 0% { background:rgba(255,207,107,.45); box-shadow:0 0 0 6px rgba(255,207,107,.25); } 100% { background:transparent; box-shadow:none; } }
+  @media (max-width:900px) { .report-layout { grid-template-columns:1fr; } .toc { position:static; max-height:none; margin-bottom:8px; } }
+  .md h1 { font-size:24px; margin:22px 0 8px; }
+  .md h2 { scroll-margin-top:70px; font-size:19px; margin:26px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  .md h3 { scroll-margin-top:70px; font-size:15px; margin:18px 0 6px; color:#cfe0ff; }
+  .md p, .md li { font-size:14px; line-height:1.65; color:var(--ink); text-align:justify; }
+  .md code { background:#16223b; padding:1px 5px; border-radius:4px; font-size:12.5px; }
+  .md pre { background:#0c1526; border:1px solid var(--line); border-radius:8px; padding:12px; overflow:auto; }
+  .md pre code { background:none; padding:0; }
+  .md blockquote { border-left:3px solid var(--accent,#4da3ff); margin:12px 0; padding:6px 14px;
+    background:rgba(77,163,255,.06); color:var(--muted); border-radius:0 8px 8px 0; }
+  .md table { border-collapse:collapse; width:100%; margin:12px 0; font-size:12.5px; display:block; overflow-x:auto; }
+  .md th, .md td { border:1px solid var(--line); padding:6px 9px; text-align:left; }
+  .md th { background:#16223b; }
+  .md a { color:var(--accent,#4da3ff); }
+  .csv-block { margin:0 0 30px; }
+  .csv-title { font-size:15px; font-weight:700; margin:0 0 4px; color:#cfe0ff; }
+  .csv-desc { font-size:12px; color:var(--muted); margin:0 0 8px; }
+  .csv-scroll { overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+  table.csv { border-collapse:collapse; width:100%; font-size:12px; }
+  table.csv th, table.csv td { border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top; }
+  table.csv th { background:#16223b; position:sticky; top:0; font-weight:700; }
+  table.csv td:last-child { min-width:260px; color:var(--muted); }
+  table.csv tr:nth-child(even) td { background:rgba(22,34,59,.35); }
+  .fig-grid { display:grid; grid-template-columns:1fr; gap:26px; }
+  .fig-card { border:1px solid var(--line); border-radius:10px; padding:12px; background:#0c1526; }
+  .fig-card img { width:100%; height:auto; border-radius:6px; background:#fff; }
+  .fig-cap { font-size:12px; color:var(--muted); line-height:1.55; margin:10px 2px 2px; }
+  .fig-links { font-size:11px; margin-top:6px; }
+  .loading { color:var(--muted); font-size:13px; padding:20px 0; }
+  .admonition { border:1px solid rgba(212,160,23,.5); border-left:4px solid #d4a017;
+    background:rgba(212,160,23,.10); border-radius:8px; padding:12px 16px; margin:16px 0; }
+  .admonition-insight { border-left-color:#ffcf6b; background:rgba(255,207,107,.10); border-color:rgba(255,207,107,.4); }
+  .admonition-title { font-weight:700; color:#ffcf6b; font-size:13.5px; margin-bottom:6px; }
+  .admonition-body { font-size:14px; line-height:1.65; color:var(--ink); text-align:justify; }
+  .admonition-body strong { color:#fff; }
+  .math-display { margin:14px 0; overflow-x:auto; text-align:center; position:relative;
+    display:flex; align-items:center; justify-content:center; gap:12px; scroll-margin-top:80px; }
+  .math-display .math-eq { flex:0 1 auto; }
+  .eq-num { color:var(--muted); font-size:13px; flex:0 0 auto; min-width:34px; text-align:right; }
+  .katex { font-size:1.02em; color:var(--ink); }
+  .katex-display { margin:12px 0; }
+  .math-fallback-block { display:block; white-space:pre-wrap; background:#0c1526; border:1px solid var(--line);
+    border-radius:8px; padding:10px 12px; margin:12px 0; font-size:12.5px; color:#cfe0ff; }
+  .math-fallback-inline { color:#cfe0ff; }
+</style>
+</head>
+<body>
+  <div class="rp-wrap">
+    <div class="rp-hero">
+      <div>
+        <h1>Study 4 — Two Independent Autonomous Vessels That Must Avoid Each Other</h1>
+        <p>Do learned policies avoid a moving partner as well as a classical controller? · 4 pairings × 3 conditions · 8 seeds · 2,880 encounters (5,760 vessel rows)</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a class="rp-back btn" href="results_study3.html">← Study 3</a>
+        <a class="rp-back btn" href="results_v3.html">Study 2</a>
+        <a class="rp-back btn" href="manuscript.html">📄 Paper</a>
+        <a class="rp-back btn" href="index.html">Live sim</a>
+      </div>
+    </div>
+
+    <div class="rp-note">
+      <b>Scope:</b> Two <b>independent</b> vessels (no central controller), each with its own policy and mission,
+      share the channel on <code>MultiVesselEnvV4</code> and must avoid <b>inter-vessel collisions</b> — combined with
+      the Study-2 sensing/comms degradation grid. Real inter-vessel geometry (collision, near-miss, closest point of
+      approach) + each vessel's own Study-2 metrics. The deployed web app is unaffected.
+    </div>
+
+    <details class="schematic-block" open>
+      <summary>Where this fits — the study progression at a glance</summary>
+      <div class="schematic-body">
+        <figure>
+          <img loading="lazy" src="assets/schematics/study_comparison.png"
+               alt="Conceptual comparison of the single-vessel studies (1-3) and the multi-vessel extension" />
+          <figcaption>
+            <span class="schematic-here">You are viewing Study 4 — two independent vessels</span>: the multi-agent
+            extension of the single-vessel testbed. Studies 1–3 evaluated one vessel; Study 4 puts <b>two</b> independent
+            vessels on the same channel and measures whether they avoid each other, under the same degradation grid.
+          </figcaption>
+        </figure>
+        <figure>
+          <img loading="lazy" src="assets/schematics/workflow.png"
+               alt="Shared experimental pipeline and per-study specialization" />
+          <figcaption><b>Shared workflow.</b> The same run → aggregate → stats → tables → figures pipeline;
+            Study 4 adds the inter-vessel geometry layer.</figcaption>
+        </figure>
+        <div class="schematic-links">
+          <a href="results.html">← Study 1</a><a href="results_v3.html">← Study 2</a><a href="results_study3.html">← Study 3</a><a href="manuscript.html">📄 Unified paper →</a>
+        </div>
+      </div>
+    </details>
+
+    <div class="rp-tabs" id="rpTabs">
+      <button class="rp-tab active" data-tab="report">📄 Full Report</button>
+      <button class="rp-tab" data-tab="tables">📊 Tables</button>
+      <button class="rp-tab" data-tab="figures">📈 Figures</button>
+      <button class="rp-tab" data-tab="methods">🧪 Design &amp; Reproducibility</button>
+    </div>
+
+    <section class="rp-panel active" id="panel-report">
+      <div class="rp-downloads">
+        <button class="rp-dl rp-dl-primary" id="btnDownloadPdf">⬇ Download report (PDF)</button>
+        <a class="rp-dl" href="results_study4/reports/Study4_report.md" download>⬇ Report (Markdown)</a>
+        <a class="rp-dl" href="results_study4/tables/all_tables_study4.xlsx" download>⬇ All tables (Excel)</a>
+        <a class="rp-dl" href="results_study4/raw/eval_episodes.csv" download>⬇ Raw eval data (CSV)</a>
+      </div>
+      <div class="report-layout">
+        <aside class="toc" id="tocNav"></aside>
+        <div class="md" id="reportBody"><p class="loading">Loading report…</p></div>
+      </div>
+    </section>
+
+    <section class="rp-panel" id="panel-tables">
+      <div class="rp-downloads">
+        <a class="rp-dl" href="results_study4/tables/all_tables_study4.xlsx" download>⬇ All tables (Excel workbook)</a>
+      </div>
+      <div id="tablesBody"><p class="loading">Loading tables…</p></div>
+    </section>
+
+    <section class="rp-panel" id="panel-figures">
+      <div class="fig-grid" id="figuresBody"><p class="loading">Loading figures…</p></div>
+    </section>
+
+    <section class="rp-panel" id="panel-methods">
+      <div class="rp-downloads">
+        <a class="rp-dl" href="results_study4/configs/experiment_config_study4.json" download>⬇ Frozen config (JSON)</a>
+      </div>
+      <div class="md" id="methodsBody"><p class="loading">Loading…</p></div>
+    </section>
+  </div>
+
+  <script>
+    // point the shared renderer at the Study 4 artifacts
+    window.RESULTS_CONFIG = {
+      dir: "results_study4",
+      report: "reports/Study4_report.md",
+      methodsDocs: [],
+      pdfTitle: "Synthetic Port — Two Independent Vessels Avoiding Each Other (Study 4)",
+      pdfSubtitle: "Multi-agent inter-vessel collision avoidance under sensing/comms degradation",
+      tables: [
+        ["table1_s4_configuration", "Table 1 — Study Configuration"],
+        ["table2_s4_intervessel_safety", "Table 2 — Inter-Vessel Collision Rate Across Conditions"],
+        ["table3_s4_tradeoff", "Table 3 — The Safety\u2013Completion Tradeoff (clean)"],
+        ["table4_s4_factorial", "Table 4 — Factorial ANOVA (Pairing \u00d7 Condition, partial \u03b7\u00b2)"],
+        ["table5_s4_reference_contrasts_harsh", "Table 5 — Classical Reference vs Each Pairing at Harsh"],
+        ["table6_s4_robustness", "Table 6 — Robustness: Clean vs Harsh per Pairing"],
+        ["table7_s4_findings", "Table 7 — Overall Findings"]
+      ],
+      figures: [
+        "figS4_tradeoff_scatter", "figS4_anova_eta2", "figS4_cpa_distributions",
+        "figS4_collrate_vs_condition", "figS4_cpa_vs_condition",
+        "figS4_collisions_harsh", "figS4_success_harsh"
+      ]
+    };
+  </script>
+  <script src="results_view.js"></script>
+</body>
+</html>

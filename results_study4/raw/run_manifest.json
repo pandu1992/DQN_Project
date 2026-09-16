@@ -1,0 +1,394 @@
+{
+  "experiment_id": "synthetic_port_study4_multivessel_avoidance",
+  "total_cells": 96,
+  "eval_rows": 5760,
+  "cells": [
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DDQN_vs_DDQN_harsh",
+      "seed": 7
+    }
+  ],
+  "nan_inf_flags": [],
+  "rebuilt_from_csv": true,
+  "note": "Manifest rebuilt from the final eval CSV after sharded/resumed runs; each cell = 8 seeds x 30 episodes x 2 vessels = 60 rows."
+}

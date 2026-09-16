@@ -1,0 +1,7 @@
+Factor,Levels / Value,Detail,Interpretation
+Vessels,"Two INDEPENDENT autonomous vessels (A, B)",no central controller,Each has its own policy + mission; they must avoid each other.
+Pairings,"DQN×DQN, DuelDouble×DuelDouble, DQN×Rule-based, Rule-based×Rule-based","2 symmetric-learned, 1 mixed, 1 classical reference","Learned-vs-learned, learned-vs-classical, classical-vs-classical."
+Conditions,"clean (0,0), mid (0.1,0.2), harsh (0.25,0.4)","(sensor noise std, packet-error rate)","Study-2 degradation grid, layered on the encounter."
+Seeds,8 shared seeds (0-7),paired design; env_seed=42+seed,Vessel B mission re-rolled so the two never share a berth.
+Cells,4 x 3 x 8 = 96,"5,760 per-vessel eval rows (2,880 encounters)",Balanced factorial; 30 episodes/cell x 2 vessels.
+Safety event,inter-vessel collision (hull sep < 18) + near-miss (< 40),distinct events + min CPA,Measured from synchronized continuous geometry.

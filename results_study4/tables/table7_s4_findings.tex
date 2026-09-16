@@ -1,0 +1,10 @@
+\begin{tabular}{llllll}
+\toprule
+Pairing & Strength & Weakness & Clean success & Clean collision\% & Interpretation \\
+\midrule
+DQN vs DQN & largest CPA / fewest inter-vessel collisions & large drop in mission completion & 16\% & 16\% & Success 16\%→22\%, collision 16\%→25\%, CPA 224→199 clean→harsh. \\
+Duel-Double vs Duel-Double & largest CPA / fewest inter-vessel collisions & large drop in mission completion & 14\% & 14\% & Success 14\%→18\%, collision 14\%→30\%, CPA 233→194 clean→harsh. \\
+DQN vs Rule-based & mixed: classical vessel completes, learned vessel yields & learned vessel completion low & 27\% & 23\% & Success 27\%→27\%, collision 23\%→26\%, CPA 186→192 clean→harsh. \\
+Rule-based vs Rule-based & highest mission completion & no partner modelling → most collisions, smallest CPA & 48\% & 41\% & Success 48\%→48\%, collision 41\%→38\%, CPA 118→120 clean→harsh. \\
+\bottomrule
+\end{tabular}

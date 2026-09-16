@@ -1,0 +1,75 @@
+{
+  "experiment_id": "synthetic_port_study4_multivessel_avoidance",
+  "title": "Study 4 — Two independent autonomous vessels that must avoid each other",
+  "description": "A multi-agent extension of the single-vessel physical/sensing/comms testbed (VesselEnvV3). TWO independent vessels (A and B), each driven by its own policy with NO central controller, share the same synthesized port channel network and must avoid colliding with each other while completing their own missions. The safety-critical event is now an INTER-VESSEL collision (two hulls converging), measured from real synchronized continuous geometry, in addition to each vessel's own static-obstacle / cross-track-error / IALA / docking / dropped-frame metrics. Combined with the Study-2 sensing/comms degradation grid (clean / mid / harsh). All metrics are genuinely computed by MultiVesselEnvV4 / VesselEnvV3; nothing is fabricated. The deployed web app (environment.js) is unaffected.",
+  "date_designed": "2026-09-15",
+  "research_questions": [
+    "Do two INDEPENDENT learned (DQN) vessels, trained against a live moving partner, avoid inter-vessel collisions as effectively as two classical COLREGs-aware rule-based vessels?",
+    "In a MIXED encounter (learned vs classical), which pairing yields fewer inter-vessel collisions / near-misses and a larger closest-point-of-approach?",
+    "How does sensing/comms degradation (Study-2 conditions) affect inter-vessel safety, and does it interact with the agent pairing?"
+  ],
+  "environment": {
+    "module": "js/environmentV4.js",
+    "class": "MultiVesselEnvV4",
+    "composes": "two js/environmentV3.js VesselEnvV3 instances over the SAME graph/obstacles/buoys",
+    "obs_dim": 31,
+    "obs_extension": "each vessel's 28-dim VesselEnvV3 observation + 3 SENSED partner-relative values [dx, dy, range], passed through the same sensor-noise + packet-loss pipeline",
+    "n_actions": 4,
+    "max_episode_steps": 60,
+    "obstacle_count": 6,
+    "inter_vessel_geometry": {
+      "collision_radius": 18,
+      "near_miss_radius": 40,
+      "counting": "vessel_collisions and near_misses are DISTINCT EVENTS (counted on transition INTO the state, not every locked step); collision_contact_steps counts steps hull-to-hull; min_cpa is the episode closest-point-of-approach",
+      "colregs_role": "give-way / stand-on / head-on role computed from real relative bearing + reciprocal course; recorded for analysis, does NOT override either agent's action"
+    },
+    "reuses": "same synthesized graph/edges/Dijkstra/buoys as Studies 1-3"
+  },
+  "factors": {
+    "pairing": [
+      {"name": "DQN_vs_DQN", "A": "DQN", "B": "DQN", "type": "two independent learners (symmetric)"},
+      {"name": "DDQN_vs_DDQN", "A": "DuelingDoubleDQN", "B": "DuelingDoubleDQN", "type": "two independent learners (best variant, symmetric)"},
+      {"name": "DQN_vs_RuleBased", "A": "DQN", "B": "RuleBased", "type": "mixed: learned vs classical"},
+      {"name": "RuleBased_vs_RuleBased", "A": "RuleBased", "B": "RuleBased", "type": "two classical controllers (reference)"}
+    ],
+    "condition": [
+      {"name": "clean", "noise_std": 0.0, "packet_error_rate": 0.0},
+      {"name": "mid", "noise_std": 0.1, "packet_error_rate": 0.2},
+      {"name": "harsh", "noise_std": 0.25, "packet_error_rate": 0.4}
+    ]
+  },
+  "n_pairings": 4,
+  "n_conditions": 3,
+  "seeds": [0, 1, 2, 3, 4, 5, 6, 7],
+  "n_seeds": 8,
+  "seed_policy": "SAME 8 seeds for every (pairing, condition) cell (shared/paired). env_seed = 42 + seed. Agent-side RNG = mulberry32(seed*1000003 + 12345). Vessel B's mission stream is offset (seed+20240) and re-rolled so the two vessels never share a goal berth.",
+  "training": {
+    "train_episodes": 150,
+    "total_steps_budget": 4500,
+    "note": "RL agents train 150 two-vessel episodes AGAINST THE LIVE PARTNER (self-play style; each learns from its own transitions incl. inter-vessel reward shaping). RuleBased never learns. RuleBased_vs_RuleBased skips training."
+  },
+  "evaluation": {"eval_episodes": 30, "policy": "greedy (RL) / deterministic (RuleBased); held-out missions from the seeded stream", "note": "each eval episode yields TWO per-vessel rows (vessel A and B)"},
+  "total_cells": 96,
+  "cells_breakdown": "4 pairings x 3 conditions x 8 seeds = 96 cells; each cell -> 30 episodes x 2 vessels = 60 per-vessel eval rows",
+  "total_eval_episodes_pervessel": 5760,
+  "total_eval_encounters": 2880,
+  "metrics": {
+    "inter_vessel_safety": ["vessel_collision_rate", "vessel_collisions_per_ep", "near_misses_per_ep", "min_cpa", "collision_contact_steps", "give_way_events"],
+    "navigation": ["success_rate", "mean_reward", "optimality_ratio", "mean_steps"],
+    "per_vessel_physical": ["static_collisions", "cte_mean", "iala_violations", "docking_accuracy", "dropped_frames"]
+  },
+  "analysis_plan": {
+    "unit_of_analysis": "per-seed cell scalar (n=8 per cell); inter-vessel metrics are per-ENCOUNTER (shared by both vessels), navigation/physical metrics are per-vessel then averaged",
+    "assumption_checks": ["Shapiro-Wilk", "Levene/Brown-Forsythe"],
+    "omnibus": "two-way factorial: pairing (4) x condition (3), y ~ pairing*condition + seed, partial eta^2, on the primary inter-vessel safety outcomes",
+    "primary_contrast": "RuleBased_vs_RuleBased (classical reference) vs each learned/mixed pairing, per condition — paired Wilcoxon + Holm + BH, Cohen's d_z + Cliff's delta",
+    "robustness": "clean vs harsh per pairing (paired)",
+    "alpha": 0.05
+  },
+  "scope_notes": [
+    "Two INDEPENDENT agents (no central controller); mixed pairings supported.",
+    "MultiVesselEnvV4 is a synthesized multi-vessel testbed, not a validated hydrodynamic/COLREGs-certified simulator; the COLREGs role is a geometric heuristic for attribution.",
+    "Inter-vessel collision counting uses distinct events to avoid saturation from single-file locked encounters; the reward penalty is applied per-step for correct incentives.",
+    "Deployed web application (environment.js) is unaffected; all Study 4 code is offline research."
+  ]
+}
