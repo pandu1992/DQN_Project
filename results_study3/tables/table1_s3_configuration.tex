@@ -1,0 +1,11 @@
+\begin{tabular}{llll}
+\toprule
+Factor & Levels / Value & Detail & Interpretation \\
+\midrule
+Agents & Rule-based (COLREGs-aware) + DQN, Double, Dueling, Dueling-Double & 1 classical baseline + 4 value-based RL & Adds a non-learning reference point. \\
+Conditions & clean (0,0), mid (0.1,0.2), harsh (0.25,0.4) & (sensor noise std, packet-error rate) & Spans ideal to heavy sensing+comms degradation. \\
+Seeds & 15 shared seeds (0-14) & paired design; env\_seed=42+seed & Confirmatory power (n=15 vs Study 2's n=6). \\
+Budget & 130 train / 30 eval (RL); rule-based no training & greedy / deterministic eval & Rule-based follows the charted channel. \\
+Cells & 5 x 3 x 15 = 225 & 6,750 evaluation episodes & Balanced factorial. \\
+\bottomrule
+\end{tabular}

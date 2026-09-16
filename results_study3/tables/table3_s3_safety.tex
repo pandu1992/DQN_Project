@@ -1,0 +1,11 @@
+\begin{tabular}{llllll}
+\toprule
+Agent & Coll/ep clean & Coll/ep harsh & IALA clean & IALA harsh & Interpretation \\
+\midrule
+Rule-based (COLREGs) & 0.00 & 0.53 & 0.0 & 24.3 & Collisions/ep 0.00→0.53; IALA 0→24/ep clean→harsh. Lowest violations under stress. \\
+DQN & 0.06 & 1.28 & 0.0 & 57.7 & Collisions/ep 0.06→1.28; IALA 0→58/ep clean→harsh. Degrades more than the baseline. \\
+Double DQN & 0.06 & 1.02 & 0.0 & 63.2 & Collisions/ep 0.06→1.02; IALA 0→63/ep clean→harsh. Degrades more than the baseline. \\
+Dueling DQN & 0.13 & 1.17 & 0.0 & 59.4 & Collisions/ep 0.13→1.17; IALA 0→59/ep clean→harsh. Degrades more than the baseline. \\
+Dueling Double DQN & 0.05 & 1.40 & 0.0 & 57.9 & Collisions/ep 0.05→1.40; IALA 0→58/ep clean→harsh. Degrades more than the baseline. \\
+\bottomrule
+\end{tabular}

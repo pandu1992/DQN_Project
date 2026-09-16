@@ -1,0 +1,26 @@
+\begin{tabular}{lllllll}
+\toprule
+Agent & Metric & Clean & Harsh & Δ & Cohen d\_z & Interpretation \\
+\midrule
+Rule-based (COLREGs) & Collision \% & 0.00 & 34.22 & +34.22 & 1.98 & 0.0→34.2 (d\_z=1.98, large); Holm-sig degradation. \\
+Rule-based (COLREGs) & IALA/ep & 0.00 & 24.27 & +24.27 & 2.14 & 0.0→24.3 (d\_z=2.14, large); Holm-sig degradation. \\
+Rule-based (COLREGs) & Docking err & 0.00 & 10.58 & +10.58 & 3.52 & 0.0→10.6 (d\_z=3.52, large); Holm-sig degradation. \\
+Rule-based (COLREGs) & Success \% & 47.33 & 47.33 & +0.00 & 0.00 & 47.3→47.3 (d\_z=0.00, negligible); not Holm-sig. \\
+DQN & Collision \% & 5.56 & 42.44 & +36.89 & 2.41 & 5.6→42.4 (d\_z=2.41, large); Holm-sig degradation. \\
+DQN & IALA/ep & 0.00 & 57.68 & +57.68 & 5.43 & 0.0→57.7 (d\_z=5.43, large); Holm-sig degradation. \\
+DQN & Docking err & 0.00 & 10.01 & +10.01 & 3.87 & 0.0→10.0 (d\_z=3.87, large); Holm-sig degradation. \\
+DQN & Success \% & 20.00 & 32.00 & +12.00 & 0.61 & 20.0→32.0 (d\_z=0.61, medium); not Holm-sig. \\
+Double DQN & Collision \% & 6.00 & 37.78 & +31.78 & 2.17 & 6.0→37.8 (d\_z=2.17, large); Holm-sig degradation. \\
+Double DQN & IALA/ep & 0.00 & 63.16 & +63.16 & 6.08 & 0.0→63.2 (d\_z=6.08, large); Holm-sig degradation. \\
+Double DQN & Docking err & 0.00 & 11.12 & +11.12 & 2.87 & 0.0→11.1 (d\_z=2.87, large); Holm-sig degradation. \\
+Double DQN & Success \% & 19.33 & 23.78 & +4.44 & 0.20 & 19.3→23.8 (d\_z=0.20, negligible); not Holm-sig. \\
+Dueling DQN & Collision \% & 10.22 & 44.22 & +34.00 & 1.55 & 10.2→44.2 (d\_z=1.55, large); Holm-sig degradation. \\
+Dueling DQN & IALA/ep & 0.00 & 59.39 & +59.39 & 4.90 & 0.0→59.4 (d\_z=4.90, large); Holm-sig degradation. \\
+Dueling DQN & Docking err & 0.00 & 11.37 & +11.37 & 3.32 & 0.0→11.4 (d\_z=3.32, large); Holm-sig degradation. \\
+Dueling DQN & Success \% & 32.22 & 32.67 & +0.44 & 0.02 & 32.2→32.7 (d\_z=0.02, negligible); not Holm-sig. \\
+Dueling Double DQN & Collision \% & 4.67 & 45.78 & +41.11 & 2.77 & 4.7→45.8 (d\_z=2.77, large); Holm-sig degradation. \\
+Dueling Double DQN & IALA/ep & 0.00 & 57.93 & +57.93 & 4.39 & 0.0→57.9 (d\_z=4.39, large); Holm-sig degradation. \\
+Dueling Double DQN & Docking err & 0.00 & 11.48 & +11.48 & 3.74 & 0.0→11.5 (d\_z=3.74, large); Holm-sig degradation. \\
+Dueling Double DQN & Success \% & 17.78 & 29.56 & +11.78 & 0.55 & 17.8→29.6 (d\_z=0.55, medium); not Holm-sig. \\
+\bottomrule
+\end{tabular}

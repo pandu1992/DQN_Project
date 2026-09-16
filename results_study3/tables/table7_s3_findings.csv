@@ -1,0 +1,6 @@
+Agent,Strength,Weakness,Clean success,Harsh IALA/ep,Interpretation
+Rule-based (COLREGs),channel compliance under stress,higher CTE / not learned,47%,24,Success invariant ~47% across conditions; lowest IALA under stress (24/ep). Classical baseline is the most channel-compliant under degradation.
+DQN,tight route (low CTE clean),safety degrades more than baseline,20%,58,Success 20%→32%; IALA rises to 58/ep at harsh (≈ 2× the rule-based baseline).
+Double DQN,tight route (low CTE clean),safety degrades more than baseline,19%,63,Success 19%→24%; IALA rises to 63/ep at harsh (≈ 2× the rule-based baseline).
+Dueling DQN,tight route (low CTE clean),safety degrades more than baseline,32%,59,Success 32%→33%; IALA rises to 59/ep at harsh (≈ 2× the rule-based baseline).
+Dueling Double DQN,tight route (low CTE clean),safety degrades more than baseline,18%,58,Success 18%→30%; IALA rises to 58/ep at harsh (≈ 2× the rule-based baseline).
