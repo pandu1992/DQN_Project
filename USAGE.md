@@ -1,4 +1,4 @@
-# Usage Guide — Bintulu Port Web DQN Simulation
+# Usage Guide — Synthetic Port Web DQN Simulation
 
 **Live demo:** https://pandu1992.github.io/DQN_Project/
 

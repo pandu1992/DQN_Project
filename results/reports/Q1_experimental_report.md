@@ -1,6 +1,6 @@
 # Comparative Experimental Evaluation of Value-Based Deep Reinforcement Learning Agents for Autonomous Vessel Navigation
 
-**A reproducible, multi-seed factorial study on the Bintulu Port navigation graph**
+**A reproducible, multi-seed factorial study on the Synthetic Port navigation graph**
 
 > Scope note (read first). This report analyses the four value-based RL
 > agents that are *actually implemented* in the project (`js/dqn.js`): **DQN,
@@ -20,7 +20,7 @@
 **Objective.** Determine, with statistical rigor, whether the choice of
 value-based DQN variant and/or the Rainbow-style enhancements (PER, Noisy Nets)
 produces a measurable difference in autonomous-navigation performance on the
-Bintulu Port channel graph, and quantify the associated effect sizes,
+Synthetic Port channel graph, and quantify the associated effect sizes,
 robustness, and reproducibility.
 
 **Why a new environment build was required (a genuine design finding).**

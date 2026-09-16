@@ -1,9 +1,16 @@
-# Bintulu Port — Web DQN Autonomous Ship Navigation
+# Synthetic Port — Web DQN Autonomous Ship Navigation
 
-A **browser-based** simulation of the *Bintulu Port Experiment* research
-notebook: a family of value-based RL agents (DQN and its variants) learn to
+A **browser-based** simulation of the *Synthetic Port* navigation experiment:
+a family of value-based RL agents (DQN and its variants) learn to
 steer an autonomous vessel along a nautical channel network to its goal. It
 runs **100% in the browser** — no Python, no server, no install.
+
+> **Naming & scope note.** The testbed is a **synthesized** port channel graph —
+> a constructed benchmark, *not* a real-world nautical chart of any specific port.
+> The user-facing project name is **"Synthetic Port."** Some internal code
+> identifiers retain the legacy `Bintulu*` prefix (`window.BintuluEnv`,
+> `BintuluDQN`, `BintuluStats`, `BintuluRuleBased`, `BintuluEnvV2/V3`); these are
+> internal namespace globals only and carry no claim about any real location.
 
 **🌐 Live demo:** https://pandu1992.github.io/DQN_Project/
 📖 **Usage guide:** [USAGE.md](USAGE.md)
@@ -17,7 +24,7 @@ Simply open `index.html` in any modern browser (or use the live demo above).
 
 ## What you see
 
-- **Navigation map** — synthesized Bintulu-style port with three lanes
+- **Navigation map** — synthesized port channel with three lanes
   (North `L02`, South `L08`, Harbour `L01`), the waypoint graph, green/red
   buoys, virtual shortcut branches (dashed), the **planned path** (Dijkstra,
   green), the **actual path** taken by the DQN (orange), and the moving ship.

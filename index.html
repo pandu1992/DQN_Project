@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bintulu Port — DQN Autonomous Ship Navigation (Web Simulation)</title>
+<title>Synthetic Port — DQN Autonomous Ship Navigation (Web Simulation)</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="topbar">
     <div class="title">
-      <h1>Bintulu Port — Autonomous Ship Navigation</h1>
+      <h1>Synthetic Port — Autonomous Ship Navigation</h1>
       <p class="subtitle">Deep Q-Network (DQN) reinforcement learning · runs entirely in your browser</p>
     </div>
     <div class="header-actions">
@@ -188,7 +188,8 @@
       </table>
 
       <p class="note">
-        Browser port of the "Bintulu Port Experiment" research notebook.
+        Browser implementation of the Synthetic Port navigation experiment on a
+        synthesized channel graph (not a real-world chart).
         The DQN learns to steer the vessel forward along the planned channel
         to the goal while avoiding wasteful WAIT/BACKWARD moves. Toggle the
         <b>heatmap</b> to see waypoint visit frequency, <b>export CSV</b> for
