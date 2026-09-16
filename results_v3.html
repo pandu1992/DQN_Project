@@ -114,6 +114,31 @@
       the same graph. Separate follow-up to the Q1 study; the deployed web app is unaffected.
     </div>
 
+    <details class="schematic-block" open>
+      <summary>Where this fits — the three studies at a glance</summary>
+      <div class="schematic-body">
+        <figure>
+          <img loading="lazy" src="assets/schematics/study_comparison.png"
+               alt="Conceptual comparison of Study 1 (clean), Study 2 (noise/packet-loss/collision/IALA/docking/CTE), Study 3 (rule-based vs DQN)" />
+          <figcaption>
+            <span class="schematic-here">You are viewing Study 2 — Degradation &amp; safety</span> (middle panel):
+            the same DQN variants under sensor noise, packet-loss, collisions, IALA channel markers, docking and
+            cross-track error. <b>Study 1</b> is the clean baseline comparison; <b>Study 3</b> adds a
+            COLREGs-aware rule-based baseline at higher statistical power.
+          </figcaption>
+        </figure>
+        <figure>
+          <img loading="lazy" src="assets/schematics/workflow.png"
+               alt="Shared experimental pipeline and per-study specialization" />
+          <figcaption><b>Shared workflow.</b> All three studies use the same pipeline; only the
+            environment build, factors, seeds and metrics change.</figcaption>
+        </figure>
+        <div class="schematic-links">
+          <a href="results.html">← Study 1</a><a href="results_study3.html">Study 3 →</a><a href="manuscript.html">📄 Unified paper →</a>
+        </div>
+      </div>
+    </details>
+
     <div class="rp-tabs" id="rpTabs">
       <button class="rp-tab active" data-tab="report">📄 Full Report</button>
       <button class="rp-tab" data-tab="tables">📊 Tables</button>
