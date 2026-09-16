@@ -1,6 +1,6 @@
 # Robustness of Value-Based Deep Reinforcement Learning for Autonomous Vessel Navigation: A Three-Study Comparison Against a Classical COLREGs-Aware Baseline
 
-**A reproducible experimental investigation on a Bintulu-Port channel-navigation testbed**
+**A reproducible experimental investigation on a Synthetic Port channel-navigation testbed**
 
 > **Reproducibility statement.** Every quantitative claim in this manuscript is
 > computed from committed experiment data (`results/`, `results_v3/`,
@@ -17,7 +17,7 @@ Deep reinforcement learning (DRL) is increasingly proposed for autonomous
 maritime navigation, yet its *robustness* to imperfect perception and
 communication — and its standing relative to classical rule-based control — is
 rarely quantified with statistical rigor. We present three linked experiments on
-a reproducible Bintulu-Port channel-navigation testbed. **Study 1** compares four
+a reproducible Synthetic Port channel-navigation testbed. **Study 1** compares four
 value-based DRL agents (DQN, Double DQN, Dueling DQN, Dueling Double DQN) with
 Prioritized Experience Replay and Noisy Nets in a clean environment
 (4×2×2 factorial, 10 seeds, 6,400 evaluation episodes). **Study 2** subjects the
@@ -116,7 +116,8 @@ faithfully as positive ones.
 
 ### 3.1 Testbed and environments
 
-All experiments run on a synthesized Bintulu-Port channel graph: two access
+All experiments run on a synthesized port channel graph (a constructed testbed,
+not a real-world nautical chart): two access
 channels (North L02, South L08) feeding a shared harbour lane (L01), with buoys,
 virtual shortcut branches, and per-edge attributes (distance, risk, traffic,
 weather, current, travel time, energy cost, navigation cost, difficulty). A
@@ -423,7 +424,7 @@ shows they are not. Safety-relevant metrics are not optional.
 ## 9. Conclusion
 
 Across three reproducible experiments (19,630 evaluation episodes in total) we
-find that, for autonomous channel navigation on a Bintulu-Port testbed, the choice
+find that, for autonomous channel navigation on a Synthetic Port testbed, the choice
 among four value-based DRL variants is not a statistically meaningful lever;
 run-to-run seed variance dominates in clean conditions, and sensing/communication
 degradation dominates safety and precision under stress, affecting all variants in

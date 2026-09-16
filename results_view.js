@@ -14,7 +14,7 @@
     dir: "results",                                  // base folder for reports/tables/figures
     report: "reports/Q1_experimental_report.md",
     methodsDocs: ["reports/SATURATED_BENCHMARK_FINDING.md", "reports/REPRODUCIBILITY.md"],
-    pdfTitle: "Bintulu Port — Autonomous Vessel Navigation",
+    pdfTitle: "Synthetic Port — Autonomous Vessel Navigation",
     pdfSubtitle: "Q1-grade comparative experimental evaluation of value-based DRL agents",
     tables: [
       ["table1_configuration", "Table 1 — Algorithm & Experimental Configuration"],

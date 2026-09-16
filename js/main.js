@@ -3,7 +3,7 @@
  * main.js — rendering, training loop, UI wiring
  *
  * Features:
- *   - Real-time DQN training over the Bintulu-style channel map
+ *   - Real-time DQN training over a synthesized channel map
  *   - Waypoint / route visit HEATMAP overlay (RouteHeatmap-style)
  *   - CSV benchmark export of per-episode metrics (Sprint 7.3/7.4)
  *   - North (L02) vs South (L08) per-lane comparison stats
@@ -1350,7 +1350,7 @@
     const lines = [];
 
     // Section 1: per-algorithm summary (mean ± std across seeds)
-    lines.push("# Bintulu DQN — algorithm comparison summary");
+    lines.push("# Synthetic Port DQN — algorithm comparison summary");
     lines.push("# enhancements:" + (modsSuffix() || " none"));
     lines.push("# seeds:" + compareSeeds + " episodes_per_algo:" + compareEpisodesPerAlgo);
     lines.push(
@@ -1416,7 +1416,7 @@
     c.font = "bold 15px sans-serif";
     c.textAlign = "left";
     const seedNote = compareSeeds > 1 ? ` — mean±std over ${compareSeeds} seeds` : "";
-    c.fillText("Bintulu DQN — Algorithm Comparison (MA20 reward)" + modsSuffix() + seedNote, pad, 20);
+    c.fillText("Synthetic Port DQN — Algorithm Comparison (MA20 reward)" + modsSuffix() + seedNote, pad, 20);
 
     // legend
     c.font = "12px sans-serif";
@@ -1458,7 +1458,7 @@
     if (!hasComparisonData()) return;
     const suffix = modsSuffix().replace(/[^A-Za-z0-9]+/g, "");
     const lines = [];
-    lines.push("# Bintulu DQN — statistical evaluation");
+    lines.push("# Synthetic Port DQN — statistical evaluation");
     lines.push("# enhancements:" + (modsSuffix() || " none"));
     lines.push("# seeds:" + compareSeeds + " episodes_per_algo:" + compareEpisodesPerAlgo);
     lines.push("# tests: Welch two-sample t-test (unequal var) + Mann-Whitney U (two-sided); effect size Cohen's d (pooled) & Hedges g");
