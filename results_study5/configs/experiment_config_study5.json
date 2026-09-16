@@ -1,0 +1,71 @@
+{
+  "experiment_id": "synthetic_port_study5_roundtrip_and_twoway",
+  "title": "Study 5 — Two-phase round-trip missions and two-way opposing traffic",
+  "description": "Two complementary realism extensions of the single-vessel physical/sensing/comms testbed (VesselEnvV3), each combined with the Study-2 degradation grid. SCENARIO A (two-phase): a single vessel must complete a full port call — inbound to the harbour berth (dock), then outbound to a channel exit — in ONE episode; success requires BOTH legs. SCENARIO B (two-way): two vessels travel in OPPOSING directions (one inbound, one outbound) on a shared access lane, so they must pass each other head-on; the real inter-vessel geometry (collision, near-miss, closest-point-of-approach, head-on events) is measured as in Study 4. The COLREGs-aware rule-based controller is the primary (competent) navigator; the value-based DQN is included as a learned comparator and its limitations are reported honestly. All metrics are genuinely computed; nothing is fabricated. The deployed web app (environment.js) is unaffected.",
+  "date_designed": "2026-09-15",
+  "research_questions": [
+    "Can a controller complete a full two-phase port call (inbound -> dock -> outbound) as reliably as a one-way transit, and how does the outbound leg change success under degradation?",
+    "When two vessels share a lane in OPPOSING directions, how often do they reach a head-on close-quarters situation, and how safely do they pass (collision rate, near-miss, closest-point-of-approach)?",
+    "Does a learned value-based policy master these realistic full-transit / round-trip / opposing-traffic missions, or is the classical rule-based controller the more capable navigator here?"
+  ],
+  "environment": {
+    "module": "js/environmentV5.js",
+    "classes": ["TwoPhaseEnvV5", "TwoWayEnvV5"],
+    "base": "js/environmentV3.js VesselEnvV3 (same graph/obstacles/buoys/Dijkstra)",
+    "twophase": {"obs_dim": 30, "obs_extension": "VesselEnvV3 obs (28) + [phase flag, cycle progress]", "max_episode_steps": 110, "success": "FULL cycle (inbound dock + outbound exit)"},
+    "twoway": {"obs_dim": 31, "obs_extension": "VesselEnvV3 obs (28) + sensed partner [dx, dy, range] through the noise/packet-loss pipeline", "max_episode_steps": 60, "traffic": "forced opposing missions on a shared lane -> guaranteed head-on encounters", "inter_vessel": {"collision_radius": 18, "near_miss_radius": 40}}
+  },
+  "scenarios": {
+    "twophase": {
+      "agents": ["RuleBased", "DQN"],
+      "note": "single vessel; RuleBased is primary. DQN included as learned comparator (reported honestly)."
+    },
+    "twoway": {
+      "pairings": [
+        {"name": "Rule_vs_Rule", "in": "RuleBased", "out": "RuleBased", "type": "classical, primary"},
+        {"name": "DQN_vs_Rule", "in": "DQN", "out": "RuleBased", "type": "mixed"},
+        {"name": "DQN_vs_DQN", "in": "DQN", "out": "DQN", "type": "learned (limitation reported)"}
+      ],
+      "note": "inbound vessel = 'in', outbound vessel = 'out'."
+    }
+  },
+  "factors": {
+    "condition": [
+      {"name": "clean", "noise_std": 0.0, "packet_error_rate": 0.0},
+      {"name": "mid", "noise_std": 0.1, "packet_error_rate": 0.2},
+      {"name": "harsh", "noise_std": 0.25, "packet_error_rate": 0.4}
+    ]
+  },
+  "n_conditions": 3,
+  "seeds": [0, 1, 2, 3, 4, 5, 6, 7],
+  "n_seeds": 8,
+  "seed_policy": "SAME 8 seeds per cell (paired). env_seed = 42 + seed. Agent RNG = mulberry32(seed*1000003 + 12345).",
+  "training": {
+    "twophase": {"train_episodes": 120, "total_steps_budget": 6600, "note": "RL trains 120 round-trip episodes; RuleBased no training."},
+    "twoway": {"train_episodes": 150, "total_steps_budget": 4500, "note": "RL trains 150 two-vessel episodes against the live partner; RuleBased no training."}
+  },
+  "evaluation": {"eval_episodes": 30, "policy": "greedy (RL) / deterministic (RuleBased)"},
+  "cells_breakdown": {
+    "twophase": "2 agents x 3 conditions x 8 seeds = 48 cells (30 eval eps each)",
+    "twoway": "3 pairings x 3 conditions x 8 seeds = 72 cells (30 eval eps x 2 vessels each)",
+    "total_cells": 120
+  },
+  "metrics": {
+    "twophase": ["full_cycle_success_rate", "dock_success_rate", "phase1_steps", "dock_accuracy", "mean_reward", "collisions", "cte_mean", "iala_violations", "dropped_frames"],
+    "twoway": ["vessel_collision_rate", "vessel_collisions_per_ep", "near_misses_per_ep", "min_cpa", "head_on_events", "give_way_events", "success_rate", "cte_mean", "iala_violations"]
+  },
+  "analysis_plan": {
+    "unit_of_analysis": "per-seed cell scalar (n=8)",
+    "assumption_checks": ["Shapiro-Wilk", "Levene"],
+    "twophase_omnibus": "two-way factorial: agent(2) x condition(3), y ~ agent*condition + seed, partial eta^2, on full-cycle success + dock accuracy",
+    "twoway_omnibus": "two-way factorial: pairing(3) x condition(3) on inter-vessel safety",
+    "primary_contrasts": "twophase: dock vs full-cycle success (paired, per agent/condition); twoway: Rule_vs_Rule reference vs each pairing per condition (paired Wilcoxon + Holm + BH, Cohen d_z + Cliff delta)",
+    "robustness": "clean vs harsh (paired), n=8",
+    "alpha": 0.05
+  },
+  "scope_notes": [
+    "TwoPhaseEnvV5 / TwoWayEnvV5 are synthesized testbeds, not validated hydrodynamic/COLREGs simulators.",
+    "The value-based DQN does not master the full harbour transit / round-trip on this testbed within budget; this is reported as an honest finding, consistent with the environment being discriminative (Study 1) and the classical controller being more robust (Study 3). The classical rule-based controller is the primary navigator.",
+    "Deployed web application (environment.js) is unaffected; all Study 5 code is offline research."
+  ]
+}

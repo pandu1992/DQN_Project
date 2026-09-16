@@ -1,0 +1,7 @@
+Agent,Condition,Dock success %,Full-cycle success %,Interpretation
+Rule-based (COLREGs),clean,43.3±27.3,21.7±14.6,Outbound leg roughly HALVES success vs docking alone.
+Rule-based (COLREGs),mid,43.3±27.3,21.7±14.6,Outbound leg roughly HALVES success vs docking alone.
+Rule-based (COLREGs),harsh,43.3±27.3,21.7±14.6,Outbound leg roughly HALVES success vs docking alone.
+DQN,clean,27.9±29.8,5.4±12.8,Learned agent rarely completes the round trip.
+DQN,mid,7.9±12.4,1.7±3.9,Learned agent rarely completes the round trip.
+DQN,harsh,41.7±30.3,0.8±2.0,Learned agent rarely completes the round trip.

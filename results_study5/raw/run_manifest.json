@@ -1,0 +1,492 @@
+{
+  "experiment_id": "synthetic_port_study5_roundtrip_and_twoway",
+  "total_cells": 120,
+  "twophase_cells": 48,
+  "twoway_cells": 72,
+  "twophase_rows": 1440,
+  "twoway_rows": 4320,
+  "cells": [
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "twophase_RuleBased_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "twophase_RuleBased_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "twophase_RuleBased_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "twophase_DQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "twophase_DQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "twophase_DQN_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_Rule_vs_Rule_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_DQN_vs_Rule_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "twoway_DQN_vs_DQN_harsh",
+      "seed": 7
+    }
+  ],
+  "nan_inf_flags": [],
+  "rebuilt_from_csv": true
+}

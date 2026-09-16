@@ -209,7 +209,8 @@
           (4 DQN variants × PER × Noisy Nets, 10 seeds); <b>Study 2</b> — robustness to sensor
           noise &amp; communication loss; <b>Study 3</b> — confirmatory replication with a
           COLREGs-aware rule-based baseline; <b>Study 4</b> — two independent vessels that must
-          avoid each other. Highlights below; full reports, tables, figures,
+          avoid each other; <b>Study 5</b> — full round-trip port calls &amp; two-way opposing traffic.
+          Highlights below; full reports, tables, figures,
           and PDF in the analysis pages.
         </p>
       </div>
@@ -264,7 +265,8 @@
         Every study runs on the same seeded testbed and statistical protocol;
         each is a progressively richer, more realistic evaluation. Studies 1–3
         evaluate a single vessel; <b>Study 4</b> adds a second independent vessel that
-        must be avoided. Read the unified paper, or open any study's full report,
+        must be avoided; <b>Study 5</b> adds full round-trip missions and two-way opposing traffic.
+        Read the unified paper, or open any study's full report,
         tables, figures, and PDF.
       </p>
     </div>
@@ -304,6 +306,12 @@
         <h3>Two vessels avoiding</h3>
         <p>Two <b>independent</b> vessels share the channel · 4 pairings · 8 seeds. <b>Finding:</b> learned agents keep vessels <b>~2× farther apart</b> than two classical controllers — but complete fewer missions (a safety–completion tradeoff).</p>
         <span class="study-link">Open Study 4 →</span>
+      </a>
+      <a class="study-card s5" href="results_study5.html">
+        <span class="study-tag">Study 5</span>
+        <h3>Round trips &amp; two-way traffic</h3>
+        <p>A full <b>inbound→dock→outbound</b> port call + <b>opposing traffic</b> sharing one lane · 8 seeds. <b>Finding:</b> the outbound leg <b>roughly halves</b> success; classical control carries two-way traffic but still meets head-on.</p>
+        <span class="study-link">Open Study 5 →</span>
       </a>
     </div>
 

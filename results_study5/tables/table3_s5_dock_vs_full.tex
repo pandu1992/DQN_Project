@@ -1,0 +1,12 @@
+\begin{tabular}{llllllll}
+\toprule
+Agent & Condition & Dock \% & Full \% & Drop (pts) & adj p (Holm) & Cohen d\_z & Interpretation \\
+\midrule
+Rule-based (COLREGs) & clean & 43.3 & 21.7 & 21.7 & 0.166 & 1.25 & Dock 43\% → full 22\% (drop 22 pts, d\_z=1.25, large); large but not Holm-sig at n=8. \\
+Rule-based (COLREGs) & mid & 43.3 & 21.7 & 21.7 & 0.166 & 1.25 & Dock 43\% → full 22\% (drop 22 pts, d\_z=1.25, large); large but not Holm-sig at n=8. \\
+Rule-based (COLREGs) & harsh & 43.3 & 21.7 & 21.7 & 0.166 & 1.25 & Dock 43\% → full 22\% (drop 22 pts, d\_z=1.25, large); large but not Holm-sig at n=8. \\
+DQN & clean & 27.9 & 5.4 & 22.5 & 0.166 & 0.91 & Dock 28\% → full 5\% (drop 22 pts, d\_z=0.91, large); large but not Holm-sig at n=8. \\
+DQN & mid & 7.9 & 1.7 & 6.2 & 0.166 & 0.61 & Dock 8\% → full 2\% (drop 6 pts, d\_z=0.61, medium); large but not Holm-sig at n=8. \\
+DQN & harsh & 41.7 & 0.8 & 40.8 & 0.166 & 1.17 & Dock 42\% → full 1\% (drop 41 pts, d\_z=1.17, large); large but not Holm-sig at n=8. \\
+\bottomrule
+\end{tabular}

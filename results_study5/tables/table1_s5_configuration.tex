@@ -1,0 +1,12 @@
+\begin{tabular}{llll}
+\toprule
+Factor & Levels / Value & Detail & Interpretation \\
+\midrule
+Scenario A & Two-phase round trip (single vessel) & inbound → dock → outbound in one episode & Success = FULL cycle; a realistic port call, not one-way. \\
+Scenario B & Two-way opposing traffic (two vessels) & one inbound + one outbound on a shared lane & Forces head-on encounters in the same water. \\
+Agents (A) & Rule-based (COLREGs) + DQN & RuleBased primary; DQN learned comparator & DQN's round-trip limitation reported honestly. \\
+Pairings (B) & Rule×Rule, DQN×Rule, DQN×DQN & classical / mixed / learned & Rule×Rule is the competent reference. \\
+Conditions & clean (0,0), mid (0.1,0.2), harsh (0.25,0.4) & (sensor noise, packet-error) & Study-2 degradation grid. \\
+Seeds & 8 shared seeds (0-7) & paired; env\_seed=42+seed & Cells: A 2×3×8=48; B 3×3×8=72. \\
+\bottomrule
+\end{tabular}

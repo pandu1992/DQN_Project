@@ -1,0 +1,10 @@
+\begin{tabular}{llll}
+\toprule
+Scenario & Finding & Key numbers & Interpretation \\
+\midrule
+Two-phase (RuleBased) & Completes the full port call \textasciitilde half as often as it docks & dock 43\% → full 22\% & The outbound leg is a real, large added burden; invariant to degradation. \\
+Two-phase (DQN) & Rarely completes the round trip & full-cycle ≈ 5\% (clean) & Learned value-based control does not master the two-phase mission here. \\
+Two-way (Rule×Rule) & Competent opposing traffic with genuine head-on encounters & success 45\%, collision 42\% & The classical controller carries two-way traffic; it does not model the partner, so it collides head-on. \\
+Two-way (DQN pairs) & Barely transit → degenerate low collisions & DQN×DQN success 2\% (clean) & Low collisions reflect a stall artefact, not learned avoidance (honest). \\
+\bottomrule
+\end{tabular}
