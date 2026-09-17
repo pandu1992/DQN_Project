@@ -524,6 +524,11 @@
   .pdf-fig { margin:10pt 0; page-break-inside:avoid; text-align:center; }
   .pdf-fig img { max-width:100%; height:auto; border:1px solid #ddd; }
   .pdf-fig figcaption { font-size:8.5pt; color:#333; text-align:justify; margin-top:3pt; }
+  /* inline body figures (markdown ![](...)) — constrain to page width so wide
+     schematics never overflow the print margin */
+  figure.md-fig { margin:10pt 0; text-align:center; page-break-inside:avoid; }
+  figure.md-fig img, .md img { display:block; max-width:100%; width:auto; height:auto; margin:0 auto; }
+  img { max-width:100%; height:auto; }
   .pdf-cover { border-bottom:2px solid #333; padding-bottom:8pt; margin-bottom:10pt; }
   .pdf-cover .sub { color:#444; font-size:10pt; }
   .pagebreak { page-break-before:always; }
