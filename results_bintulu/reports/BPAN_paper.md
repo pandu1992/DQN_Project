@@ -216,13 +216,13 @@ risk $\rho_e$, traffic $\tau_e$, weather $w_e$ and current $\kappa_e$. The along
 speed, travel time and energy are
 
 $$ s_e=\max\!\big(2,\; 8\,(1-\kappa_e)\big),\qquad
-   t_e=\frac{d_e}{s_e},\qquad \varepsilon_e = 0.01\,d_e . \tag{1}$$
+   t_e=\frac{d_e}{s_e},\qquad \varepsilon_e = 0.01\,d_e .$$
 
 The **navigation cost** that defines the charted route and the action ordering, and
 the normalised **difficulty**, are
 
 $$ \mathrm{nav}(e)=t_e+\varepsilon_e+2\tau_e+3\rho_e,\qquad
-   \mathrm{dif}(e)=\min\!\big(1,\;0.35\rho_e+0.25\tau_e+0.2 w_e+0.2|\kappa_e|\big). \tag{2}$$
+   \mathrm{dif}(e)=\min\!\big(1,\;0.35\rho_e+0.25\tau_e+0.2 w_e+0.2|\kappa_e|\big).$$
 
 The **planned (charted) route** $\pi^\star(u\!\to\!g)$ is the minimum-cost path under
 $\mathrm{nav}(\cdot)$, obtained by Dijkstra's algorithm; its node sequence
@@ -239,12 +239,12 @@ the segment. The realised pose is the nominal interpolation plus a lateral
 
 $$ \mathbf{z}(\theta_k)=\mathbf{p}_u+\theta_k(\mathbf{p}_v-\mathbf{p}_u)
    \;+\;\hat{\mathbf{n}}_e\,\underbrace{\sigma_\text{dr}\,\xi_k\,\psi(\theta_k)}_{\text{drift}},
-   \qquad \xi_k\sim\mathcal{N}(0,1), \tag{3}$$
+   \qquad \xi_k\sim\mathcal{N}(0,1),$$
 
 with drift scale and shape
 
 $$ \sigma_\text{dr}=90\,\sigma_\text{obs}+45\,p_\text{err},\qquad
-   \psi(\theta)=\sin(\pi\theta)\,(1-h)+h\,\theta\,\mathbb{1}[v=g],\;\; h=\tfrac12\mathbb{1}[v=g], \tag{4}$$
+   \psi(\theta)=\sin(\pi\theta)\,(1-h)+h\,\theta\,\mathbb{1}[v=g],\;\; h=\tfrac12\mathbb{1}[v=g],$$
 
 where $\sigma_\text{obs}=$`noiseStd` and $p_\text{err}=$`packetErrorRate` are the
 condition parameters. The $\sin(\pi\theta)$ shape makes drift vanish at both
@@ -256,14 +256,14 @@ offset persist at a berth, modelling imperfect station-keeping.
 A seeded obstacle field $\mathcal{O}=\{(\mathbf{o}_j,r_j)\}$, $r_j=22$, is placed
 near edges. A **collision** at sub-step $k$ occurs iff the hull enters a disc,
 
-$$ \mathrm{coll}_k=\mathbb{1}\!\Big[\min_j \lVert\mathbf{z}(\theta_k)-\mathbf{o}_j\rVert_2\le r_j\Big]. \tag{5}$$
+$$ \mathrm{coll}_k=\mathbb{1}\!\Big[\min_j \lVert\mathbf{z}(\theta_k)-\mathbf{o}_j\rVert_2\le r_j\Big].$$
 
 Let $\mathrm{seg}(\mathbf z,\mathcal P)$ be the distance from a pose to the nearest
 planned segment. The per-step **cross-track error** sample and the episode mean on
 the $M$ recorded sub-steps are
 
 $$ \mathrm{CTE}_k=\mathrm{seg}\big(\mathbf{z}(\theta_k),\mathcal{P}\big),\qquad
-   \overline{\mathrm{CTE}}=\frac{1}{M}\sum_{k} \mathrm{CTE}_k. \tag{6}$$
+   \overline{\mathrm{CTE}}=\frac{1}{M}\sum_{k} \mathrm{CTE}_k.$$
 
 For **IALA channel-keeping** we use the signed side of a segment,
 $\mathrm{sgn\text{-}side}(\mathbf z,u,v)=(x_v\!-\!x_u)(Y\!-\!y_u)-(y_v\!-\!y_u)(X\!-\!x_u)$.
@@ -282,7 +282,7 @@ The *true* observation $\mathbf{o}^\text{true}_t\in\mathbb{R}^{28}$ concatenates
 $$ \mathbf{o}^{\text{true}}_t=\Big[\tfrac{X_t}{W},\tfrac{Y_t}{H},\tfrac{x_g}{W},\tfrac{y_g}{H},
    \tfrac{x_g-X_t}{W},\tfrac{y_g-Y_t}{H},\tfrac{d_g}{1500},\tfrac{\ell(c_t)}{2},\tfrac{t}{H}\;\big\Vert\;
    \{\mathbb{1}_a,\hat c_a,\mathrm{dif}_a,\beta_a\}_{a=0}^{3}\;\big\Vert\;
-   \widehat{\mathrm{CTE}},\widehat{\mathrm{obs}},\lambda_t\Big], \tag{7}$$
+   \widehat{\mathrm{CTE}},\widehat{\mathrm{obs}},\lambda_t\Big],$$
 
 where $d_g=\lVert\mathbf z_t-\mathbf p_g\rVert_2$, $\ell(\cdot)$ encodes the lane,
 $\hat c_a=\min(1,\mathrm{nav}(e_a)/40)$, $\beta_a=\mathbb{1}[\text{edge }a\text{ reduces goal distance}]$,
@@ -290,13 +290,13 @@ and $\lambda_t$ flags a collision on the previous step. The agent never sees gro
 truth: a **Gaussian sensor model** corrupts every non-indicator entry,
 
 $$ \mathbf{o}^\text{sens}_t = \mathbf{o}^\text{true}_t + \sigma_\text{obs}\,\boldsymbol{\eta}_t,
-   \qquad \boldsymbol{\eta}_t\sim\mathcal{N}(\mathbf 0,\mathbf I), \tag{8}$$
+   \qquad \boldsymbol{\eta}_t\sim\mathcal{N}(\mathbf 0,\mathbf I),$$
 
 followed by a **packet-loss channel** that, with probability $p_\text{err}$, drops
 the frame and re-delivers the last received observation (stale hold):
 
 $$ \mathbf{o}_t=\begin{cases}\mathbf{o}_{t-1}, & \text{w.p. } p_\text{err}\ \ (\text{dropped frame}),\\[2pt]
-   \mathbf{o}^\text{sens}_t, & \text{w.p. } 1-p_\text{err}.\end{cases} \tag{9}$$
+   \mathbf{o}^\text{sens}_t, & \text{w.p. } 1-p_\text{err}.\end{cases}$$
 
 The three evaluated conditions are $(\sigma_\text{obs},p_\text{err})\in\{(0,0),\,(0.1,0.2),\,(0.25,0.4)\}$
 for clean / mid / harsh.
@@ -310,12 +310,12 @@ $$ R_t = -0.2\;\underbrace{-5\,\mathbb{1}[\text{invalid}]}_{\text{illegal slot}}
    \;\underbrace{-0.1\,\mathrm{nav}(e_t)}_{\text{movement}}
    \;\underbrace{-\,\mathbb{1}[\text{revisit}]}_{-1}
    \;\underbrace{-\,25\,\mathrm{coll}_t}_{\text{collision}}
-   \;-\,0.005\,\overline{\mathrm{CTE}} \;+\; R^\text{term}_t, \tag{10}$$
+   \;-\,0.005\,\overline{\mathrm{CTE}} \;+\; R^\text{term}_t,$$
 
 $$ R^\text{term}_t=\begin{cases}
    100 + 20\max\!\big(0,\,1-\delta/40\big), & c_t=g\ (\text{berth, docking bonus}),\\
    -30, & t=H,\ c_t\neq g\ (\text{timeout}),\\
-   0, & \text{otherwise.}\end{cases} \tag{11}$$
+   0, & \text{otherwise.}\end{cases}$$
 
 The agent maximises the expected discounted return
 $\mathbb{E}\!\big[\sum_{t=0}^{H-1}\gamma^{t}R_t\big]$.
@@ -333,16 +333,16 @@ $$ y_t=r_t+\gamma(1-\mathrm{done})\cdot
    \begin{cases}
    \displaystyle\max_{a'} Q_{\phi^-}(\mathbf o_{t+1},a'), & \text{DQN / Dueling-DQN},\\[6pt]
    Q_{\phi^-}\!\big(\mathbf o_{t+1},\,\arg\max_{a'}Q_{\phi}(\mathbf o_{t+1},a')\big), & \text{Double / Dueling-Double}.
-   \end{cases} \tag{12}$$
+   \end{cases}$$
 
 $$ \delta_t=Q_\phi(\mathbf o_t,a_t)-y_t,\qquad
    \mathcal{L}_\kappa(\delta_t)=\begin{cases}\tfrac12\delta_t^2, & |\delta_t|\le\kappa,\\[2pt]
-   \kappa\big(|\delta_t|-\tfrac12\kappa\big), & |\delta_t|>\kappa.\end{cases} \tag{13}$$
+   \kappa\big(|\delta_t|-\tfrac12\kappa\big), & |\delta_t|>\kappa.\end{cases}$$
 
 The **dueling** variants factor the value through a state value and a
 mean-centred advantage,
 
-$$ Q_\phi(\mathbf o,a)=V_\phi(\mathbf o)+\Big(A_\phi(\mathbf o,a)-\tfrac{1}{|\mathcal A|}\sum_{a'}A_\phi(\mathbf o,a')\Big). \tag{14}$$
+$$ Q_\phi(\mathbf o,a)=V_\phi(\mathbf o)+\Big(A_\phi(\mathbf o,a)-\tfrac{1}{|\mathcal A|}\sum_{a'}A_\phi(\mathbf o,a')\Big).$$
 
 Exploration during training is $\varepsilon$-greedy with $\varepsilon$ annealed
 linearly from $\varepsilon_0=1.0$ to $\varepsilon_1=0.05$ over the first $20\%$ of
@@ -369,7 +369,7 @@ condition $j$, seed $k$ (the mean of a metric over a cell's evaluation episodes;
 CTE/docking averaged over *successful* episodes only). We fit a two-way
 fixed-effects model with the seed as a block,
 
-$$ y_{ijk}=\mu+\alpha_i+\beta_j+(\alpha\beta)_{ij}+s_k+\epsilon_{ijk}, \tag{15}$$
+$$ y_{ijk}=\mu+\alpha_i+\beta_j+(\alpha\beta)_{ij}+s_k+\epsilon_{ijk},$$
 
 and report, from Type-II sums of squares, the **partial eta-squared** effect size
 $\eta^2_p=\mathrm{SS}_\text{effect}/(\mathrm{SS}_\text{effect}+\mathrm{SS}_\text{resid})$.
