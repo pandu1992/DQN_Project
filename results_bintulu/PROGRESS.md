@@ -1,38 +1,28 @@
-# BPAN — Bintulu Port Autonomous Navigation — progress
+# BPAN — Bintulu Port Autonomous Navigation — COMPLETE
 
-**Status: IN PROGRESS** (saved before disconnect). Resume tonight.
+**Status: COMPLETE.** Separate chart-grounded study, distinct from the Synthetic
+Port Studies 1–5.
 
-## Done
-- `assets/bintulu/bintulu_chart.png` — real Bintulu approach chart (copied from the uploaded `assets/schematics/map_3.png`), used as the live-sim background.
-- `js/environmentBintulu.js` — `BintuluEnv`: waypoint graph on the chart's native 1536×1024 frame; North Access Channel (buoys NO1'–NO9'/N1'–N9') and South Access Channel (R2'–R10'/G2'–G10'), **extended into the harbour berths** (Southern Jetty / Container Terminal / Inner Harbour 1 & 2) so missions complete (fixes the chart's channel lines stopping in open water). Reuses the project's physics/sensing/comms + metric contract. 23 nodes, 20 buoys, all 6 start→goal missions solvable.
-- `js/bintulu_main.js` + `bintulu.html` — live simulation rendering the vessel/waypoints/buoys/obstacles over the real chart background. Verified: loads, trains, telemetry advances, goal berth renders at Inner Harbour 2 / Southern Jetty. Separate from the Synthetic Port sim (`index.html`).
-- `experiments/harness_bintulu.js`, `run_experiment_bintulu.js`, `results_bintulu/configs/experiment_config_bintulu.json` — 4 algorithms × 3 conditions × 8 seeds = 96 cells.
+## Delivered
+- `assets/bintulu/bintulu_chart.png` — real Bintulu approach chart (background).
+- `js/environmentBintulu.js` (`BintuluEnv`) — waypoint graph on the chart frame;
+  North + South Access Channels extended into the harbour berths; full
+  physics/sensing/comms + metric contract.
+- `bintulu.html` + `js/bintulu_main.js` — live simulation over the real chart.
+- Experiment: 4 algorithms × 3 conditions × 8 seeds = **96 cells / 2,880 episodes**
+  (`experiments/{harness,run_experiment,analyze}_bintulu.js|.py`,
+  `results_bintulu/{configs,raw,aggregated,statistics,tables,figures}`).
+- **Full paper**: `results_bintulu/reports/BPAN_paper.md` (intro → conclusion) +
+  dashboard `bintulu_paper.html`.
+- Landing-page link added to the BPAN simulation.
 
-## Experiment data collected: 80/96 cells (2,400 rows), all complete, 0 NaN
-Done (240 rows each): DQN {clean,mid,harsh}, DoubleDQN {clean,mid,harsh},
-DuelingDQN {clean,mid,harsh}, DuelingDoubleDQN {clean}.
-
-## Remaining to run tonight (2 shards)
-```
-NODE=$(ls /root/.nvm/versions/node/*/bin/node | head -1)
-cd DQN_bintulu
-$NODE experiments/run_experiment_bintulu.js --cell=3:1 --append   # DuelingDoubleDQN_mid
-$NODE experiments/run_experiment_bintulu.js --cell=3:2 --append   # DuelingDoubleDQN_harsh
-# (Dueling variants ~34s/cell -> ~5 min each shard; run one per call)
-```
-After both, each config should be 240 rows (96 cells, 2,880 rows total). Rebuild
-the manifest, then: aggregate → stats → tables → figures → **write the BPAN paper**
-(`bintulu_paper.html` + `manuscript`), add a landing link, PR + deploy + verify live.
-
-## Early signal (self-test, DQN seed 0)
-clean: success 40%, CTE|success 14.6, collisions 0.13/ep, IALA 0.0;
-harsh: success 17%, CTE|success 19.8, collisions 1.20/ep, IALA 19.7 — degradation
-clearly hurts safety/compliance on the real chart, same qualitative pattern as the
-Synthetic Port studies.
+## Headline results
+- Algorithm choice is immaterial (partial η² ≈ 0.01–0.03 on every metric, n.s.).
+- Degradation condition dominates safety/precision: collision-rate η²=0.64,
+  IALA η²=0.63, docking-accuracy η²=0.79, success η²=0.18 (all p<0.001).
+- Clean→harsh (mean over variants): IALA 0→22.7/ep, collisions 0.19→1.63/ep,
+  CTE|success 2.9→25.2, dropped frames 0→19.8.
 
 ## Notes
-- Work on branch `bintulu/bpan-study` (fresh clone `DQN_bintulu`; the old
-  `DQN_Project` checkout is corrupted — always start from a fresh clone).
-- node: `$(ls /root/.nvm/versions/node/*/bin/node | head -1)`.
-- Naming confirmed: this study is **"Bintulu Port Autonomous Navigation (BPAN)"**,
-  kept separate from Synthetic Port Studies 1–5 (which stay rebranded).
+- Branch `bintulu/bpan-study` (fresh clone). node: `$(ls /root/.nvm/versions/node/*/bin/node | head -1)`.
+- Deployed Synthetic Port app unaffected; BPAN adds separate pages.

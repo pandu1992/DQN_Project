@@ -1,0 +1,5 @@
+Factor,Levels / Value,Detail,Interpretation
+Testbed,Bintulu Port approach chart (1536x1024 native frame),North + South Access Channels -> Inner Harbours / Southern Jetty,Waypoints on the real chart; channels extended into berths.
+Agents,"DQN, Double, Dueling, Dueling-Double",value-based DRL,"Same four variants as the Synthetic Port studies, for comparability."
+Conditions,"clean (0,0), mid (0.1,0.2), harsh (0.25,0.4)","(sensor noise, packet-error)",Graded sensing/communication degradation.
+Seeds,8 shared seeds (0-7),paired; env_seed=42+seed,"Cells: 4x3x8=96; 2,880 eval episodes."
