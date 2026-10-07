@@ -365,15 +365,28 @@ rather than over-claim per-cell significance.
 ### 4.4 Qualitative behaviour (animations)
 
 To make the learned behaviour concrete, we render trained-DQN greedy episodes
-directly over the Bintulu chart (full-resolution animations are on the project
-site; representative frames are shown here). In **clean** conditions the vessel
-tracks the planned channel and berths cleanly; under **harsh** sensing/comms the
-realised track drifts off the buoyed centreline, crosses channel markers (IALA
-violations), and grazes obstacles — the visual counterpart of §4.2.
+directly over the Bintulu chart. Because animations cannot be embedded in a static
+manuscript, each scenario is presented as a **three-panel still-frame plate** whose
+panels are selected *automatically from the trajectory data* at the analytically
+meaningful instants (peak off-channel deviation, first collision, minimum
+closest-point-of-approach); the full-resolution animated versions are on the
+project site. In **clean** conditions (Figure 3a) the vessel tracks the planned
+channel and berths cleanly; under **harsh** sensing/comms (Figure 3b) the realised
+track drifts off the buoyed centreline (panel b, cross-track error annotated),
+crosses channel markers (IALA violations), and grazes an obstacle (panel c,
+collision) — the visual counterpart of §4.2.
 
-- `results_bintulu/gifs/clean_success.gif` — clean transit, berths successfully.
-- `results_bintulu/gifs/mid_transit.gif` — mid degradation, completes with drift.
-- `results_bintulu/gifs/harsh_drift.gif` — harsh degradation, drift + collision.
+![Clean-conditions key frames: departure, mid-channel transit, berthing.](results_bintulu/figures/figBPAN_keyframes_clean.png)
+**Figure 3a.** Clean conditions, key frames auto-selected from the trajectory:
+(a) departure from the sea entrance, (b) mid-channel transit along the buoyed
+North channel, (c) berthing at the harbour.
+
+![Harsh-degradation key frames: on-centreline, peak drift (IALA), collision.](results_bintulu/figures/figBPAN_keyframes_harsh.png)
+**Figure 3b.** Harsh degradation, key frames auto-selected: (a) the vessel still
+on the centreline, (b) the instant of **peak off-channel drift** (cross-track error
+annotated — the IALA-departure moment), (c) the frame of the **obstacle collision**
+(red burst). The still plate makes the §4.2 safety collapse legible in a form that
+can be printed in the paper.
 
 ### 4.5 Improving the DQN — the navigation prior is the dominant lever
 
@@ -466,6 +479,14 @@ inter-vessel outcomes.
 separate cleanly and are essentially flat across degradation — the gap between them
 is the interaction structure, not the noise.
 
+![Multi-vessel key frames: approach, closest encounter (min CPA), after passing.](results_bintulu/multi/figures/figMULTI_keyframes.png)
+**Figure 6b.** Two independent DQN vessels sharing the port, key frames
+auto-selected from the trajectory at the **minimum closest-point-of-approach**:
+(a) the two vessels approach on their separate missions, (b) the closest encounter
+(the inter-vessel link and separation are annotated; a red ring marks a contact),
+(c) the vessels after passing. This is the inter-vessel interaction whose *pairing*
+dominates the statistics above.
+
 > [!INSIGHT]
 > **In shared water, the operative design variable is the *composition of
 > controllers*, not the DRL variant.** A classical follower completes but will not
@@ -522,6 +543,14 @@ above everything measured here.
 (blue) cuts head-on events below the rule/rule structural baseline (red ≈ 1.0),
 evidence of emergent temporal give-way; the residual inter-vessel collision,
 however, is structural on a single centreline.
+
+![Two-way key frames: opposing approach, head-on encounter (min CPA), outcome.](results_bintulu/ops/figures/figOPS_twoway_keyframes.png)
+**Figure 7b.** Opposing traffic in one access channel, key frames auto-selected at
+the **head-on minimum closest-point-of-approach**: (a) the inbound (blue, DQN) and
+outbound (orange, rule-based) vessels approach from opposite ends of the same
+centreline, (b) the head-on encounter (red ring = contact), (c) the outcome after
+the meeting. The plate makes the *structural* nature of the single-channel
+collision — the §4.7 null — directly visible.
 
 ![Round-trip full-cycle success by agent.](results_bintulu/ops/figures/figOPS_twophase_full.png)
 **Figure 8.** Full round-trip success. The classical follower closes the cycle
