@@ -1,0 +1,186 @@
+{
+  "experiment_id": "bpan_operational_realism",
+  "cells": [
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_clean",
+      "seed": 0,
+      "ms": 43
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_clean",
+      "seed": 1,
+      "ms": 28
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_clean",
+      "seed": 2,
+      "ms": 26
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_clean",
+      "seed": 3,
+      "ms": 25
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_clean",
+      "seed": 4,
+      "ms": 24
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_clean",
+      "seed": 5,
+      "ms": 24
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_mid",
+      "seed": 0,
+      "ms": 42
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_mid",
+      "seed": 1,
+      "ms": 35
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_mid",
+      "seed": 2,
+      "ms": 34
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_mid",
+      "seed": 3,
+      "ms": 33
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_mid",
+      "seed": 4,
+      "ms": 33
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_mid",
+      "seed": 5,
+      "ms": 35
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_harsh",
+      "seed": 0,
+      "ms": 34
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_harsh",
+      "seed": 1,
+      "ms": 36
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_harsh",
+      "seed": 2,
+      "ms": 34
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_harsh",
+      "seed": 3,
+      "ms": 33
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_harsh",
+      "seed": 4,
+      "ms": 33
+    },
+    {
+      "config_id": "twoway_RuleBased_vs_RuleBased_harsh",
+      "seed": 5,
+      "ms": 33
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_clean",
+      "seed": 0,
+      "ms": 9682
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_clean",
+      "seed": 1,
+      "ms": 12747
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_clean",
+      "seed": 2,
+      "ms": 12556
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_clean",
+      "seed": 3,
+      "ms": 13353
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_clean",
+      "seed": 4,
+      "ms": 14228
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_clean",
+      "seed": 5,
+      "ms": 12377
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_mid",
+      "seed": 0,
+      "ms": 9446
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_mid",
+      "seed": 1,
+      "ms": 11696
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_mid",
+      "seed": 2,
+      "ms": 18508
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_mid",
+      "seed": 3,
+      "ms": 22402
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_mid",
+      "seed": 4,
+      "ms": 16713
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_mid",
+      "seed": 5,
+      "ms": 11976
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_harsh",
+      "seed": 0,
+      "ms": 13438
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_harsh",
+      "seed": 1,
+      "ms": 15601
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_harsh",
+      "seed": 2,
+      "ms": 21231
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_harsh",
+      "seed": 3,
+      "ms": 22854
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_harsh",
+      "seed": 4,
+      "ms": 16929
+    },
+    {
+      "config_id": "twoway_DQN_vs_RuleBased_harsh",
+      "seed": 5,
+      "ms": 13716
+    }
+  ],
+  "total_cells": 36
+}

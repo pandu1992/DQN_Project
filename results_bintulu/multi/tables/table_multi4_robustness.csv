@@ -1,0 +1,13 @@
+Pairing,Metric,Clean,Harsh,Δ,Cohen d_z,adj p (Holm),Sig,Interpretation
+Rule / Rule,Success rate (%),83.61,83.61,+0.00,0.00,1.000,no,negligible clean→harsh change; n.s. at n=6.
+Rule / Rule,Inter-vessel collisions / episode,1.24,1.08,-0.16,-0.50,0.188,no,medium clean→harsh change; n.s. at n=6.
+Rule / Rule,Near-misses / episode,0.00,0.16,+0.16,0.50,0.469,no,medium clean→harsh change; n.s. at n=6.
+Rule / Rule,Min closest-point-of-approach (px),73.13,73.28,+0.14,0.07,0.844,no,negligible clean→harsh change; n.s. at n=6.
+DQN / Rule,Success rate (%),54.72,59.44,+4.72,0.62,0.675,no,medium clean→harsh change; n.s. at n=6.
+DQN / Rule,Inter-vessel collisions / episode,0.31,0.73,+0.43,1.90,0.094,no,large clean→harsh change; n.s. at n=6.
+DQN / Rule,Near-misses / episode,0.51,0.30,-0.21,-0.87,0.469,no,large clean→harsh change; n.s. at n=6.
+DQN / Rule,Min closest-point-of-approach (px),87.89,82.87,-5.02,-0.42,0.438,no,small clean→harsh change; n.s. at n=6.
+DQN / DQN,Success rate (%),31.94,37.22,+5.28,0.27,1.000,no,small clean→harsh change; n.s. at n=6.
+DQN / DQN,Inter-vessel collisions / episode,0.61,1.89,+1.29,1.13,0.188,no,large clean→harsh change; n.s. at n=6.
+DQN / DQN,Near-misses / episode,0.49,0.54,+0.04,0.23,0.688,no,small clean→harsh change; n.s. at n=6.
+DQN / DQN,Min closest-point-of-approach (px),93.29,59.01,-34.28,-0.94,0.188,no,large clean→harsh change; n.s. at n=6.

@@ -1,0 +1,7 @@
+pairing,condition,n_seeds,success_rate_mean,success_rate_ci95_hw,vessel_collision_rate_mean,vessel_collision_rate_ci95_hw,vessel_collisions_per_ep_mean,vessel_collisions_per_ep_ci95_hw,head_on_events_per_ep_mean,head_on_events_per_ep_ci95_hw,near_misses_per_ep_mean,near_misses_per_ep_ci95_hw,min_cpa_mean,min_cpa_ci95_hw
+DQN_vs_RuleBased,clean,6,90.27777777777779,15.815856123366707,100.0,0.0,1.0,0.0,0.8444444444444444,0.25386479023061714,0.0,0.0,0.0,0.0
+DQN_vs_RuleBased,harsh,6,79.72222222222221,13.430984499918694,99.44444444444446,1.4281010197979505,1.0611111111111111,0.11584355484739552,0.75,0.1793958650832362,0.011111111111111112,0.028562020395959047,0.6691666666666668,0.8852801907743245
+DQN_vs_RuleBased,mid,6,83.88888888888889,14.909812372378356,100.0,0.0,1.011111111111111,0.028562020395959044,0.9444444444444443,0.05266576336613011,0.0,0.0,0.0,0.0
+RuleBased_vs_RuleBased,clean,6,100.0,0.0,100.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0
+RuleBased_vs_RuleBased,harsh,6,100.0,0.0,100.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0
+RuleBased_vs_RuleBased,mid,6,100.0,0.0,100.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0

@@ -1,0 +1,12 @@
+Study,Metric,ICC (seed),sigma^2 seed,sigma^2 resid,Interpretation
+Core single-leg (algorithm x condition),success_rate,0.448,120.817,148.887,seed explains a large share of residual variance
+Core single-leg (algorithm x condition),collision_rate,0.150,65.425,371.511,seed contributes modestly
+Core single-leg (algorithm x condition),iala_violations,0.237,23.159,74.431,seed contributes modestly
+Multi-vessel (pairing x condition),success_rate,0.427,140.622,188.466,seed explains a large share of residual variance
+Multi-vessel (pairing x condition),vessel_collisions_per_ep,0.126,0.097,0.675,seed contributes modestly
+Multi-vessel (pairing x condition),near_misses_per_ep,0.033,0.001,0.038,seed negligible after fixed effects
+Round trip (agent x condition),full_success_rate,0.185,59.900,264.060,seed contributes modestly
+Round trip (agent x condition),collisions_per_ep,0.284,0.079,0.200,seed contributes modestly
+Two-way traffic (pairing x condition),success_rate,0.000,0.000,97.921,seed negligible after fixed effects
+Two-way traffic (pairing x condition),head_on_events_per_ep,0.030,0.000,0.015,seed negligible after fixed effects
+Two-way traffic (pairing x condition),vessel_collisions_per_ep,0.000,0.000,0.002,seed negligible after fixed effects

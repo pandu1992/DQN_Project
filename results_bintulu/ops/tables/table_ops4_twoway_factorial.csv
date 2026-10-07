@@ -1,0 +1,13 @@
+Metric,Effect,F,p-value,partial η²,Interpretation
+Transit success (%),Pairing,19.81,0.0002,0.442,"sig, large effect"
+Transit success (%),Condition,0.79,0.4649,0.059,"n.s., small effect"
+Transit success (%),Pairing×Condition,0.79,0.4649,0.059,"n.s., small effect"
+Transit success (%),Seed (block),0.52,0.7572,0.095,"n.s., medium effect"
+Inter-vessel collisions / episode,Pairing,2.33,0.1394,0.085,"n.s., medium effect"
+Inter-vessel collisions / episode,Condition,1.42,0.2605,0.102,"n.s., medium effect"
+Inter-vessel collisions / episode,Pairing×Condition,1.42,0.2605,0.102,"n.s., medium effect"
+Inter-vessel collisions / episode,Seed (block),0.77,0.5769,0.134,"n.s., medium effect"
+Head-on encounter events / episode,Pairing,14.76,0.0007,0.371,"sig, large effect"
+Head-on encounter events / episode,Condition,1.97,0.1606,0.136,"n.s., medium effect"
+Head-on encounter events / episode,Pairing×Condition,1.97,0.1606,0.136,"n.s., medium effect"
+Head-on encounter events / episode,Seed (block),1.27,0.3088,0.202,"n.s., large effect"

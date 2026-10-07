@@ -1,13 +1,18 @@
-# Bintulu Port Autonomous Navigation (BPAN): A Chart-Grounded Case Study of Value-Based Deep Reinforcement Learning under Degraded Sensing and Communication
+# Bintulu Port Autonomous Navigation (BPAN): What Level of the Design Stack Confers Robust, Complete, Multi-Vessel Autonomy? A Chart-Grounded Factor-Hierarchy Study
 
-**A reproducible, chart-grounded investigation on the Bintulu Port approach channels**
+**A reproducible, chart-grounded investigation on the Bintulu Port approach channels — from single-vessel transit to shared-water and round-trip operations**
 
-> **Reproducibility statement.** Every quantitative claim is computed from
-> `results_bintulu/raw/eval_episodes.csv` (2,880 evaluation episodes) by
-> `experiments/analyze_bintulu.py`; nothing is hand-set or fabricated. The
-> waypoint graph is placed on the native pixel frame of the Bintulu Port approach
-> chart (`assets/bintulu/bintulu_chart.png`), which is also the background of the
-> live browser simulation (`bintulu.html`).
+> **Reproducibility statement.** Every quantitative claim is computed from the
+> committed per-episode data by the analysis scripts; nothing is hand-set or
+> fabricated. The core single-vessel study draws on
+> `results_bintulu/raw/eval_episodes.csv` (2,880 episodes,
+> `experiments/analyze_bintulu.py`); the multi-vessel extension on
+> `results_bintulu/raw_multi/` (54 cells, `analyze_bintulu_multi.py`); the
+> operational-realism extension on `results_bintulu/raw_ops/` (72 cells,
+> `analyze_bintulu_ops.py`); and the seed-level mixed-effects treatment on
+> `mixed_effects_bpan.py`. The waypoint graph is placed on the native pixel frame
+> of the Bintulu Port approach chart (`assets/bintulu/bintulu_chart.png`), which is
+> also the background of the live browser simulation (`bintulu.html`).
 
 > **Scope & relationship to prior work.** This is a **standalone case study on the
 > real Bintulu Port chart**, deliberately kept separate from the author's
@@ -46,12 +51,34 @@ to ≈1.6 per episode (condition partial η² ≈ 0.63 for both; p < 0.001), whi
 cross-track error on successful transits grows from ≈3 to ≈25. We conclude that,
 on the Bintulu approaches, robust autonomy is primarily a perception/communication
 problem rather than a value-function-refinement problem, and that safety-relevant
-metrics must be reported alongside berthing success. The chart-grounded testbed
-and live simulation are released for reproducibility.
+metrics must be reported alongside berthing success.
+
+We then extend the study beyond the single one-way transit along three axes and
+synthesise the results into a **design-stack factor hierarchy**. **(d) Multi-vessel:**
+with two independent vessels sharing the channels, the *pairing of control
+architectures* dominates (success partial η² = 0.74, near-misses 0.59) — a classical
+follower completes most but collides most, a learned vessel gives way but completes
+less — while the DRL variant and even the degradation condition are minor on the
+inter-vessel outcomes. **(e) Operational realism:** requiring a full inbound-dock-
+outbound *round trip* makes completion a control-architecture capability (agent
+partial η² = 0.90: the rule-based planner closes the cycle 100% of the time, the
+naive learner ≈16%), while a *two-way* head-on in one surveyed channel makes
+collision **structural** (≈1 per episode regardless of algorithm or condition) — an
+honest null that only a mission-geometry change (traffic separation) could remove.
+**(f)** A seed-level mixed-effects model ($y\sim\text{fixed}+(1\mid\text{seed})$)
+reproduces every conclusion under a conservative random-seed treatment and reports
+the seed's intraclass correlation (≤ 0.45, and ≈ 0 where the outcome is structurally
+fixed). The **synthesis** is a factor hierarchy: *mission & interaction structure ≳
+control architecture & navigation prior > perception & communications ≫ learning
+algorithm.* Robust, complete, multi-vessel autonomy is conferred by the upper levels
+of the design stack; the choice of value-based algorithm sits at the bottom and
+moves nothing. The chart-grounded testbed, the three extensions, the animations, and
+the live simulation are released for reproducibility.
 
 **Keywords:** Bintulu Port, autonomous surface vessel, deep reinforcement learning,
-COLREGs/IALA channel-keeping, sensor noise, communication reliability, nautical
-chart, reproducibility.
+multi-vessel interaction, COLREGs/IALA channel-keeping, operational realism,
+mixed-effects models, factor hierarchy, sensor noise, communication reliability,
+nautical chart, reproducibility.
 
 ---
 
@@ -113,6 +140,25 @@ chart**.
 
 ## 3. Methods
 
+The study proceeds as a single sequential pipeline — from the real chart, through
+a shared environment contract, into four study blocks, down to a per-seed unit of
+inference, and up through a three-tier statistical treatment to a factor-hierarchy
+synthesis. Figure M lays out that flow in full; each stage below corresponds to a
+box in the figure.
+
+![BPAN methodology flow, from the real chart to the factor-hierarchy synthesis.](results_bintulu/figures/figBPAN_methodology.png)
+**Figure M.** The end-to-end BPAN methodology. (1) the real Bintulu chart grounds
+(2) a waypoint/buoy/berth graph that feeds (3) the shared environment contract
+(physics, sensor noise, comms loss, obstacles, IALA, docking, CTE). Four study
+blocks run on that contract — (A) the core 4-variant comparison, (B) the
+DQN-improvement arms, (C) the multi-vessel extension *(d)*, and (D) the
+operational-realism extension *(e)*. Every cell is reduced to (4) a per-seed
+scalar, the unit of inference, with cross-track error taken on **successful**
+episodes only. The scalars drive a three-tier statistical treatment — (5a)
+factorial ANOVA with partial η², (5b) paired clean→harsh Wilcoxon/Holm/Cohen
+$d_z$ contrasts, and (5c) the seed-level mixed-effects model *(f)* — which
+together support (6) the factor-hierarchy synthesis.
+
 ### 3.1 Chart-grounded environment
 
 The environment (`js/environmentBintulu.js`, `BintuluEnv`) places a waypoint graph
@@ -173,6 +219,77 @@ factorial ANOVA (algorithm × condition + seed; Type-II SS; partial η²), and t
 clean→harsh robustness per algorithm with paired Wilcoxon signed-rank tests, Holm
 correction, and Cohen's $d_z$. The **4 × 3 × 8 = 96 cells / 2,880 episodes** index
 computational replication; the effective sample size is the 8 seeds.
+
+### 3.4 Extension (d): multi-vessel interaction
+
+To test behaviour when the port is **shared**, `js/environmentBintuluMulti.js`
+(`MultiVesselBintulu`) instantiates **two independent `BintuluEnv` vessels** on the
+same chart, each with its own policy, its own mission (decorrelated RNG streams so
+the two receive different start/berth assignments), and a 3-value **partner
+channel** appended to each observation (sensed relative bearing `dx, dy` and
+`range` to the other vessel, obs 28 → 31). The partner channel is corrupted by the
+*same* Gaussian noise as the rest of the observation, so degradation also blinds a
+vessel to its neighbour. Inter-vessel geometry is evaluated continuously: at every
+one of the 6 kinematic sub-steps the hull–hull separation is measured, a
+**collision** is counted below 26 px and a **near-miss** below 60 px (hysteretic,
+so one encounter is counted once), the running **minimum closest-point-of-approach
+(CPA)** is tracked, and a COLREGs-style role (head-on / give-way / stand-on) is
+assigned from the relative bearing and heading difference.
+
+We cross three **pairings** — `Rule/Rule`, `DQN/Rule`, `DQN/DQN` — with the three
+degradation conditions and 6 shared seeds (**3 × 3 × 6 = 54 cells**, 30 eval
+episodes per cell × 2 vessels). The rule-based controller is the project's
+COLREGs-aware channel-follower (`js/rulebased.js`), reused unchanged. The pairing
+factor isolates **the control architecture of the interaction partner**: does
+pairing a learner with a classical controller, or two learners together, change
+who completes and who collides?
+
+### 3.5 Extension (e): operational realism
+
+Real port traffic is not a single one-way transit. `js/environmentBintuluOps.js`
+adds two scenarios on the chart:
+
+- **Round trip (`TwoPhaseBintulu`).** A single vessel must transit *inbound* from
+  the sea entrance to the inner berth of an access channel, dock, then **retarget**
+  and transit *outbound* back to the entrance. Success is the **full cycle**; a
+  phase flag and a cycle-progress scalar are appended to the observation
+  (obs 28 → 30) and the step budget is doubled (120). This probes whether a stack
+  that can reach a berth can also *complete an operation*.
+- **Two-way traffic (`TwoWayBintulu`).** An **inbound** and an **outbound** vessel
+  share one access channel in opposing directions, producing genuine head-on
+  encounters on a single surveyed centreline. The inter-vessel collision / near-miss
+  / CPA / COLREGs-role machinery is identical to §3.4.
+
+Both scenarios enforce an **operational invariant that the committed core
+environment deliberately omits**: a working port keeps its surveyed channels
+navigable. The core single-leg study averages over many missions, so a seed that
+happens to spawn a static obstacle across a berth's final approach edge is simply
+absorbed into the (already low) mean success; but a *round-trip* or *opposed-traffic*
+mission that **must** reach one specific berth would then be impossible, confounding
+the operational signal with a cartographic accident. We therefore nudge any
+obstacle that would fully seal a lane centreline segment just clear of that corridor
+(perpendicular to the segment, preserving its side); obstacles in open water are
+untouched, so drift under degradation can still carry a vessel into them. This
+invariant is applied to the operational and multi-vessel environments **only** — the
+committed core environment and its published results are left byte-identical.
+
+Scenarios run as **agent {Rule, DQN} × condition × 6 seeds** (round trip, 36 cells)
+and **pairing {Rule/Rule, DQN/Rule} × condition × 6 seeds** (two-way, 36 cells).
+
+### 3.6 Extension (f): a seed-level mixed-effects treatment
+
+The factorial ANOVAs above enter the shared seed as a fixed block. As a
+complementary, effect-size-first check we refit each key metric as a **linear
+mixed-effects model** that treats the seed as a *random* effect,
+$y \sim \text{(design factors, fixed)} + (1\mid\text{seed})$
+(`experiments/mixed_effects_bpan.py`, REML). This (i) propagates seed-to-seed
+variability into the fixed-effect inference honestly rather than conditioning it
+away, and (ii) yields the **intraclass correlation**
+$\text{ICC}=\sigma^2_{\text{seed}}/(\sigma^2_{\text{seed}}+\sigma^2_{\text{resid}})$,
+the share of residual outcome variance attributable to the seed alone. We fit the
+model for the core, multi-vessel, round-trip and two-way sub-studies and report the
+variance partition plus whether the design-factor fixed effects remain significant
+under the random-seed model.
 
 ---
 
@@ -304,6 +421,151 @@ combining it with potential-based shaping (purple) is best under harsh degradati
 > refinement — are the operative lever, and it argues for hybrid designs that feed
 > the port's Dijkstra/charted plan into the learned controller.
 
+### 4.6 Multi-vessel: the interaction partner dominates, not the algorithm (ext. d)
+
+When two vessels share the Bintulu channels, **the pairing of control
+architectures — not the degradation condition — governs who completes and who
+collides.** Mean outcomes (6 seeds; the per-seed scalar pools both vessels of a
+cell):
+
+| Pairing | Success clean→harsh | Inter-vessel collisions/ep | Near-misses/ep | Min CPA (px) |
+|---|---|---|---|---|
+| Rule / Rule | 84% → 84% | 1.24 → 1.08 | 0.00 → 0.16 | 73 |
+| DQN / Rule | 55% → 59% | 0.31 → 0.73 | 0.51 → 0.30 | 83–88 |
+| DQN / DQN | 32% → 37% | 0.61 → **1.89** | 0.49 → 0.54 | 59–93 |
+
+The factorial ANOVA is unambiguous: **pairing explains the large majority of the
+variance** — success partial η² = **0.74** (p < 10⁻¹¹), near-misses η² = **0.59**
+(p < 10⁻⁷), vessel-collision rate η² = **0.60** (p < 10⁻⁸) — while the degradation
+**condition** is small-to-moderate on these inter-vessel outcomes
+(success η² = 0.01, n.s.; near-miss η² < 0.01, n.s.) and the pairing×condition
+interaction is non-significant for success and near-misses. The one place
+degradation bites hard is the *static-obstacle* collision rate (condition
+η² = 0.70) and cross-track error (condition η² = 0.91) — i.e. the single-vessel
+degradation story of §4.2 persists underneath, but the *inter-vessel* story is
+dominated by who the two controllers are.
+
+The pattern is interpretable rather than a simple ranking. The classical
+`Rule/Rule` pair **completes** most missions (84%) because each vessel rigidly
+follows its charted channel — but for exactly that reason it **collides most**
+(1.24/ep): neither vessel yields. Pairing a learner with the rule-follower
+(`DQN/Rule`) **halves–quarters** the collision rate (0.31–0.73/ep) and keeps the
+largest separation (CPA ≈ 83–88 px) at the cost of lower completion (55–59%), and
+two learners together (`DQN/DQN`) complete least and, under harsh degradation when
+the partner channel is noisiest, collide **most** (1.89/ep) — the one condition
+where degradation and the pairing compound.
+
+![Multi-vessel variance explained: the interaction pairing dominates.](results_bintulu/multi/figures/figMULTI_anova_eta2.png)
+**Figure 5.** Partial η² per factor for the multi-vessel study. The **pairing**
+(blue) dominates success, near-misses and inter-vessel collisions; the degradation
+**condition** (orange) and the interaction are comparatively small on the
+inter-vessel outcomes.
+
+![Multi-vessel success by pairing and condition.](results_bintulu/multi/figures/figMULTI_success.png)
+**Figure 6.** Transit success by pairing across conditions. The three pairings
+separate cleanly and are essentially flat across degradation — the gap between them
+is the interaction structure, not the noise.
+
+> [!INSIGHT]
+> **In shared water, the operative design variable is the *composition of
+> controllers*, not the DRL variant.** A classical follower completes but will not
+> give way; a learned vessel gives way (fewer collisions, larger CPA) but completes
+> less; two learners interact worst under heavy degradation. Safe multi-vessel
+> operation is a question of *who shares the channel*, decided a level above the
+> value-function family.
+
+### 4.7 Operational realism: completing an operation is a control-architecture problem; a shared channel makes collision structural (ext. e)
+
+**Round trip.** Requiring the *full* inbound-dock-outbound cycle exposes a sharp
+split by control architecture. The classical follower completes the whole round
+trip in **100%** of episodes at every condition; the naive DQN **docks** (reaches
+the inner berth) much of the time but **closes the full cycle only ≈16–19%** of the
+time, because retargeting for the return leg is a second composite task it was never
+reliably trained for:
+
+| Agent | Leg-1 dock (clean) | Full cycle clean | Full cycle mid | Full cycle harsh |
+|---|---|---|---|---|
+| Rule-based | 100% | **100%** | **100%** | **100%** |
+| DQN | 100% | 17% | 19% | 16% |
+
+Here the ANOVA cleanly separates two levels of the stack onto two different
+outcomes: **agent (control architecture) dominates full-cycle success**
+(partial η² = **0.90**, p < 10⁻¹⁰; condition negligible, η² < 0.01), while
+**degradation dominates the static-collision rate** (condition η² = **0.80**,
+p < 10⁻⁷; agent η² ≈ 0.00). *Whether you finish the operation* is set by the
+controller; *how safely you move while doing it* is set by the sensing/comms
+condition.
+
+**Two-way traffic.** When an inbound and an outbound vessel are forced down one
+surveyed centreline, a non-cooperative controller **cannot** avoid the oncoming
+vessel — the collision is **structural**:
+
+| Pairing | Success clean→harsh | Vessel collisions/ep | Head-on events/ep clean→harsh |
+|---|---|---|---|
+| Rule / Rule | 100% → 100% | 1.00 (all conditions) | 1.00 → 1.00 |
+| DQN / Rule | 90% → 80% | ≈1.00–1.06 | 0.84 → 0.75 |
+
+The pairing significantly governs **transit success** (η² = 0.44, p < 10⁻³) and
+**head-on event rate** (η² = 0.37, p < 10⁻³): the learned inbound vessel reduces
+head-on *events* (1.00 → 0.75) by learning to **hold** (temporal give-way, letting
+the oncoming vessel pass) and takes a modest success hit under degradation
+(100% → 80%). But the **collision count itself is ≈1/episode regardless of pairing
+or condition** (pairing η² = 0.09, n.s.; seed ICC ≈ 0, §4.8) — on a single shared
+centreline there is no lateral room to pass, so two opposing vessels that both
+insist on transiting must meet. This is a faithful **null/structural result**: the
+lever that removes two-way collisions is not the algorithm or the sensors but the
+*mission geometry* (a traffic-separation scheme / one-way scheduling), a level
+above everything measured here.
+
+![Two-way head-on event rate by pairing.](results_bintulu/ops/figures/figOPS_twoway_headon.png)
+**Figure 7.** Head-on encounter events per episode. The learned inbound vessel
+(blue) cuts head-on events below the rule/rule structural baseline (red ≈ 1.0),
+evidence of emergent temporal give-way; the residual inter-vessel collision,
+however, is structural on a single centreline.
+
+![Round-trip full-cycle success by agent.](results_bintulu/ops/figures/figOPS_twophase_full.png)
+**Figure 8.** Full round-trip success. The classical follower closes the cycle
+every time; the naive learner docks but rarely returns — a control-architecture
+gap, flat across degradation.
+
+> [!INSIGHT]
+> **Operational completeness and shared-channel safety sit at *different* levels of
+> the stack.** Finishing a round trip is a control-architecture capability (the
+> classical planner has it, the naive learner does not); avoiding a head-on in a
+> single channel is a mission-geometry problem no controller in our set can design
+> away. Neither is an algorithm-selection problem.
+
+### 4.8 Mixed-effects confirmation and the role of the seed (ext. f)
+
+Refitting each metric with the seed as a **random** effect (REML,
+$y\sim\text{fixed}+(1\mid\text{seed})$) reproduces every ANOVA conclusion and adds
+a variance partition. The design-factor fixed effects behave exactly as the
+factor-hierarchy story predicts: in the **core** study **0 of 9** algorithm-level
+fixed effects reach p < 0.05 (the algorithm is immaterial), whereas **4 of 6**
+pairing effects (multi-vessel), the **agent** effect on round-trip success, and
+**2 of 3** pairing effects (two-way) are significant. The intraclass correlations
+show the seed carries real but secondary weight — moderate for success-type metrics
+(core success ICC = 0.45; multi-vessel success ICC = 0.43; round-trip collisions
+ICC = 0.28) and **essentially zero where the outcome is structurally fixed**
+(two-way vessel collisions ICC = 0.00, head-on events ICC = 0.03) — confirming that
+the two-way collision is a deterministic property of the geometry, not seed noise.
+
+| Sub-study | Metric | ICC (seed) | Fixed-effect verdict |
+|---|---|---|---|
+| Core | success rate | 0.45 | 0/9 algorithm effects significant |
+| Multi-vessel | success rate | 0.43 | pairing significant |
+| Multi-vessel | vessel collisions/ep | 0.13 | pairing significant |
+| Round trip | full-cycle success | 0.19 | agent significant |
+| Two-way | vessel collisions/ep | 0.00 | structural; no factor moves it |
+| Two-way | head-on events/ep | 0.03 | pairing significant |
+
+> [!INSIGHT]
+> **The conclusions survive a stricter, random-seed model.** Treating the seed as a
+> random effect — the more conservative choice — leaves the algorithm non-significant
+> and the higher stack levels (pairing, control architecture, mission geometry)
+> significant, and shows the seed itself explains at most a moderate, never a
+> dominant, share of variance.
+
 ---
 
 ## 5. Discussion
@@ -333,6 +595,45 @@ On the real Bintulu approaches, the evidence is consistent and actionable:
 These conclusions mirror, on a real chart, what the author's broader Synthetic Port
 programme found on a constructed benchmark — strengthening the case that the
 pattern is a property of the task class, not of one particular synthetic map.
+
+### 5.1 Synthesis: a design-stack factor hierarchy
+
+Taken together, the four study blocks reframe the design question from *"which DRL
+variant wins?"* to *"what **level of the design stack** confers robust, complete,
+multi-vessel behaviour?"* The measured partial η² values across all BPAN
+experiments arrange the levers into a clear hierarchy (Figure H):
+
+1. **Mission & interaction structure** — the strongest lever (η² ≈ 0.37–0.90):
+   the round-trip composite makes completion a different problem (agent η² = 0.90),
+   the vessel pairing governs shared-water success and collisions
+   (η² ≈ 0.59–0.74), and the two-way channel geometry makes head-on collision
+   structural (no measured factor removes it).
+2. **Control architecture & navigation prior** — strong (η² ≈ 0.30–0.45): rule-based
+   vs learned control decides who completes a round trip and who gives way; the
+   charted-route prior is the dominant *within-DQN* lever (arm η² = 0.41, §4.5).
+3. **Perception & communications** — metric-dependent (η² ≈ 0.06–0.80): degradation
+   dominates *single-vessel* safety/compliance (IALA, static collisions, CTE:
+   η² ≈ 0.6–0.9) but is comparatively minor for *inter-vessel* success and
+   near-misses.
+4. **Learning algorithm (the DQN variant)** — negligible (η² ≈ 0.01–0.05, never
+   significant; 0/9 fixed effects under the mixed model).
+
+![The BPAN design-stack factor hierarchy.](results_bintulu/figures/figBPAN_factor_hierarchy.png)
+**Figure H.** The design stack ranked by measured variance explained. Higher levels
+— mission/interaction framing and control architecture — dominate robust, complete,
+multi-vessel behaviour; the perception/communication condition matters chiefly for
+single-vessel safety; the choice of value-based algorithm is immaterial. The
+actionable ordering for a Bintulu autonomy programme is therefore: get the
+**mission framing** and **traffic scheme** right, invest in **control architecture
+and the chart prior**, harden **perception/comms** for safety — and only then, if at
+all, tune the DRL algorithm.
+
+> [!INSIGHT]
+> **The factor hierarchy is the headline.** Across one-way transit, improvement
+> arms, shared water, and real operations, robustness is conferred by the *upper*
+> levels of the design stack. "Which DQN variant" sits at the bottom and moves
+> nothing; mission framing, control architecture, the navigation prior and the
+> sensing/comms budget are where autonomy is won or lost.
 
 ---
 

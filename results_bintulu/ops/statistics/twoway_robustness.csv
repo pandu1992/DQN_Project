@@ -1,0 +1,13 @@
+pairing,metric,clean_mean,harsh_mean,abs_change,wilcoxon_p,cohens_dz,effect_mag,wilcoxon_p_holm,sig_holm
+RuleBased_vs_RuleBased,success_rate,100.0,100.0,0.0,1.0,0.0,negligible,1.0,False
+RuleBased_vs_RuleBased,vessel_collision_rate,100.0,100.0,0.0,1.0,0.0,negligible,1.0,False
+RuleBased_vs_RuleBased,vessel_collisions_per_ep,1.0,1.0,0.0,1.0,0.0,negligible,1.0,False
+RuleBased_vs_RuleBased,head_on_events_per_ep,1.0,1.0,0.0,1.0,0.0,negligible,1.0,False
+RuleBased_vs_RuleBased,near_misses_per_ep,0.0,0.0,0.0,1.0,0.0,negligible,1.0,False
+RuleBased_vs_RuleBased,min_cpa,0.0,0.0,0.0,1.0,0.0,negligible,1.0,False
+DQN_vs_RuleBased,success_rate,90.27777777777779,79.72222222222221,-10.555555555555559,0.3125,-0.40790944827755643,small,0.625,False
+DQN_vs_RuleBased,vessel_collision_rate,100.0,99.44444444444446,-0.5555555555555548,0.31731050786291415,-0.4082482904638631,small,0.6346210157258283,False
+DQN_vs_RuleBased,vessel_collisions_per_ep,1.0,1.0611111111111111,0.06111111111111114,0.28504940740261275,0.553610238205543,medium,0.5700988148052255,False
+DQN_vs_RuleBased,head_on_events_per_ep,0.8444444444444444,0.75,-0.09444444444444443,0.4375,-0.314104681035863,small,0.875,False
+DQN_vs_RuleBased,near_misses_per_ep,0.0,0.011111111111111112,0.011111111111111112,0.31731050786291415,0.408248290463863,small,0.6346210157258283,False
+DQN_vs_RuleBased,min_cpa,0.0,0.6691666666666668,0.6691666666666668,0.043114446783075355,0.7932486870808262,medium,0.08622889356615071,False

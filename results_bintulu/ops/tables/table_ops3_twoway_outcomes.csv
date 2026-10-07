@@ -1,0 +1,3 @@
+Pairing,Success clean,Success harsh,vColl/ep,HeadOn/ep clean,HeadOn/ep harsh,Interpretation
+Rule / Rule,100%,100%,1.00,1.00,1.00,"Collision in a single shared channel is structural (~1/ep); a learned give-way vessel cuts head-on EVENTS, degraded by noise."
+DQN / Rule,90%,80%,1.00,0.84,0.75,"Collision in a single shared channel is structural (~1/ep); a learned give-way vessel cuts head-on EVENTS, degraded by noise."
