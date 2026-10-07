@@ -506,6 +506,7 @@
   h2 { font-size:14pt; border-bottom:1px solid #999; padding-bottom:2pt; margin:18pt 0 6pt;
     page-break-after:avoid; }
   h3 { font-size:12pt; margin:12pt 0 4pt; page-break-after:avoid; }
+  h4 { font-size:10.5pt; margin:9pt 0 3pt; color:#222; page-break-after:avoid; }
   p, li { text-align:justify; }
   code { font-family:'Courier New',monospace; background:#f2f2f2; padding:0 3px; font-size:9.5pt; }
   pre { background:#f6f6f6; border:1px solid #ddd; padding:8px; overflow:auto; font-size:9pt; }

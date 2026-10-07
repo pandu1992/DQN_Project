@@ -188,15 +188,208 @@ obstacle field with collision detection, docking accuracy, cross-track error (CT
 and IALA channel-departure detection from the buoy geometry. Observation dimension
 28; four discrete edge-selection actions; a 60-step episode budget.
 
-### 3.2 Agents and training
+### 3.2 Mathematical formulation
 
-Four value-based DRL agents share an MLP torso (obs → 128 → 128, ReLU), a target
-network with periodic hard updates, Huber loss and a hand-written Adam optimizer:
-**DQN**, **Double DQN** (decoupled selection/evaluation), **Dueling DQN**
-(value+advantage streams), and **Dueling Double DQN**. Each is trained for 150
+This section states the model explicitly. All symbols and constants are exactly
+those used in `js/environmentBintulu.js` and `js/dqn.js`; nothing below is
+illustrative.
+
+#### 3.2.1 Markov decision process
+
+We model Bintulu navigation as a finite-horizon, deterministically-structured but
+stochastically-perturbed **Markov decision process**
+$\mathcal{M}=(\mathcal{S},\mathcal{A},P,R,\gamma,H)$. The navigable space is a
+directed graph $G=(V,E)$ whose nodes $v\in V$ are chart waypoints with pixel
+coordinates $\mathbf{p}_v=(x_v,y_v)\in[0,W]\times[0,H]$, $W=1536$, $H=1024$. At
+step $t$ the agent occupies a current waypoint $c_t\in V$ with a continuous pose
+$\mathbf{z}_t=(X_t,Y_t)$ and must reach a goal berth $g\in V$. The action
+$a_t\in\mathcal{A}=\{0,1,2,3\}$ selects one of up to $N_\text{slot}=4$ outgoing
+edges of $c_t$, ordered by ascending navigation cost (Eq. 2). An episode runs for
+at most $H=60$ steps and terminates on arrival ($c_t=g$) or timeout. The discount
+is $\gamma=0.99$.
+
+#### 3.2.2 Edge attributes and planning cost
+
+Each directed edge $e=(u,v)\in E$ carries a Euclidean length
+$d_e=\lVert\mathbf{p}_u-\mathbf{p}_v\rVert_2$ and seeded random attributes
+risk $\rho_e$, traffic $\tau_e$, weather $w_e$ and current $\kappa_e$. The along-edge
+speed, travel time and energy are
+
+$$ s_e=\max\!\big(2,\; 8\,(1-\kappa_e)\big),\qquad
+   t_e=\frac{d_e}{s_e},\qquad \varepsilon_e = 0.01\,d_e . \tag{1}$$
+
+The **navigation cost** that defines the charted route and the action ordering, and
+the normalised **difficulty**, are
+
+$$ \mathrm{nav}(e)=t_e+\varepsilon_e+2\tau_e+3\rho_e,\qquad
+   \mathrm{dif}(e)=\min\!\big(1,\;0.35\rho_e+0.25\tau_e+0.2 w_e+0.2|\kappa_e|\big). \tag{2}$$
+
+The **planned (charted) route** $\pi^\star(u\!\to\!g)$ is the minimum-cost path under
+$\mathrm{nav}(\cdot)$, obtained by Dijkstra's algorithm; its node sequence
+$\mathcal{P}=(p_0,\dots,p_L)$ and optimal cost
+$C^\star=\sum_i \mathrm{nav}(p_i,p_{i+1})$ are used both as the reference track for
+cross-track error (Eq. 6) and, in the improvement study, as the chart prior.
+
+#### 3.2.3 Continuous kinematics with degradation-driven drift
+
+Choosing edge $e=(c_t,v)$ moves the vessel along the segment in $K=6$ sub-steps
+$k=1,\dots,K$ with $\theta_k=k/K$. Let $\hat{\mathbf{n}}_e$ be the unit normal to
+the segment. The realised pose is the nominal interpolation plus a lateral
+**control drift** whose amplitude grows with the sensing/communication degradation:
+
+$$ \mathbf{z}(\theta_k)=\mathbf{p}_u+\theta_k(\mathbf{p}_v-\mathbf{p}_u)
+   \;+\;\hat{\mathbf{n}}_e\,\underbrace{\sigma_\text{dr}\,\xi_k\,\psi(\theta_k)}_{\text{drift}},
+   \qquad \xi_k\sim\mathcal{N}(0,1), \tag{3}$$
+
+with drift scale and shape
+
+$$ \sigma_\text{dr}=90\,\sigma_\text{obs}+45\,p_\text{err},\qquad
+   \psi(\theta)=\sin(\pi\theta)\,(1-h)+h\,\theta\,\mathbb{1}[v=g],\;\; h=\tfrac12\mathbb{1}[v=g], \tag{4}$$
+
+where $\sigma_\text{obs}=$`noiseStd` and $p_\text{err}=$`packetErrorRate` are the
+condition parameters. The $\sin(\pi\theta)$ shape makes drift vanish at both
+waypoints on through-edges (the vessel is "pinned" to nodes) and lets residual
+offset persist at a berth, modelling imperfect station-keeping.
+
+#### 3.2.4 Obstacles, IALA channel-keeping, cross-track error, docking
+
+A seeded obstacle field $\mathcal{O}=\{(\mathbf{o}_j,r_j)\}$, $r_j=22$, is placed
+near edges. A **collision** at sub-step $k$ occurs iff the hull enters a disc,
+
+$$ \mathrm{coll}_k=\mathbb{1}\!\Big[\min_j \lVert\mathbf{z}(\theta_k)-\mathbf{o}_j\rVert_2\le r_j\Big]. \tag{5}$$
+
+Let $\mathrm{seg}(\mathbf z,\mathcal P)$ be the distance from a pose to the nearest
+planned segment. The per-step **cross-track error** sample and the episode mean on
+the $M$ recorded sub-steps are
+
+$$ \mathrm{CTE}_k=\mathrm{seg}\big(\mathbf{z}(\theta_k),\mathcal{P}\big),\qquad
+   \overline{\mathrm{CTE}}=\frac{1}{M}\sum_{k} \mathrm{CTE}_k. \tag{6}$$
+
+For **IALA channel-keeping** we use the signed side of a segment,
+$\mathrm{sgn\text{-}side}(\mathbf z,u,v)=(x_v\!-\!x_u)(Y\!-\!y_u)-(y_v\!-\!y_u)(X\!-\!x_u)$.
+A lateral buoy $b$ within the gate ($\le 60$ px of the segment) is **violated** when
+the vessel passes on the buoy's side *and farther out* than the buoy, i.e. with
+perpendicular offsets $d^\perp_{\text{vessel}}>d^\perp_b$ on the same side; the
+episode count $\mathrm{IALA}=\sum_b \mathbb{1}[\text{violated}_b]$ (each buoy once).
+On arrival the **docking accuracy** is the terminal berth miss distance
+$\delta=\lVert\mathbf{z}_T-\mathbf{p}_g\rVert_2$.
+
+#### 3.2.5 Observation and sensing/communication model
+
+The *true* observation $\mathbf{o}^\text{true}_t\in\mathbb{R}^{28}$ concatenates a
+9-D navigational block, a $4\times4$ action-slot block, and a 3-D safety block:
+
+$$ \mathbf{o}^{\text{true}}_t=\Big[\tfrac{X_t}{W},\tfrac{Y_t}{H},\tfrac{x_g}{W},\tfrac{y_g}{H},
+   \tfrac{x_g-X_t}{W},\tfrac{y_g-Y_t}{H},\tfrac{d_g}{1500},\tfrac{\ell(c_t)}{2},\tfrac{t}{H}\;\big\Vert\;
+   \{\mathbb{1}_a,\hat c_a,\mathrm{dif}_a,\beta_a\}_{a=0}^{3}\;\big\Vert\;
+   \widehat{\mathrm{CTE}},\widehat{\mathrm{obs}},\lambda_t\Big], \tag{7}$$
+
+where $d_g=\lVert\mathbf z_t-\mathbf p_g\rVert_2$, $\ell(\cdot)$ encodes the lane,
+$\hat c_a=\min(1,\mathrm{nav}(e_a)/40)$, $\beta_a=\mathbb{1}[\text{edge }a\text{ reduces goal distance}]$,
+and $\lambda_t$ flags a collision on the previous step. The agent never sees ground
+truth: a **Gaussian sensor model** corrupts every non-indicator entry,
+
+$$ \mathbf{o}^\text{sens}_t = \mathbf{o}^\text{true}_t + \sigma_\text{obs}\,\boldsymbol{\eta}_t,
+   \qquad \boldsymbol{\eta}_t\sim\mathcal{N}(\mathbf 0,\mathbf I), \tag{8}$$
+
+followed by a **packet-loss channel** that, with probability $p_\text{err}$, drops
+the frame and re-delivers the last received observation (stale hold):
+
+$$ \mathbf{o}_t=\begin{cases}\mathbf{o}_{t-1}, & \text{w.p. } p_\text{err}\ \ (\text{dropped frame}),\\[2pt]
+   \mathbf{o}^\text{sens}_t, & \text{w.p. } 1-p_\text{err}.\end{cases} \tag{9}$$
+
+The three evaluated conditions are $(\sigma_\text{obs},p_\text{err})\in\{(0,0),\,(0.1,0.2),\,(0.25,0.4)\}$
+for clean / mid / harsh.
+
+#### 3.2.6 Reward
+
+The one-step reward aggregates a step penalty, a cost-shaped movement term, event
+penalties, and terminal bonuses:
+
+$$ R_t = -0.2\;\underbrace{-5\,\mathbb{1}[\text{invalid}]}_{\text{illegal slot}}
+   \;\underbrace{-0.1\,\mathrm{nav}(e_t)}_{\text{movement}}
+   \;\underbrace{-\,\mathbb{1}[\text{revisit}]}_{-1}
+   \;\underbrace{-\,25\,\mathrm{coll}_t}_{\text{collision}}
+   \;-\,0.005\,\overline{\mathrm{CTE}} \;+\; R^\text{term}_t, \tag{10}$$
+
+$$ R^\text{term}_t=\begin{cases}
+   100 + 20\max\!\big(0,\,1-\delta/40\big), & c_t=g\ (\text{berth, docking bonus}),\\
+   -30, & t=H,\ c_t\neq g\ (\text{timeout}),\\
+   0, & \text{otherwise.}\end{cases} \tag{11}$$
+
+The agent maximises the expected discounted return
+$\mathbb{E}\!\big[\sum_{t=0}^{H-1}\gamma^{t}R_t\big]$.
+
+#### 3.2.7 Value-based agents
+
+All four agents learn an action-value function $Q_\phi(\mathbf o,a)$ with an MLP
+torso ($28\!\to\!128\!\to\!128$, ReLU) and target network $Q_{\phi^-}$ synchronised
+every $1000$ steps. Transitions are stored in a replay buffer and sampled in
+minibatches of $64$; training uses Adam ($\eta=10^{-3}$) on the **Huber loss**
+$\mathcal{L}_\kappa$ with $\kappa=1$. The temporal-difference target differs by
+variant:
+
+$$ y_t=r_t+\gamma(1-\mathrm{done})\cdot
+   \begin{cases}
+   \displaystyle\max_{a'} Q_{\phi^-}(\mathbf o_{t+1},a'), & \text{DQN / Dueling-DQN},\\[6pt]
+   Q_{\phi^-}\!\big(\mathbf o_{t+1},\,\arg\max_{a'}Q_{\phi}(\mathbf o_{t+1},a')\big), & \text{Double / Dueling-Double}.
+   \end{cases} \tag{12}$$
+
+$$ \delta_t=Q_\phi(\mathbf o_t,a_t)-y_t,\qquad
+   \mathcal{L}_\kappa(\delta_t)=\begin{cases}\tfrac12\delta_t^2, & |\delta_t|\le\kappa,\\[2pt]
+   \kappa\big(|\delta_t|-\tfrac12\kappa\big), & |\delta_t|>\kappa.\end{cases} \tag{13}$$
+
+The **dueling** variants factor the value through a state value and a
+mean-centred advantage,
+
+$$ Q_\phi(\mathbf o,a)=V_\phi(\mathbf o)+\Big(A_\phi(\mathbf o,a)-\tfrac{1}{|\mathcal A|}\sum_{a'}A_\phi(\mathbf o,a')\Big). \tag{14}$$
+
+Exploration during training is $\varepsilon$-greedy with $\varepsilon$ annealed
+linearly from $1.0$ to $0.05$ over the first $20\%$ of the step budget; evaluation
+is greedy ($\varepsilon=0$).
+
+#### 3.2.8 Inter-vessel geometry (extensions d, e)
+
+For the two-vessel scenarios (§3.5–3.6), hull separation is evaluated continuously
+on the $K=6$ sub-steps between the vessels $A,B$:
+$s_k=\lVert\mathbf z^A(\theta_k)-\mathbf z^B(\theta_k)\rVert_2$. A step registers a
+**collision** if $\min_k s_k\le R_\text{coll}=26$ px and a **near-miss** if
+$R_\text{coll}<\min_k s_k\le R_\text{near}=60$ px (hysteretic, counted once per
+encounter), and the episode **closest-point-of-approach** is
+$\mathrm{CPA}=\min_t\min_k s_k$. A COLREGs-style **role** is assigned from the
+relative bearing $\beta$ (bearing to the other vessel minus own heading) and the
+heading difference $\Delta h$: *head-on* if $|\,|\Delta h|-\pi\,|<\pi/8$ and
+$|\beta|<\pi/8$; *give-way* if $0<\beta<\pi/2$; *stand-on* if $-\pi/2<\beta<0$.
+
+#### 3.2.9 Statistical estimators
+
+The unit of inference is the **per-seed scalar** $y_{ijk}$ for factor level $i$,
+condition $j$, seed $k$ (the mean of a metric over a cell's evaluation episodes;
+CTE/docking averaged over *successful* episodes only). We fit a two-way
+fixed-effects model with the seed as a block,
+
+$$ y_{ijk}=\mu+\alpha_i+\beta_j+(\alpha\beta)_{ij}+s_k+\epsilon_{ijk}, \tag{15}$$
+
+and report, from Type-II sums of squares, the **partial eta-squared** effect size
+$\eta^2_p=\mathrm{SS}_\text{effect}/(\mathrm{SS}_\text{effect}+\mathrm{SS}_\text{resid})$.
+Robustness is the clean$\to$harsh paired contrast per level, tested with the
+Wilcoxon signed-rank statistic, Holm-corrected across metrics, with the paired
+effect size $d_z=\overline{D}/\mathrm{sd}(D)$, $D_k=y^\text{harsh}_k-y^\text{clean}_k$.
+As a conservative complement (§3.7) we refit each metric as a linear mixed model
+with the seed as a **random** effect,
+$y=\mathbf{X}\boldsymbol\gamma+u_k+\epsilon,\;u_k\sim\mathcal N(0,\sigma^2_s)$,
+reporting the intraclass correlation
+$\mathrm{ICC}=\sigma^2_s/(\sigma^2_s+\sigma^2_\epsilon)$.
+
+### 3.3 Agents and training
+
+Four value-based DRL agents instantiate the $Q$-learning template of §3.2.7 —
+**DQN**, **Double DQN** (decoupled selection/evaluation, Eq. 12), **Dueling DQN**
+(value+advantage streams, Eq. 14), and **Dueling Double DQN** — sharing the MLP
+torso, target network, Huber loss and Adam optimizer above. Each is trained for 150
 episodes and then evaluated greedily for 30 episodes.
 
-### 3.3 Metrics, evaluation, and statistics
+### 3.4 Metrics, evaluation, and statistics
 
 Metrics: navigation **success rate** (berth reached), **mean reward**, routing
 **optimality ratio**; safety **collision rate / collisions-per-episode** and **IALA
@@ -214,13 +407,14 @@ distribution the agent trained on — within-distribution generalization, **not*
 held-out split.
 
 The unit of inference is the **per-seed scalar** (8 shared seeds; `env_seed = 42 +
-seed`, agent RNG seeded separately). We report means with 95% CIs, run a two-way
-factorial ANOVA (algorithm × condition + seed; Type-II SS; partial η²), and test
-clean→harsh robustness per algorithm with paired Wilcoxon signed-rank tests, Holm
-correction, and Cohen's $d_z$. The **4 × 3 × 8 = 96 cells / 2,880 episodes** index
-computational replication; the effective sample size is the 8 seeds.
+seed`, agent RNG seeded separately) defined in §3.2.9. We report means with 95%
+CIs, run the two-way factorial ANOVA of Eq. (15) (algorithm × condition + seed;
+Type-II SS; partial $\eta^2_p$), and test clean→harsh robustness per algorithm with
+paired Wilcoxon signed-rank tests, Holm correction, and Cohen's $d_z$ (§3.2.9). The
+**4 × 3 × 8 = 96 cells / 2,880 episodes** index computational replication; the
+effective sample size is the 8 seeds.
 
-### 3.4 Extension (d): multi-vessel interaction
+### 3.5 Extension (d): multi-vessel interaction
 
 To test behaviour when the port is **shared**, `js/environmentBintuluMulti.js`
 (`MultiVesselBintulu`) instantiates **two independent `BintuluEnv` vessels** on the
@@ -244,7 +438,7 @@ factor isolates **the control architecture of the interaction partner**: does
 pairing a learner with a classical controller, or two learners together, change
 who completes and who collides?
 
-### 3.5 Extension (e): operational realism
+### 3.6 Extension (e): operational realism
 
 Real port traffic is not a single one-way transit. `js/environmentBintuluOps.js`
 adds two scenarios on the chart:
@@ -258,7 +452,7 @@ adds two scenarios on the chart:
 - **Two-way traffic (`TwoWayBintulu`).** An **inbound** and an **outbound** vessel
   share one access channel in opposing directions, producing genuine head-on
   encounters on a single surveyed centreline. The inter-vessel collision / near-miss
-  / CPA / COLREGs-role machinery is identical to §3.4.
+  / CPA / COLREGs-role machinery is exactly the geometry formalised in §3.2.8.
 
 Both scenarios enforce an **operational invariant that the committed core
 environment deliberately omits**: a working port keeps its surveyed channels
@@ -276,7 +470,7 @@ committed core environment and its published results are left byte-identical.
 Scenarios run as **agent {Rule, DQN} × condition × 6 seeds** (round trip, 36 cells)
 and **pairing {Rule/Rule, DQN/Rule} × condition × 6 seeds** (two-way, 36 cells).
 
-### 3.6 Extension (f): a seed-level mixed-effects treatment
+### 3.7 Extension (f): a seed-level mixed-effects treatment
 
 The factorial ANOVAs above enter the shared seed as a fixed block. As a
 complementary, effect-size-first check we refit each key metric as a **linear
