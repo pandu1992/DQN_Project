@@ -1,0 +1,30 @@
+{
+  "experiment_id": "bpan_dqn_improvement",
+  "title": "BPAN — improving DQN on the Bintulu approach channels",
+  "description": "An improvement study for the BPAN baseline (DQN on the Bintulu chart). Four arms isolate the effect of two concrete, principled improvements: a Dijkstra charted-route PRIOR appended to the observation (the structured-navigation-prior lever shown to help on the Synthetic Port chart), and potential-based reward SHAPING toward the goal (policy-invariant, Ng et al. 1999). Arms: baseline, +chart, +shaping, +chart+shaping. Evaluated across the Study-2 degradation grid; genuinely computed metrics; CTE reported on successful episodes.",
+  "date_designed": "2026-10-07",
+  "environment": {"module": "js/environmentBintuluPlus.js", "class": "BintuluEnvPlus", "base": "js/environmentBintulu.js", "obs_dim": {"baseline": 28, "chart": 32, "shaping": 28, "chart_shaping": 32}},
+  "factors": {
+    "arm": ["baseline", "chart", "shaping", "chart_shaping"],
+    "condition": [
+      {"name": "clean", "noise_std": 0.0, "packet_error_rate": 0.0},
+      {"name": "mid", "noise_std": 0.1, "packet_error_rate": 0.2},
+      {"name": "harsh", "noise_std": 0.25, "packet_error_rate": 0.4}
+    ]
+  },
+  "n_arms": 4, "n_conditions": 3,
+  "seeds": [0, 1, 2, 3, 4, 5], "n_seeds": 6,
+  "seed_policy": "SAME 6 seeds per cell (paired). env_seed = 42 + seed.",
+  "training": {"train_episodes": 150, "total_steps_budget": 4500, "note": "all four arms use 150 episodes; a separate chart_long arm (300 eps) is reported as an ablation."},
+  "evaluation": {"eval_episodes": 30, "note": "greedy; within-distribution"},
+  "total_cells": 72,
+  "cells_breakdown": "4 arms x 3 conditions x 6 seeds = 72 cells, 30 eval eps each = 2,160 episodes",
+  "analysis_plan": {
+    "unit_of_analysis": "per-seed cell scalar (n=6)",
+    "omnibus": "two-way factorial arm(4) x condition(3) + seed, partial eta^2 on success",
+    "primary_contrast": "each improvement vs baseline, per condition (paired Wilcoxon + Holm, Cohen d_z)",
+    "alpha": 0.05
+  },
+  "pilot": "seed 0: baseline clean 17%/harsh 37%; +chart clean 67%/harsh 77%; +shaping clean 43%/harsh 47% -> both improvements help; chart prior dominant.",
+  "scope_notes": ["Improvements are principled and generic (navigation prior, potential shaping), not Bintulu-specific tweaks.", "Separate from the Synthetic Port studies; chart-grounded Bintulu case."]
+}

@@ -245,6 +245,65 @@ rather than over-claim per-cell significance.
 > is "about as good" in harsh conditions, while the safety metrics show the
 > trajectories have become markedly less compliant and more collision-prone.
 
+### 4.4 Qualitative behaviour (animations)
+
+To make the learned behaviour concrete, we render trained-DQN greedy episodes
+directly over the Bintulu chart (full-resolution animations are on the project
+site; representative frames are shown here). In **clean** conditions the vessel
+tracks the planned channel and berths cleanly; under **harsh** sensing/comms the
+realised track drifts off the buoyed centreline, crosses channel markers (IALA
+violations), and grazes obstacles — the visual counterpart of §4.2.
+
+- `results_bintulu/gifs/clean_success.gif` — clean transit, berths successfully.
+- `results_bintulu/gifs/mid_transit.gif` — mid degradation, completes with drift.
+- `results_bintulu/gifs/harsh_drift.gif` — harsh degradation, drift + collision.
+
+### 4.5 Improving the DQN — the navigation prior is the dominant lever
+
+Given that algorithm choice does not help ([§4.1](#rq1)), we asked **what does**.
+We evaluated two principled, generic improvements as explicit arms (4 arms × 3
+conditions × 6 seeds = 72 cells / 2,160 episodes), each isolated against the
+baseline:
+
+- **Chart prior** — append to the observation a per-outgoing-edge flag indicating
+  the next segment of the Dijkstra charted route (a *structured navigation prior*;
+  the lever found decisive on the Synthetic Port chart). Obs 28 → 32.
+- **Reward shaping** — potential-based shaping toward the goal,
+  $F=\gamma\,\phi(s')-\phi(s)$ with $\phi=-\text{dist}_{\text{goal}}$, which is
+  policy-invariant (Ng et al., 1999) and so can only speed/stabilise learning.
+
+**Results (navigation success rate, mean over 6 seeds):**
+
+| Arm | clean | mid | harsh |
+|---|---|---|---|
+| Baseline DQN | 15.0% | 17.2% | 25.0% |
+| + reward shaping | 20.0% | 36.7% | 45.6% |
+| + chart prior | 35.6% | 42.8% | 56.1% |
+| **+ chart + shaping** | **30.0%** | **50.0%** | **65.0%** |
+
+A two-way factorial ANOVA makes the **improvement arm the dominant factor** on
+success (partial $\eta^2 = 0.41$, $p < 0.001$) — larger than the degradation
+condition ($\eta^2 = 0.32$) — with a small, non-significant arm×condition
+interaction. The chart prior alone roughly **doubles to triples** baseline success
+at every condition (clean 15→36%, harsh 25→56%; Cohen's $d_z$ up to 2.6 at harsh);
+reward shaping helps on its own (harsh 25→46%); and the two **combine** for the
+best harsh-condition success (**65%**). At n = 6 the per-condition paired contrasts
+are power-limited after Holm correction (adjusted $p \approx 0.09$–0.20), so — as
+elsewhere — the pooled ANOVA and the large effect sizes carry the inference.
+
+![Improving the DQN on Bintulu: the chart prior is the dominant lever.](results_bintulu/figures/figBPAN_improvements.png)
+**Figure 4.** Navigation success by improvement arm across conditions (n = 6
+seeds, 95% CI). The baseline (grey) sits far below the three improved arms;
+appending the charted-route prior (blue) is the single most effective change, and
+combining it with potential-based shaping (purple) is best under harsh degradation.
+
+> [!INSIGHT]
+> **The way to improve DQN on the Bintulu approaches is not a better value-function
+> variant but a better *input*: give the policy the charted route.** This mirrors
+> the broader finding that structured navigation priors — not algorithmic
+> refinement — are the operative lever, and it argues for hybrid designs that feed
+> the port's Dijkstra/charted plan into the learned controller.
+
 ---
 
 ## 5. Discussion
@@ -262,6 +321,14 @@ On the real Bintulu approaches, the evidence is consistent and actionable:
 - **Report safety, not just berthing success.** Because collisions do not end an
   episode and IALA departures are unrewarded, success conceals the safety cost of
   degradation; the multi-metric, outcome-aware evaluation reveals it.
+- **To improve the agent, improve its input, not its value-function.** The
+  improvement study ([§4.5](#rq1)) shows that appending the port's charted route to
+  the observation — a structured navigation prior — is the dominant lever (arm
+  partial $\eta^2 = 0.41$), roughly doubling–tripling berthing success, and that it
+  combines with policy-invariant reward shaping. The actionable recommendation for
+  a Bintulu autonomy stack is therefore a **hybrid** design: feed the Dijkstra /
+  charted plan into the learned controller rather than searching for a better DQN
+  variant.
 
 These conclusions mirror, on a real chart, what the author's broader Synthetic Port
 programme found on a constructed benchmark — strengthening the case that the
