@@ -50,6 +50,12 @@
   .admonition { border:1px solid rgba(255,207,107,.4); border-left:4px solid #ffcf6b; background:rgba(255,207,107,.10); border-radius:8px; padding:12px 16px; margin:16px 0; }
   .admonition-title { font-weight:700; color:#ffcf6b; font-size:13.5px; margin-bottom:6px; } .admonition-body { font-size:14px; line-height:1.65; color:var(--ink); text-align:justify; }
   .katex { font-size:1.02em; color:var(--ink); }
+  /* display equations: let wide ones scroll horizontally within the column
+     instead of overflowing / wrapping the equation tag onto its own line */
+  .md .math-display { overflow-x:auto; overflow-y:hidden; max-width:100%; padding:4px 2px; }
+  .md .math-display .katex-display { margin:0; }
+  .md .math-display .katex { font-size:1.0em; }
+  @media (max-width:760px){ .md .math-display .katex { font-size:0.9em; } }
 </style>
 </head>
 <body>
