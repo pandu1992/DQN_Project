@@ -56,7 +56,7 @@
     <div class="rp-hero">
       <div>
         <h1>Bintulu Port Autonomous Navigation (BPAN)</h1>
-        <p>A chart-grounded DRL case study on the real Bintulu approach channels · 4 algorithms × 3 conditions × 8 seeds · 2,880 evaluation episodes</p>
+        <p>A chart-grounded DRL factor-hierarchy study on the real Bintulu approach channels · core transit (2,880 eps) + multi-vessel (54 cells) + operational realism (72 cells) + mixed-effects</p>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <a class="rp-tab" href="bintulu.html">🚢 Live Bintulu simulation</a>
@@ -107,6 +107,14 @@
           <img loading="lazy" src="results_bintulu/gifs/harsh_drift.gif" alt="Harsh-degradation DQN drift and collision on the Bintulu chart" />
           <div class="fig-cap"><b>Harsh degradation.</b> Under heavy noise + packet-loss the track drifts across channel markers (IALA violations) and grazes an obstacle (collision) — the visual counterpart of the quantitative safety collapse.</div>
         </div>
+        <div class="fig-card">
+          <img loading="lazy" src="results_bintulu/gifs/multi_interaction.gif" alt="Two DQN vessels sharing the Bintulu channels and avoiding each other" />
+          <div class="fig-cap"><b>Multi-vessel (ext. d).</b> Two independent vessels share the port, each on its own mission. The link between them turns amber on a near-miss and red on a collision; this is the inter-vessel interaction whose <em>pairing</em> dominates the §4.6 statistics.</div>
+        </div>
+        <div class="fig-card">
+          <img loading="lazy" src="results_bintulu/gifs/twoway_headon.gif" alt="Opposing inbound and outbound vessels meeting head-on in one Bintulu channel" />
+          <div class="fig-cap"><b>Two-way traffic (ext. e).</b> An inbound (learned) and an outbound (rule-based) vessel share one access channel in opposing directions. On a single surveyed centreline the head-on meeting is structural — the collision the §4.7 null result quantifies.</div>
+        </div>
       </div>
     </section>
   </div>
@@ -119,15 +127,40 @@
       pdfTitle: "Bintulu Port Autonomous Navigation (BPAN)",
       pdfSubtitle: "A chart-grounded DRL case study on the Bintulu approach channels",
       tables: [
-        ["table1_bpan_configuration", "Table 1 — Study Configuration"],
-        ["table2_bpan_navigation", "Table 2 — Navigation Success Across Conditions"],
-        ["table3_bpan_safety", "Table 3 — Safety & Precision (clean vs harsh)"],
-        ["table4_bpan_factorial", "Table 4 — Factorial ANOVA (Algorithm \u00d7 Condition, partial \u03b7\u00b2)"],
-        ["table5_bpan_robustness", "Table 5 — Robustness: Clean vs Harsh per Algorithm"],
-        ["table6_bpan_improvements", "Table 6 — Improving the DQN (chart prior, reward shaping)"]
+        { file: "table1_bpan_configuration", title: "Table 1 — Study Configuration", group: "Core single-vessel transit" },
+        { file: "table2_bpan_navigation", title: "Table 2 — Navigation Success Across Conditions" },
+        { file: "table3_bpan_safety", title: "Table 3 — Safety & Precision (clean vs harsh)" },
+        { file: "table4_bpan_factorial", title: "Table 4 — Factorial ANOVA (Algorithm \u00d7 Condition, partial \u03b7\u00b2)" },
+        { file: "table5_bpan_robustness", title: "Table 5 — Robustness: Clean vs Harsh per Algorithm" },
+        { file: "table6_bpan_improvements", title: "Table 6 — Improving the DQN (chart prior, reward shaping)" },
+        { file: "table_multi1_config", title: "Table 7 — Multi-vessel Configuration", dir: "results_bintulu/multi", group: "Extension (d) — multi-vessel" },
+        { file: "table_multi2_outcomes", title: "Table 8 — Multi-vessel Outcomes by Pairing", dir: "results_bintulu/multi" },
+        { file: "table_multi3_factorial", title: "Table 9 — Multi-vessel Factorial ANOVA (Pairing \u00d7 Condition)", dir: "results_bintulu/multi" },
+        { file: "table_multi4_robustness", title: "Table 10 — Multi-vessel Robustness (clean vs harsh)", dir: "results_bintulu/multi" },
+        { file: "table_ops1_twophase_outcomes", title: "Table 11 — Round-trip Outcomes by Agent", dir: "results_bintulu/ops", group: "Extension (e) — operational realism" },
+        { file: "table_ops2_twophase_factorial", title: "Table 12 — Round-trip Factorial ANOVA (Agent \u00d7 Condition)", dir: "results_bintulu/ops" },
+        { file: "table_ops3_twoway_outcomes", title: "Table 13 — Two-way Traffic Outcomes by Pairing", dir: "results_bintulu/ops" },
+        { file: "table_ops4_twoway_factorial", title: "Table 14 — Two-way Factorial ANOVA (Pairing \u00d7 Condition)", dir: "results_bintulu/ops" },
+        { file: "icc_summary", title: "Table 15 — Mixed-effects ICC & fixed-effect verdicts", dir: "results_bintulu/mixed_effects", group: "Extension (f) — mixed-effects" }
       ],
       figures: [
-        "figBPAN_anova_eta2", "figBPAN_success", "figBPAN_iala", "figBPAN_collisions", "figBPAN_improvements"
+        { fig: "figBPAN_methodology", group: "Overview", caption: "The end-to-end BPAN methodology flow: real chart \u2192 chart-grounded graph \u2192 shared environment contract \u2192 four study blocks (core, DQN-improvement, multi-vessel (d), operational realism (e)) \u2192 per-seed scalars \u2192 three-tier statistics (factorial ANOVA + partial \u03b7\u00b2, paired Wilcoxon/Holm/Cohen d_z, mixed-effects (1|seed)+ICC) \u2192 factor-hierarchy synthesis." },
+        { fig: "figBPAN_factor_hierarchy", caption: "The design-stack factor hierarchy. Levels ordered by measured partial \u03b7\u00b2: mission & interaction structure \u2273 control architecture & navigation prior > perception & communications \u226b learning algorithm. The upper levels confer robust, complete, multi-vessel behaviour; the DQN variant moves nothing." },
+        { fig: "figBPAN_anova_eta2", group: "Core single-vessel transit", caption: "Partial \u03b7\u00b2 per factor and metric (core study). The degradation condition dominates single-vessel safety/precision; the algorithm and interaction are small." },
+        { fig: "figBPAN_success", caption: "Navigation success rate vs condition, per variant (core study, 95% CI)." },
+        { fig: "figBPAN_iala", caption: "IALA channel-departure violations per episode rise steeply clean\u2192harsh for all four variants, which track each other closely." },
+        { fig: "figBPAN_collisions", caption: "Collisions per episode vs condition, per variant." },
+        { fig: "figBPAN_improvements", caption: "Navigation success by improvement arm (baseline / +chart prior / +shaping / +both); the charted-route prior is the dominant within-DQN lever." },
+        { fig: "figMULTI_anova_eta2", dir: "results_bintulu/multi", group: "Extension (d) — multi-vessel" },
+        { fig: "figMULTI_success", dir: "results_bintulu/multi" },
+        { fig: "figMULTI_vcoll", dir: "results_bintulu/multi" },
+        { fig: "figMULTI_cpa", dir: "results_bintulu/multi" },
+        { fig: "figOPS_twophase_full", dir: "results_bintulu/ops", group: "Extension (e) — operational realism" },
+        { fig: "figOPS_twophase_dock", dir: "results_bintulu/ops" },
+        { fig: "figOPS_twophase_coll", dir: "results_bintulu/ops" },
+        { fig: "figOPS_twoway_success", dir: "results_bintulu/ops" },
+        { fig: "figOPS_twoway_headon", dir: "results_bintulu/ops" },
+        { fig: "figOPS_twoway_vcoll", dir: "results_bintulu/ops" }
       ]
     };
   </script>

@@ -1,0 +1,4 @@
+Pairing,Success clean,Success harsh,vColl/ep clean,vColl/ep harsh,minCPA clean,Interpretation
+Rule / Rule,84±28%,84±28%,1.24,1.08,73,Rule/Rule completes most but collides most; learned pairs trade completion for separation.
+DQN / Rule,55±9%,59±14%,0.31,0.73,88,Rule/Rule completes most but collides most; learned pairs trade completion for separation.
+DQN / DQN,32±19%,37±14%,0.61,1.89,93,Rule/Rule completes most but collides most; learned pairs trade completion for separation.

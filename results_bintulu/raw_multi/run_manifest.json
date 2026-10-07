@@ -1,0 +1,276 @@
+{
+  "experiment_id": "bpan_multi_vessel",
+  "cells": [
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 0,
+      "ms": 35850
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 1,
+      "ms": 40837
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 2,
+      "ms": 39697
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 3,
+      "ms": 37314
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 4,
+      "ms": 37240
+    },
+    {
+      "config_id": "DQN_vs_DQN_clean",
+      "seed": 5,
+      "ms": 37711
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 0,
+      "ms": 36129
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 1,
+      "ms": 41322
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 2,
+      "ms": 39984
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 3,
+      "ms": 40271
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 4,
+      "ms": 38198
+    },
+    {
+      "config_id": "DQN_vs_DQN_mid",
+      "seed": 5,
+      "ms": 37294
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 0,
+      "ms": 41377
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 1,
+      "ms": 42467
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 2,
+      "ms": 41622
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 3,
+      "ms": 40200
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 4,
+      "ms": 38993
+    },
+    {
+      "config_id": "DQN_vs_DQN_harsh",
+      "seed": 5,
+      "ms": 39859
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 0,
+      "ms": 15321
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 1,
+      "ms": 20741
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 2,
+      "ms": 18143
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 3,
+      "ms": 20580
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 4,
+      "ms": 17349
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_clean",
+      "seed": 5,
+      "ms": 16490
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 0,
+      "ms": 18110
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 1,
+      "ms": 20463
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 2,
+      "ms": 18524
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 3,
+      "ms": 18849
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 4,
+      "ms": 17991
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_mid",
+      "seed": 5,
+      "ms": 15570
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 0,
+      "ms": 16185
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 1,
+      "ms": 21909
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 2,
+      "ms": 19262
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 3,
+      "ms": 19241
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 4,
+      "ms": 18074
+    },
+    {
+      "config_id": "DQN_vs_RuleBased_harsh",
+      "seed": 5,
+      "ms": 17201
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 0,
+      "ms": 28
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 1,
+      "ms": 27
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 2,
+      "ms": 77
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 3,
+      "ms": 26
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 4,
+      "ms": 120
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_clean",
+      "seed": 5,
+      "ms": 27
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 0,
+      "ms": 36
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 1,
+      "ms": 37
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 2,
+      "ms": 109
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 3,
+      "ms": 38
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 4,
+      "ms": 168
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_mid",
+      "seed": 5,
+      "ms": 37
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 0,
+      "ms": 37
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 1,
+      "ms": 38
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 2,
+      "ms": 109
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 3,
+      "ms": 38
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 4,
+      "ms": 167
+    },
+    {
+      "config_id": "RuleBased_vs_RuleBased_harsh",
+      "seed": 5,
+      "ms": 36
+    }
+  ],
+  "total_cells": 54
+}

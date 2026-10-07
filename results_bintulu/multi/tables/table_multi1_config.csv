@@ -1,0 +1,6 @@
+Factor,Levels / Value,Detail,Interpretation
+Scenario,Two independent vessels on the Bintulu chart,each own policy + mission; must avoid each other,Extension (d): multi-vessel interaction on the real chart.
+Pairings,"Rule/Rule, DQN/Rule, DQN/DQN",controller composition,Isolates the effect of the interaction partner's control architecture.
+Conditions,"clean (0,0), mid (0.1,0.2), harsh (0.25,0.4)","(sensor+partner noise, packet-error)","Degradation also corrupts the sensed partner channel (dx,dy,range)."
+Seeds,6 shared seeds (0-5),paired; env_seed=42+seed,Cells: 3x3x6=54; 30 eval episodes/cell x 2 vessels.
+Collision model,"hull radius 26 px, near-miss 60 px, 6 sub-steps",continuous CPA between hulls,Inter-vessel collisions/near-misses genuinely computed.
