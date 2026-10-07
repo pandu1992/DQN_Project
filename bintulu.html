@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bintulu Port — Autonomous Navigation (BPAN) · DRL on the real approach chart</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .bpan-wrap { max-width: 1240px; margin: 0 auto; padding: 16px 20px 70px; }
+  .bpan-hero { border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 14px;
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+  .bpan-hero h1 { font-size: 22px; margin: 0 0 4px; }
+  .bpan-hero p { margin: 0; color: var(--muted); font-size: 13px; max-width: 760px; line-height:1.5; }
+  .bpan-note { font-size:12px; color:var(--muted); background:rgba(77,163,255,.08);
+    border:1px solid rgba(77,163,255,.3); border-radius:8px; padding:10px 12px; margin:0 0 14px; line-height:1.5; }
+  .bpan-grid { display:grid; grid-template-columns: 1fr 320px; gap: 18px; align-items:start; }
+  @media (max-width: 920px){ .bpan-grid { grid-template-columns: 1fr; } }
+  .bpan-canvas-card { border:1px solid var(--line); border-radius:12px; padding:10px; background:#0c1526; }
+  #bintuluCanvas { width:100%; height:auto; border-radius:8px; display:block; background:#0a1220; }
+  .bpan-legend { display:flex; flex-wrap:wrap; gap:12px; font-size:11.5px; color:var(--muted); margin-top:8px; }
+  .bpan-legend span { display:inline-flex; align-items:center; gap:5px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .bpan-panel { border:1px solid var(--line); border-radius:12px; padding:14px; background:#0c1526; }
+  .bpan-panel h3 { font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:#cfe0ff; margin:0 0 10px; }
+  .bpan-row { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .bpan-row .btn { flex:1; }
+  label.ctl { display:block; font-size:12px; color:var(--muted); margin:10px 0 4px; }
+  select, input[type=range], input[type=number] { width:100%; }
+  .statgrid { display:grid; grid-template-columns:1fr auto; gap:3px 10px; font-size:12.5px; margin-top:6px; }
+  .statgrid .k { color:var(--muted); } .statgrid .v { color:var(--ink); font-weight:600; text-align:right; }
+  .bpan-links { font-size:12px; margin-top:4px; display:flex; gap:10px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+  <div class="bpan-wrap">
+    <div class="bpan-hero">
+      <div>
+        <h1>Bintulu Port — Autonomous Navigation (BPAN)</h1>
+        <p>A chart-grounded deep-Q-network case study: an autonomous vessel learns to transit the
+          <b>North</b> and <b>South Access Channels</b> of Bintulu Port and berth at the Inner Harbours /
+          Southern Jetty, navigating directly over the <b>real approach chart</b>. Runs entirely in your browser.
+          This is a <b>separate</b> study from the Synthetic Port Studies 1–5.</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a class="btn report-btn" href="bintulu_paper.html">📄 Read the BPAN paper</a>
+        <a class="btn report-btn" href="index.html">Synthetic Port sim</a>
+      </div>
+    </div>
+
+    <div class="bpan-note">
+      <b>Chart & scope.</b> The background is the Bintulu Port approach chart (lateral buoys
+      NO 1'–NO 9' / N1'–N9' on the North channel, R2'–R10' / G2'–G10' on the South channel). The navigable
+      waypoint graph follows the charted channels and is <b>extended into the harbour berths</b> so the vessel
+      completes a full sea-to-berth mission (the chart's magenta channel lines stop in open water). Geometry is
+      a faithful approximation, not a surveyed hydrographic model.
+    </div>
+
+    <div class="bpan-grid">
+      <div class="bpan-canvas-card">
+        <canvas id="bintuluCanvas" width="1024" height="683"></canvas>
+        <div class="bpan-legend">
+          <span><span class="dot" style="background:#37d67a"></span>Planned (Dijkstra)</span>
+          <span><span class="dot" style="background:#ff9f43"></span>Actual (DQN)</span>
+          <span><span class="dot" style="background:#4da3ff"></span>Vessel</span>
+          <span><span class="dot" style="background:#1ecb6b"></span>Green buoy</span>
+          <span><span class="dot" style="background:#ff4d4d"></span>Red buoy</span>
+          <span><span class="dot" style="background:#ffd24a"></span>Berth (goal)</span>
+          <span><span class="dot" style="border:1.5px solid #ff5d5d;background:transparent"></span>Obstacle</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="bpan-panel">
+          <h3>Agent & Conditions</h3>
+          <label class="ctl" for="algoSel">Algorithm</label>
+          <select id="algoSel">
+            <option value="DQN">DQN (vanilla)</option>
+            <option value="DoubleDQN">Double DQN</option>
+            <option value="DuelingDQN">Dueling DQN</option>
+            <option value="DuelingDoubleDQN">Dueling Double DQN</option>
+          </select>
+          <label class="ctl" for="noiseStd">Sensor noise (std)</label>
+          <select id="noiseStd"><option value="0">0 (clean)</option><option value="0.1">0.1 (mid)</option><option value="0.25">0.25 (harsh)</option></select>
+          <label class="ctl" for="packetErr">Packet-error rate</label>
+          <select id="packetErr"><option value="0">0 (clean)</option><option value="0.2">0.2 (mid)</option><option value="0.4">0.4 (harsh)</option></select>
+          <label class="ctl" for="obstacleCount">Obstacles</label>
+          <input id="obstacleCount" type="number" min="0" max="14" value="6" />
+
+          <h3 style="margin-top:14px">Controls</h3>
+          <div class="bpan-row">
+            <button class="btn" id="btnTrain">▶ Train</button>
+            <button class="btn" id="btnPause">⏸ Pause</button>
+          </div>
+          <div class="bpan-row">
+            <button class="btn" id="btnReset">↺ Reset</button>
+            <button class="btn" id="btnGreedy">🎯 Greedy episode</button>
+          </div>
+          <label class="ctl" for="speed">Speed: <span id="speedVal">6×</span></label>
+          <input id="speed" type="range" min="1" max="20" value="6" />
+        </div>
+
+        <div class="bpan-panel" style="margin-top:14px">
+          <h3>Live telemetry</h3>
+          <div class="statgrid">
+            <div class="k">Episode</div><div class="v" id="statEpisode">0</div>
+            <div class="k">Env steps</div><div class="v" id="statSteps">0</div>
+            <div class="k">Epsilon (ε)</div><div class="v" id="statEps">—</div>
+            <div class="k">Last reward</div><div class="v" id="statReward">—</div>
+            <div class="k">Reward MA20</div><div class="v" id="statMA">—</div>
+            <div class="k">Best reward</div><div class="v" id="statBest">—</div>
+            <div class="k">Start</div><div class="v" id="statStart">—</div>
+            <div class="k">Goal (berth)</div><div class="v" id="statGoal">—</div>
+            <div class="k">Planned cost</div><div class="v" id="statPlanCost">—</div>
+            <div class="k">Collisions</div><div class="v" id="statColl">0</div>
+            <div class="k">IALA violations</div><div class="v" id="statIala">0</div>
+            <div class="k">Mean CTE</div><div class="v" id="statCte">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/dqn.js"></script>
+  <script src="js/environmentBintulu.js"></script>
+  <script src="js/bintulu_main.js"></script>
+</body>
+</html>
