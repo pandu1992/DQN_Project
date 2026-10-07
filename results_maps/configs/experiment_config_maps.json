@@ -1,0 +1,44 @@
+{
+  "experiment_id": "synthetic_port_external_validity_maps",
+  "title": "External validity — do the findings hold across multiple synthetic maps?",
+  "description": "Studies 1-5 all reuse a single channel geometry, a single-graph external-validity bottleneck. This study replicates the baseline-fairness arms (DRL_no_chart / DRL_with_chart / RuleBased) across THREE distinct synthetic port maps (mapgen.js: map 0 = canonical anchor identical to all prior studies; map 2 = compact strongly-curved channels; map 3 = asymmetric long-north/short-south with an S-curve), under clean and harsh degradation, to test whether the chart-prior effect and the arm ordering generalize beyond the original graph. Only the geometry/topology changes across maps; kinematics, degradation, obstacles, metrics and the chart prior are identical.",
+  "date_designed": "2026-09-17",
+  "research_question": "Do (a) the chart prior closing the DRL-vs-rule-based gap and (b) the arm ordering hold across multiple distinct port geometries, not just the canonical map?",
+  "environment": {
+    "module": "js/environmentV3map.js",
+    "class": "VesselEnvV3ChartMap",
+    "map_module": "js/mapgen.js (buildMap)",
+    "maps": {"0": "canonical anchor (== environment.js geometry)", "2": "compact, strongly curved, tight separation", "3": "asymmetric long-north/short-south, S-curve north"},
+    "obs_dim": {"DRL_no_chart": 28, "DRL_with_chart": 32, "RuleBased": 28},
+    "max_episode_steps": 60, "obstacle_count": 6
+  },
+  "factors": {
+    "map_id": [0, 2, 3],
+    "arm": ["DRL_no_chart", "DRL_with_chart", "RuleBased"],
+    "condition": [
+      {"name": "clean", "noise_std": 0.0, "packet_error_rate": 0.0},
+      {"name": "harsh", "noise_std": 0.25, "packet_error_rate": 0.4}
+    ]
+  },
+  "n_maps": 3,
+  "n_arms": 3,
+  "n_conditions": 2,
+  "seeds": [0, 1, 2, 3, 4, 5],
+  "n_seeds": 6,
+  "seed_policy": "SAME 6 seeds per cell (paired). env_seed = 42 + seed. Map graph attributes seeded by (env_seed, mapId).",
+  "training": {"train_episodes": 130, "total_steps_budget": 3900, "note": "DRL arms train 130 episodes; RuleBased no training."},
+  "evaluation": {"eval_episodes": 30, "note": "greedy (DRL) / deterministic (RuleBased); within-distribution generalization (not held-out)."},
+  "total_cells": 108,
+  "cells_breakdown": "3 maps x 3 arms x 2 conditions x 6 seeds = 108 cells, 30 eval eps each = 3,240 eval episodes",
+  "analysis_plan": {
+    "unit_of_analysis": "per-seed cell scalar (n=6)",
+    "omnibus": "three-way factorial arm(3) x condition(2) x map(3) (+ seed), partial eta^2; the MAP main effect and arm x map interaction quantify cross-map generalization",
+    "key_question": "is the arm effect (esp. DRL_no_chart < DRL_with_chart) preserved across maps (small arm x map interaction), and does the map factor add variance without overturning the ordering?",
+    "alpha": 0.05
+  },
+  "scope_notes": [
+    "Three synthetic geometries broaden but do not fully establish real-world external validity; still a synthesized testbed.",
+    "2 conditions (clean/harsh) x 6 seeds keeps the 3-map design computationally feasible.",
+    "Deployed web application unaffected; offline research."
+  ]
+}

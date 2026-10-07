@@ -1,0 +1,3 @@
+Study,Episodes,% success (goal),% timeout failure,% other failure,Interpretation
+Study 2,6480,29.6,70.4,0.0,"endOnCollision=false and no off-channel termination: the ONLY failure mode is timeout. Collisions/IALA are within-episode safety metrics, orthogonal to the success/failure outcome."
+Study 3,6750,30.4,69.6,0.0,"endOnCollision=false and no off-channel termination: the ONLY failure mode is timeout. Collisions/IALA are within-episode safety metrics, orthogonal to the success/failure outcome."

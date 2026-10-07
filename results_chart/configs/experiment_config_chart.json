@@ -1,0 +1,48 @@
+{
+  "experiment_id": "synthetic_port_chart_fairness",
+  "title": "Baseline fairness — is the classical advantage robustness, or chart access?",
+  "description": "A controlled disentanglement of the rule-based baseline's advantage. The COLREGs rule-based controller follows the Dijkstra-charted channel (its dominant scoring term reads env.plannedPath), whereas the value-based DQN receives only a greedy geometric 'toward-goal' edge flag and no charted-route prior. This study makes chart access an EXPLICIT arm on VesselEnvV3Chart: DRL_no_chart (28-dim obs, as in Studies 2-3), DRL_with_chart (28 + 4 per-slot onPlan flags = 32-dim, giving the learner the SAME charted-route prior the baseline uses), and RuleBased. Only the presence of the chart prior is manipulated; graph, kinematics, degradation, obstacles and metrics are identical. If DRL_with_chart closes the gap to RuleBased, the bottleneck is access to structured navigation priors (an architectural insight), not learning-vs-classical control.",
+  "date_designed": "2026-09-17",
+  "research_question": "Does the rule-based baseline's robustness advantage over value-based DRL persist once the DRL agent is given the same charted-route prior the baseline uses?",
+  "environment": {
+    "module": "js/environmentV3chart.js",
+    "class": "VesselEnvV3Chart",
+    "base": "js/environmentV3.js VesselEnvV3 (identical graph/kinematics/degradation/metrics)",
+    "chart_feature": "cfg.chartAware appends one onPlan flag per action slot (1 if that outgoing edge is the next Dijkstra-plan segment); passed through the same sensing/comms pipeline, left un-perturbed by additive noise like the other discrete per-slot flags",
+    "obs_dim": {"DRL_no_chart": 28, "DRL_with_chart": 32, "RuleBased": 28},
+    "max_episode_steps": 60, "obstacle_count": 6
+  },
+  "factors": {
+    "arm": ["DRL_no_chart", "DRL_with_chart", "RuleBased"],
+    "condition": [
+      {"name": "clean", "noise_std": 0.0, "packet_error_rate": 0.0},
+      {"name": "mid", "noise_std": 0.1, "packet_error_rate": 0.2},
+      {"name": "harsh", "noise_std": 0.25, "packet_error_rate": 0.4}
+    ]
+  },
+  "n_arms": 3,
+  "n_conditions": 3,
+  "seeds": [0, 1, 2, 3, 4, 5, 6, 7],
+  "n_seeds": 8,
+  "seed_policy": "SAME 8 seeds per cell (paired). env_seed = 42 + seed. Agent RNG = mulberry32(seed*1000003 + 12345). RuleBased deterministic.",
+  "training": {"train_episodes": 130, "total_steps_budget": 3900, "note": "DRL arms train 130 episodes as in Study 3; RuleBased no training."},
+  "evaluation": {"eval_episodes": 30, "note": "greedy (DRL) / deterministic (RuleBased); fresh draws from the same mission distribution (within-distribution generalization, not a held-out split)."},
+  "total_cells": 72,
+  "cells_breakdown": "3 arms x 3 conditions x 8 seeds = 72 cells, 30 eval eps each = 2,160 eval episodes",
+  "metrics": {
+    "navigation": ["success_rate", "mean_reward", "optimality_ratio"],
+    "safety_precision": ["collision_rate", "iala_violations", "cte_mean (reported by outcome)", "docking_accuracy (solved-only)"]
+  },
+  "analysis_plan": {
+    "unit_of_analysis": "per-seed cell scalar (n=8)",
+    "omnibus": "two-way factorial arm(3) x condition(3), y ~ arm*condition + seed, partial eta^2",
+    "primary_contrast": "DRL_no_chart vs DRL_with_chart (does the chart prior help?) and DRL_with_chart vs RuleBased (does the gap close?), paired Wilcoxon + Holm, Cohen d_z",
+    "cte_reporting": "CTE reported on successful episodes only (audit fix B); success rate reported alongside",
+    "alpha": 0.05
+  },
+  "scope_notes": [
+    "Synthesized testbed; the chart prior is the Dijkstra plan already used by the baseline.",
+    "This isolates the information-asymmetry confound the reviewer flagged; it does not add a new algorithm.",
+    "Deployed web application unaffected; offline research."
+  ]
+}
