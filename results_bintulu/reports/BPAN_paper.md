@@ -324,8 +324,8 @@ $\mathbb{E}\!\big[\sum_{t=0}^{H-1}\gamma^{t}R_t\big]$.
 
 All four agents learn an action-value function $Q_\phi(\mathbf o,a)$ with an MLP
 torso ($28\!\to\!128\!\to\!128$, ReLU) and target network $Q_{\phi^-}$ synchronised
-every $1000$ steps. Transitions are stored in a replay buffer and sampled in
-minibatches of $64$; training uses Adam ($\eta=10^{-3}$) on the **Huber loss**
+every 1000 steps. Transitions are stored in a replay buffer and sampled in
+minibatches of 64; training uses Adam ($\eta=10^{-3}$) on the **Huber loss**
 $\mathcal{L}_\kappa$ with $\kappa=1$. The temporal-difference target differs by
 variant:
 
@@ -345,7 +345,8 @@ mean-centred advantage,
 $$ Q_\phi(\mathbf o,a)=V_\phi(\mathbf o)+\Big(A_\phi(\mathbf o,a)-\tfrac{1}{|\mathcal A|}\sum_{a'}A_\phi(\mathbf o,a')\Big). \tag{14}$$
 
 Exploration during training is $\varepsilon$-greedy with $\varepsilon$ annealed
-linearly from $1.0$ to $0.05$ over the first $20\%$ of the step budget; evaluation
+linearly from $\varepsilon_0=1.0$ to $\varepsilon_1=0.05$ over the first $20\%$ of
+the step budget; evaluation
 is greedy ($\varepsilon=0$).
 
 #### 3.2.8 Inter-vessel geometry (extensions d, e)
