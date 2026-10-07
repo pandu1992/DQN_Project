@@ -1,0 +1,6 @@
+Agent,CTE|success clean,CTE|success mid,CTE|success harsh,CTE all-eps clean→harsh,Interpretation
+Rule-based,0.0,5.9,13.2,11.0→22.8,Tracking error on SUCCESS rises 0.0→13.2 clean→harsh (true degradation); the all-episode aggregate (11→23) is a misleading success/failure mixture.
+DQN,0.4,7.3,17.8,28.8→32.0,Tracking error on SUCCESS rises 0.4→17.8 clean→harsh (true degradation); the all-episode aggregate (29→32) is a misleading success/failure mixture.
+Double DQN,0.7,7.9,20.5,29.0→42.3,Tracking error on SUCCESS rises 0.7→20.5 clean→harsh (true degradation); the all-episode aggregate (29→42) is a misleading success/failure mixture.
+Dueling DQN,0.0,7.4,15.8,25.6→35.6,Tracking error on SUCCESS rises 0.0→15.8 clean→harsh (true degradation); the all-episode aggregate (26→36) is a misleading success/failure mixture.
+Dueling Double DQN,0.1,7.4,15.3,27.6→36.0,Tracking error on SUCCESS rises 0.1→15.3 clean→harsh (true degradation); the all-episode aggregate (28→36) is a misleading success/failure mixture.

@@ -1,0 +1,440 @@
+{
+  "experiment_id": "synthetic_port_external_validity_maps",
+  "total_cells": 108,
+  "eval_rows": 3240,
+  "cells": [
+    {
+      "config_id": "map0_RuleBased_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map0_RuleBased_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map0_RuleBased_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map0_RuleBased_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map0_RuleBased_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map0_RuleBased_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map0_RuleBased_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map0_RuleBased_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map0_RuleBased_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map0_RuleBased_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map0_RuleBased_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map0_RuleBased_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map2_RuleBased_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map2_RuleBased_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map2_RuleBased_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map2_RuleBased_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map2_RuleBased_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map2_RuleBased_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map2_RuleBased_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map2_RuleBased_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map2_RuleBased_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map2_RuleBased_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map2_RuleBased_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map2_RuleBased_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map3_RuleBased_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map3_RuleBased_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map3_RuleBased_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map3_RuleBased_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map3_RuleBased_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map3_RuleBased_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map3_RuleBased_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map3_RuleBased_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map3_RuleBased_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map3_RuleBased_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map3_RuleBased_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map3_RuleBased_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map0_DRL_no_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map0_DRL_no_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map0_DRL_no_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map0_DRL_no_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map0_DRL_no_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map0_DRL_no_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map0_DRL_no_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map0_DRL_no_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map0_DRL_no_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map0_DRL_no_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map0_DRL_no_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map0_DRL_no_chart_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map0_DRL_with_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map0_DRL_with_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map0_DRL_with_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map0_DRL_with_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map0_DRL_with_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map0_DRL_with_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map0_DRL_with_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map0_DRL_with_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map0_DRL_with_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map0_DRL_with_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map0_DRL_with_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map0_DRL_with_chart_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map2_DRL_no_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map2_DRL_no_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map2_DRL_no_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map2_DRL_no_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map2_DRL_no_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map2_DRL_no_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map2_DRL_no_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map2_DRL_no_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map2_DRL_no_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map2_DRL_no_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map2_DRL_no_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map2_DRL_no_chart_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map2_DRL_with_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map2_DRL_with_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map2_DRL_with_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map2_DRL_with_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map2_DRL_with_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map2_DRL_with_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map2_DRL_with_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map2_DRL_with_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map2_DRL_with_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map2_DRL_with_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map2_DRL_with_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map2_DRL_with_chart_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map3_DRL_no_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map3_DRL_no_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map3_DRL_no_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map3_DRL_no_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map3_DRL_no_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map3_DRL_no_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map3_DRL_no_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map3_DRL_no_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map3_DRL_no_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map3_DRL_no_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map3_DRL_no_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map3_DRL_no_chart_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "map3_DRL_with_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "map3_DRL_with_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "map3_DRL_with_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "map3_DRL_with_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "map3_DRL_with_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "map3_DRL_with_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "map3_DRL_with_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "map3_DRL_with_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "map3_DRL_with_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "map3_DRL_with_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "map3_DRL_with_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "map3_DRL_with_chart_harsh",
+      "seed": 5
+    }
+  ],
+  "rebuilt_from_csv": true
+}

@@ -1,0 +1,296 @@
+{
+  "experiment_id": "synthetic_port_chart_fairness",
+  "total_cells": 72,
+  "eval_rows": 2160,
+  "cells": [
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "RuleBased_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "RuleBased_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "RuleBased_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DRL_no_chart_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DRL_no_chart_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DRL_no_chart_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DRL_with_chart_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DRL_with_chart_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DRL_with_chart_harsh",
+      "seed": 7
+    }
+  ],
+  "rebuilt_from_csv": true
+}
