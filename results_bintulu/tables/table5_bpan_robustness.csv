@@ -1,0 +1,17 @@
+Agent,Metric,Clean,Harsh,Δ,Cohen d_z,adj p (Holm),Sig,Interpretation
+DQN,success_rate,21.7,28.3,+6.7,0.34,0.703,no,small clean→harsh change; n.s. at n=8.
+DQN,collision_rate,15.4,57.9,+42.5,1.01,0.039,yes,large clean→harsh change; Holm-sig.
+DQN,iala_violations,0.0,22.9,+22.9,1.39,0.031,yes,large clean→harsh change; Holm-sig.
+DQN,docking_accuracy,0.0,15.3,+15.3,2.80,0.250,no,large clean→harsh change; n.s. at n=8.
+Double DQN,success_rate,11.7,35.4,+23.8,1.86,0.031,yes,large clean→harsh change; Holm-sig.
+Double DQN,collision_rate,1.7,69.6,+67.9,3.34,0.031,yes,large clean→harsh change; Holm-sig.
+Double DQN,iala_violations,0.0,17.5,+17.5,3.35,0.031,yes,large clean→harsh change; Holm-sig.
+Double DQN,docking_accuracy,0.0,19.9,+19.9,6.50,0.250,no,large clean→harsh change; n.s. at n=8.
+Dueling DQN,success_rate,21.2,27.5,+6.2,0.31,0.703,no,small clean→harsh change; n.s. at n=8.
+Dueling DQN,collision_rate,10.8,58.8,+47.9,1.31,0.031,yes,large clean→harsh change; Holm-sig.
+Dueling DQN,iala_violations,0.0,28.3,+28.3,1.25,0.031,yes,large clean→harsh change; Holm-sig.
+Dueling DQN,docking_accuracy,0.0,15.9,+15.9,3.86,0.250,no,large clean→harsh change; n.s. at n=8.
+Dueling Double DQN,success_rate,16.7,27.1,+10.4,0.53,0.586,no,medium clean→harsh change; n.s. at n=8.
+Dueling Double DQN,collision_rate,8.3,60.8,+52.5,1.86,0.031,yes,large clean→harsh change; Holm-sig.
+Dueling Double DQN,iala_violations,0.0,22.1,+22.1,1.19,0.031,yes,large clean→harsh change; Holm-sig.
+Dueling Double DQN,docking_accuracy,0.0,16.3,+16.3,4.38,0.250,no,large clean→harsh change; n.s. at n=8.

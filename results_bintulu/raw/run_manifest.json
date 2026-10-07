@@ -1,0 +1,393 @@
+{
+  "experiment_id": "bintulu_port_autonomous_navigation",
+  "status": "COMPLETE: 96 cells",
+  "total_cells": 96,
+  "eval_rows": 2880,
+  "cells": [
+    {
+      "config_id": "DQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DQN_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DoubleDQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DoubleDQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DoubleDQN_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DuelingDQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DuelingDQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DuelingDQN_harsh",
+      "seed": 7
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 0
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 1
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 2
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 3
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 4
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 5
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 6
+    },
+    {
+      "config_id": "DuelingDoubleDQN_clean",
+      "seed": 7
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 0
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 1
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 2
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 3
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 4
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 5
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 6
+    },
+    {
+      "config_id": "DuelingDoubleDQN_mid",
+      "seed": 7
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 0
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 1
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 2
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 3
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 4
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 5
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 6
+    },
+    {
+      "config_id": "DuelingDoubleDQN_harsh",
+      "seed": 7
+    }
+  ],
+  "rebuilt_from_csv": true
+}

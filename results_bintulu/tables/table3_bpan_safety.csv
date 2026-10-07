@@ -1,0 +1,5 @@
+Agent,Coll/ep clean,Coll/ep harsh,IALA clean,IALA harsh,CTE|succ clean,CTE|succ harsh,Interpretation
+DQN,0.15,2.00,0.0,22.9,8.7,23.9,Safety/compliance degrade sharply clean→harsh; CTE on success rises.
+Double DQN,0.40,1.61,0.0,17.5,0.0,29.4,Safety/compliance degrade sharply clean→harsh; CTE on success rises.
+Dueling DQN,0.11,1.53,0.0,28.3,3.0,24.9,Safety/compliance degrade sharply clean→harsh; CTE on success rises.
+Dueling Double DQN,0.08,1.37,0.0,22.1,0.0,22.7,Safety/compliance degrade sharply clean→harsh; CTE on success rises.
