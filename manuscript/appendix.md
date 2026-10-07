@@ -1,9 +1,74 @@
 # Appendix
 
-This appendix collects the mathematical and statistical methods and the full
-result tables for all five studies. The tables themselves are rendered from the
-committed CSVs in the **Appendix — Tables** tab; this document provides the
-formal methods reference and an index to those tables.
+This appendix collects the mathematical and statistical methods, the validity-audit
+and measurement notes, the mixed-effects summary, the literature capability table,
+and the full result tables for all experiments. Tables are rendered from the
+committed CSVs in the **Appendix — Tables** tab; this document provides the formal
+methods reference and an index.
+
+<a name="appendix-audit"></a>
+
+## A.0a Validity Audit & Measurement Notes
+
+A pre-submission internal audit (full text: `results_audit/Q1_validity_audit.md`)
+grounded each measurement choice in the code and drove three reporting rules used
+throughout:
+
+- **Success is goal-reaching only; timeout is the sole failure mode.** With
+  collision-termination disabled and no off-channel termination, non-success is
+  always a timeout (0 non-timeout failures across 13,230 single-vessel episodes).
+  Collisions/IALA are *within-episode* safety metrics orthogonal to the outcome;
+  ~35–47% of *successful* harsh episodes still collide
+  (`results_audit/tables/tableAudit_success_hides_safety.csv`).
+- **CTE is reported by outcome, never as a single aggregate** (the clean
+  successful CTE$\approx$0 construction creates a mixture artifact); CTE-on-success
+  rises monotonically with degradation
+  (`results_audit/outcome_decomposition_findings.md`,
+  `tableAudit_cte_by_outcome_study3.csv`).
+- **Precision metrics are solved-only** and are reported with the success base.
+- **Evaluation is within-distribution, not held-out** (shared mission stream,
+  ~120-pair space).
+- IALA compliance is an *unoptimized* metric (the reward does not penalise it);
+  inter-vessel separation uses a first-order interpolation between macro-step poses.
+
+<a name="appendix-mixed"></a>
+
+## A.0b Mixed-Effects (Random-Seed) Summary
+
+Full output: `results_audit/mixed_effects_{summary.csv,findings.md}`. A linear
+mixed model $y \sim \text{(fixed factors)} + (1\,|\,\text{seed})$ reproduces every
+factorial-ANOVA conclusion under a random-seed specification: degradation
+(noise/packet-error) is highly significant in RQ2 ($p<0.001$); the rule-based agent
+and the pairing are significant in RQ3/RQ4; and **the chart prior remains a
+significant fixed effect** in the chart-fairness experiment ($p<0.001$). The seed
+intraclass correlation (ICC) is substantial where expected (RQ3 confirmatory
+$\approx0.19$; two-vessel $\approx0.38$), quantitatively echoing the RQ1
+seed-dominance finding and confirming that inference is seed-level (so the 31,150
+episodes index reproducibility, not statistical power).
+
+<a name="appendix-lit"></a>
+
+## A.0c Literature Capability Comparison
+
+Full positioning (with inline citations): `results_audit/literature_positioning.md`.
+Legend: ✓ common/central · ~ limited/rare · ✗ essentially absent.
+
+| Dimension | Maritime DRL nav/COLREGs | DRL robustness-to-noise | Connected-vehicle MARL comms | RL methodology | This work |
+|---|---|---|---|---|---|
+| DRL algorithm comparison | ✓ | ~ | ~ | ✓ | ✓ (diagnostic) |
+| Sensor / observation noise | ✗ | ✓ | ~ | ✗ | ✓ |
+| Communication packet-loss | ✗ | ✗ | ✓ (vehicles) | ✗ | ✓ |
+| Safety metrics (collision/IALA/docking/CTE) | ~ | ~ | ~ | ✗ | ✓ (outcome-decomposed) |
+| Classical baseline | ~ | ~ | ✗ | ✗ | ✓ |
+| **Baseline information (chart) as a factor** | ✗ | ✗ | ✗ | ✗ | **✓** |
+| Shared seeds + significance + effect sizes | ~ | ~ | ~ | ✓ (prescribed) | ✓ |
+| Mixed-effects / seed-as-random inference | ✗ | ✗ | ~ | ~ | ✓ |
+| Multi-vessel interaction | ✓ | ✗ | ✓ | ✗ | ✓ |
+| Round-trip / two-way mission structure | ~ | ✗ | ✗ | ✗ | ✓ |
+| Cross-map external-validity check | ~ | ~ | ~ | ✗ | ✓ (3 maps) |
+| Factor-hierarchy characterization | ✗ | ✗ | ✗ | ✗ | **✓** |
+
+---
 
 <a name="appendix-methods"></a>
 
@@ -96,3 +161,37 @@ Under the *Study 3* group:
 - **Table S3.5** — Rule-based vs DQN at harsh (significance + effect size).
 - **Table S3.6** — Robustness: clean vs harsh per agent.
 - **Table S3.7** — Overall findings.
+
+<a name="appendix-a3b"></a>
+
+## A.3b RQ3 — Chart-Fairness & External Validity
+
+Chart-fairness (`results_chart/`): `summary.csv` (per arm × condition),
+`statistics/factorial_anova.csv` (arm partial $\eta^2=0.30$ on success),
+`statistics/contrasts.csv` (DRL-no-chart vs rule-based Holm-significant;
+DRL-with-chart vs rule-based non-significant), `reports/chart_fairness_report.md`.
+External validity (`results_maps/`): `summary.csv` and
+`statistics/factorial_anova.csv` (map main effect $\eta^2=0.018$ n.s.; arm×map
+interaction $\eta^2=0.123$), `reports/external_validity_report.md`.
+
+<a name="appendix-a4"></a>
+
+## A.4 RQ4 — Two Vessels (Study 4) Tables
+
+Under the *Study 4* group:
+
+- **Table S4.1** — Configuration. **S4.2** — Inter-vessel collision rate.
+- **S4.3** — Safety–completion tradeoff. **S4.4** — Factorial ANOVA (pairing × condition).
+- **S4.5** — Reference vs pairing at harsh. **S4.6** — Robustness clean vs harsh.
+- **S4.7** — Overall findings.
+
+<a name="appendix-a5"></a>
+
+## A.5 RQ4 — Round-Trip & Two-Way (Study 5) Tables
+
+Under the *Study 5* group:
+
+- **Table S5.1** — Configuration. **S5.2** — Two-phase dock vs full-cycle.
+- **S5.3** — Outbound-leg drop (significance). **S5.4** — Two-way collision rate.
+- **S5.5** — Two-way factorial ANOVA. **S5.6** — Reference vs pairing at harsh.
+- **S5.7** — Overall findings.

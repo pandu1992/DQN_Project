@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Manuscript — Robustness of DRL for Autonomous Vessel Navigation</title>
+<title>Manuscript — What Makes Autonomous Vessel Navigation Robust? (Synthetic Port)</title>
 <link rel="stylesheet" href="styles.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
       integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous" />
@@ -91,8 +91,8 @@
   <div class="rp-wrap">
     <div class="rp-hero">
       <div>
-        <h1>Robustness of Value-Based DRL for Autonomous Vessel Navigation vs a Classical COLREGs-Aware Baseline — Extended to Multi-Vessel Encounters &amp; Round-Trip Missions</h1>
-        <p>Unified manuscript merging Studies 1–5 · 31,150 evaluation episodes/rows · reproducible testbed</p>
+        <h1>What Makes Autonomous Vessel Navigation Robust? A Controlled Factor-Hierarchy Study of Deep Reinforcement Learning under Degraded Sensing, Communication &amp; Multi-Vessel Interaction</h1>
+        <p>Factor-hierarchy synthesis across four research questions · 31,150 evaluation episodes/rows · reproducible testbed</p>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <a class="rp-back btn" href="results.html">Study 1</a>
@@ -105,7 +105,7 @@
     </div>
 
     <div class="rp-note">
-      <b>Draft manuscript</b> synthesizing all five studies into one Q1-style paper. Figures are embedded inline;
+      <b>Draft manuscript</b> synthesizing the experimental programme (RQ1–RQ4 + chart-fairness, external-validity &amp; mixed-effects) into one Q1-style paper with a factor-hierarchy framing. Figures are embedded inline;
       all tables are collected in the <b>Appendix — Tables</b> tab. Use <b>⬇ Download manuscript (PDF)</b> for a
       single self-contained document (paper + appendix methods + all tables). Every number is computed from the
       committed study data; nothing is fabricated.
@@ -149,29 +149,31 @@
       report: "manuscript.md",
       methodsDocs: ["appendix.md"],
       pdfLayout: "manuscript",
-      pdfTitle: "Robustness of Value-Based DRL for Autonomous Vessel Navigation",
-      pdfSubtitle: "A five-study comparison against a classical COLREGs-aware baseline, extended to multi-vessel encounters and round-trip missions",
+      pdfTitle: "What Makes Autonomous Vessel Navigation Robust?",
+      pdfSubtitle: "A controlled factor-hierarchy study of DRL under degraded sensing, communication, and multi-vessel interaction",
       figures: [
-        {fig:"fig1_overall_performance", dir:"results", group:"Study 1 — Clean comparison"},
-        {fig:"fig8_variance_dominance", dir:"results", group:"Study 1 — Clean comparison"},
-        {fig:"fig5_ci_comparison", dir:"results", group:"Study 1 — Clean comparison"},
-        {fig:"fig6_significance_matrix", dir:"results", group:"Study 1 — Clean comparison"},
-        {fig:"figV3_effect_sizes", dir:"results_v3", group:"Study 2 — Robustness"},
-        {fig:"figV3_success_vs_noise", dir:"results_v3", group:"Study 2 — Robustness"},
-        {fig:"figV3_collision_vs_noise", dir:"results_v3", group:"Study 2 — Robustness"},
-        {fig:"figV3_iala_heatmap", dir:"results_v3", group:"Study 2 — Robustness"},
-        {fig:"figS3_iala_interaction", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
-        {fig:"figS3_iala_harsh", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
-        {fig:"figS3_effect_matrix", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
-        {fig:"figS3_success_vs_condition", dir:"results_study3", group:"Study 3 — Baseline & confirmatory"},
-        {fig:"figS4_tradeoff_scatter", dir:"results_study4", group:"Study 4 — Two independent vessels"},
-        {fig:"figS4_anova_eta2", dir:"results_study4", group:"Study 4 — Two independent vessels"},
-        {fig:"figS4_cpa_distributions", dir:"results_study4", group:"Study 4 — Two independent vessels"},
-        {fig:"figS4_collrate_vs_condition", dir:"results_study4", group:"Study 4 — Two independent vessels"},
-        {fig:"figS5_twophase_dock_vs_full", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"},
-        {fig:"figS5_twoway_tradeoff", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"},
-        {fig:"figS5_twoway_anova_eta2", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"},
-        {fig:"figS5_twoway_cpa_distributions", dir:"results_study5", group:"Study 5 — Round trips & two-way traffic"}
+        {fig:"fig1_overall_performance", dir:"results", group:"RQ1 — Algorithm (diagnostic)"},
+        {fig:"fig8_variance_dominance", dir:"results", group:"RQ1 — Algorithm (diagnostic)"},
+        {fig:"figA_cte_outcome_correction", dir:"results_audit", group:"RQ2 — Perception/communication"},
+        {fig:"figB_success_hides_collisions", dir:"results_audit", group:"RQ2 — Perception/communication"},
+        {fig:"figChart_success_gap_closes", dir:"results_chart", group:"RQ3 — Navigation prior (chart-fairness)"},
+        {fig:"figMaps_success_across_maps", dir:"results_maps", group:"RQ3 — External validity (maps)"},
+        {fig:"figV3_effect_sizes", dir:"results_v3", group:"RQ2 — Perception/communication"},
+        {fig:"figV3_success_vs_noise", dir:"results_v3", group:"RQ2 — Perception/communication"},
+        {fig:"figV3_collision_vs_noise", dir:"results_v3", group:"RQ2 — Perception/communication"},
+        {fig:"figV3_iala_heatmap", dir:"results_v3", group:"RQ2 — Perception/communication"},
+        {fig:"figS3_iala_interaction", dir:"results_study3", group:"RQ3 — Classical baseline"},
+        {fig:"figS3_iala_harsh", dir:"results_study3", group:"RQ3 — Classical baseline"},
+        {fig:"figS3_effect_matrix", dir:"results_study3", group:"RQ3 — Classical baseline"},
+        {fig:"figS3_success_vs_condition", dir:"results_study3", group:"RQ3 — Classical baseline"},
+        {fig:"figS4_tradeoff_scatter", dir:"results_study4", group:"RQ4 — Two independent vessels"},
+        {fig:"figS4_anova_eta2", dir:"results_study4", group:"RQ4 — Two independent vessels"},
+        {fig:"figS4_cpa_distributions", dir:"results_study4", group:"RQ4 — Two independent vessels"},
+        {fig:"figS4_collrate_vs_condition", dir:"results_study4", group:"RQ4 — Two independent vessels"},
+        {fig:"figS5_twophase_dock_vs_full", dir:"results_study5", group:"RQ4 — Round trips & two-way traffic"},
+        {fig:"figS5_twoway_tradeoff", dir:"results_study5", group:"RQ4 — Round trips & two-way traffic"},
+        {fig:"figS5_twoway_anova_eta2", dir:"results_study5", group:"RQ4 — Round trips & two-way traffic"},
+        {fig:"figS5_twoway_cpa_distributions", dir:"results_study5", group:"RQ4 — Round trips & two-way traffic"}
       ],
       tables: [
         {file:"table1_configuration", title:"Table S1.1 — Configuration", dir:"results", group:"Appendix A.1 — Study 1 Tables"},
@@ -211,7 +213,11 @@
         {file:"table4_s5_twoway_safety", title:"Table S5.4 — Two-way collision rate", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
         {file:"table5_s5_twoway_factorial", title:"Table S5.5 — Two-way factorial ANOVA", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
         {file:"table6_s5_reference_contrasts_harsh", title:"Table S5.6 — Reference vs pairing at harsh", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
-        {file:"table7_s5_findings", title:"Table S5.7 — Overall findings", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"}
+        {file:"table7_s5_findings", title:"Table S5.7 — Overall findings", dir:"results_study5", group:"Appendix A.5 — Study 5 Tables"},
+        {file:"tableAudit_cte_by_outcome_study3", title:"Table A0.1 — CTE by episode outcome (RQ3)", dir:"results_audit", group:"Appendix A.0 — Validity audit"},
+        {file:"tableAudit_success_hides_safety", title:"Table A0.2 — Success hides safety violations", dir:"results_audit", group:"Appendix A.0 — Validity audit"},
+        {file:"tableAudit_failure_taxonomy", title:"Table A0.3 — Failure taxonomy (timeout is sole failure)", dir:"results_audit", group:"Appendix A.0 — Validity audit"},
+        {file:"mixed_effects_summary", title:"Table A0.4 — Mixed-effects (seed random effect) summary", dir:"results_audit", group:"Appendix A.0 — Validity audit"}
       ]
     };
   </script>
