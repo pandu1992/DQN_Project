@@ -68,6 +68,7 @@
       <button class="rp-tab active" data-tab="report">📄 Full Paper</button>
       <button class="rp-tab" data-tab="tables">📊 Tables</button>
       <button class="rp-tab" data-tab="figures">📈 Figures</button>
+      <button class="rp-tab" data-tab="gifs">🎞 Animations</button>
     </div>
 
     <section class="rp-panel active" id="panel-report">
@@ -91,6 +92,23 @@
     <section class="rp-panel" id="panel-figures">
       <div class="fig-grid" id="figuresBody"><p class="loading">Loading figures…</p></div>
     </section>
+
+    <section class="rp-panel" id="panel-gifs">
+      <div class="fig-grid">
+        <div class="fig-card">
+          <img loading="lazy" src="results_bintulu/gifs/clean_success.gif" alt="Clean-conditions DQN transit berthing at Bintulu" />
+          <div class="fig-cap"><b>Clean conditions.</b> The trained DQN vessel tracks the planned channel over the real Bintulu chart and berths at the harbour (no sensor noise or packet-loss).</div>
+        </div>
+        <div class="fig-card">
+          <img loading="lazy" src="results_bintulu/gifs/mid_transit.gif" alt="Mid-degradation DQN transit on the Bintulu chart" />
+          <div class="fig-cap"><b>Mid degradation.</b> With moderate sensor noise and packet-loss the realised track drifts from the buoyed centreline but the vessel still completes the transit.</div>
+        </div>
+        <div class="fig-card">
+          <img loading="lazy" src="results_bintulu/gifs/harsh_drift.gif" alt="Harsh-degradation DQN drift and collision on the Bintulu chart" />
+          <div class="fig-cap"><b>Harsh degradation.</b> Under heavy noise + packet-loss the track drifts across channel markers (IALA violations) and grazes an obstacle (collision) — the visual counterpart of the quantitative safety collapse.</div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -105,10 +123,11 @@
         ["table2_bpan_navigation", "Table 2 — Navigation Success Across Conditions"],
         ["table3_bpan_safety", "Table 3 — Safety & Precision (clean vs harsh)"],
         ["table4_bpan_factorial", "Table 4 — Factorial ANOVA (Algorithm \u00d7 Condition, partial \u03b7\u00b2)"],
-        ["table5_bpan_robustness", "Table 5 — Robustness: Clean vs Harsh per Algorithm"]
+        ["table5_bpan_robustness", "Table 5 — Robustness: Clean vs Harsh per Algorithm"],
+        ["table6_bpan_improvements", "Table 6 — Improving the DQN (chart prior, reward shaping)"]
       ],
       figures: [
-        "figBPAN_anova_eta2", "figBPAN_success", "figBPAN_iala", "figBPAN_collisions"
+        "figBPAN_anova_eta2", "figBPAN_success", "figBPAN_iala", "figBPAN_collisions", "figBPAN_improvements"
       ]
     };
   </script>

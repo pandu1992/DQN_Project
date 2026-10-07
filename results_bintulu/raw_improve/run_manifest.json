@@ -1,0 +1,439 @@
+{
+  "experiment_id": "bpan_dqn_improvement",
+  "cells": [
+    {
+      "config_id": "baseline_clean",
+      "seed": 0,
+      "ms": 18520,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_clean",
+      "seed": 1,
+      "ms": 20552,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_clean",
+      "seed": 2,
+      "ms": 15032,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_clean",
+      "seed": 3,
+      "ms": 19423,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_clean",
+      "seed": 4,
+      "ms": 15929,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_clean",
+      "seed": 5,
+      "ms": 20876,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_mid",
+      "seed": 0,
+      "ms": 17487,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_mid",
+      "seed": 1,
+      "ms": 20080,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_mid",
+      "seed": 2,
+      "ms": 16135,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_mid",
+      "seed": 3,
+      "ms": 17857,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_mid",
+      "seed": 4,
+      "ms": 16776,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_mid",
+      "seed": 5,
+      "ms": 19400,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_harsh",
+      "seed": 0,
+      "ms": 18373,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_harsh",
+      "seed": 1,
+      "ms": 20377,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_harsh",
+      "seed": 2,
+      "ms": 16636,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_harsh",
+      "seed": 3,
+      "ms": 18590,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_harsh",
+      "seed": 4,
+      "ms": 16079,
+      "evalEps": 30
+    },
+    {
+      "config_id": "baseline_harsh",
+      "seed": 5,
+      "ms": 17453,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_clean",
+      "seed": 0,
+      "ms": 15761,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_clean",
+      "seed": 1,
+      "ms": 16775,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_clean",
+      "seed": 2,
+      "ms": 13550,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_clean",
+      "seed": 3,
+      "ms": 16861,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_clean",
+      "seed": 4,
+      "ms": 16441,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_clean",
+      "seed": 5,
+      "ms": 21385,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_mid",
+      "seed": 0,
+      "ms": 15286,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_mid",
+      "seed": 1,
+      "ms": 16867,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_mid",
+      "seed": 2,
+      "ms": 16730,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_mid",
+      "seed": 3,
+      "ms": 14814,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_mid",
+      "seed": 4,
+      "ms": 15549,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_mid",
+      "seed": 5,
+      "ms": 19821,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_harsh",
+      "seed": 0,
+      "ms": 14239,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_harsh",
+      "seed": 1,
+      "ms": 17168,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_harsh",
+      "seed": 2,
+      "ms": 15461,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_harsh",
+      "seed": 3,
+      "ms": 17404,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_harsh",
+      "seed": 4,
+      "ms": 15697,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_harsh",
+      "seed": 5,
+      "ms": 17738,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_clean",
+      "seed": 0,
+      "ms": 15205,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_clean",
+      "seed": 1,
+      "ms": 16097,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_clean",
+      "seed": 2,
+      "ms": 15266,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_clean",
+      "seed": 3,
+      "ms": 16933,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_clean",
+      "seed": 4,
+      "ms": 16514,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_clean",
+      "seed": 5,
+      "ms": 20392,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_mid",
+      "seed": 0,
+      "ms": 17595,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_mid",
+      "seed": 1,
+      "ms": 13501,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_mid",
+      "seed": 2,
+      "ms": 15876,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_mid",
+      "seed": 3,
+      "ms": 16483,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_mid",
+      "seed": 4,
+      "ms": 16721,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_mid",
+      "seed": 5,
+      "ms": 14242,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_harsh",
+      "seed": 0,
+      "ms": 15678,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_harsh",
+      "seed": 1,
+      "ms": 14363,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_harsh",
+      "seed": 2,
+      "ms": 15474,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_harsh",
+      "seed": 3,
+      "ms": 16692,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_harsh",
+      "seed": 4,
+      "ms": 15817,
+      "evalEps": 30
+    },
+    {
+      "config_id": "shaping_harsh",
+      "seed": 5,
+      "ms": 14449,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_clean",
+      "seed": 0,
+      "ms": 12967,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_clean",
+      "seed": 1,
+      "ms": 15162,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_clean",
+      "seed": 2,
+      "ms": 15015,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_clean",
+      "seed": 3,
+      "ms": 15676,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_clean",
+      "seed": 4,
+      "ms": 15837,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_clean",
+      "seed": 5,
+      "ms": 21357,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_mid",
+      "seed": 0,
+      "ms": 13038,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_mid",
+      "seed": 1,
+      "ms": 13084,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_mid",
+      "seed": 2,
+      "ms": 15077,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_mid",
+      "seed": 3,
+      "ms": 15361,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_mid",
+      "seed": 4,
+      "ms": 15103,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_mid",
+      "seed": 5,
+      "ms": 16717,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_harsh",
+      "seed": 0,
+      "ms": 10590,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_harsh",
+      "seed": 1,
+      "ms": 13094,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_harsh",
+      "seed": 2,
+      "ms": 13936,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_harsh",
+      "seed": 3,
+      "ms": 16518,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_harsh",
+      "seed": 4,
+      "ms": 15072,
+      "evalEps": 30
+    },
+    {
+      "config_id": "chart_shaping_harsh",
+      "seed": 5,
+      "ms": 15389,
+      "evalEps": 30
+    }
+  ],
+  "total_cells": 72,
+  "eval_rows": 2160
+}

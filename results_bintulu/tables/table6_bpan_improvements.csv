@@ -1,0 +1,5 @@
+Arm,Clean %,Mid %,Harsh %,Interpretation
+Baseline DQN,15.0,17.2,25.0,Reference DQN with no improvement.
++ chart prior,35.6,42.8,56.1,+26 pts success vs baseline on avg; 0/3 conditions Holm-sig (d_z 1.0-2.6).
++ reward shaping,20.0,36.7,45.6,+15 pts success vs baseline on avg; 0/3 conditions Holm-sig (d_z 0.3-1.2).
++ chart + shaping,30.0,50.0,65.0,+29 pts success vs baseline on avg; 0/3 conditions Holm-sig (d_z 1.1-1.8).
